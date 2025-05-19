@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter } from "@/components/ui/
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Plus, Play } from "lucide-react";
+import { Check, Plus, Play } from "lucide-react";
 import { WatchlistMenu } from "../watchlists/WatchlistMenu";
 
 interface MediaCardProps {
@@ -34,6 +34,9 @@ export function MediaCard({ item, config }: MediaCardProps) {
   };
   
   const mediaType = 'title' in item ? 'movie' : 'tv';
+  
+  // Check if the item has been watched (from props)
+  const isWatched = 'watched' in item && item.watched;
   
   return (
     <>
@@ -64,6 +67,11 @@ export function MediaCard({ item, config }: MediaCardProps) {
               <Play className="h-4 w-4" />
               <span className="sr-only">Play trailer</span>
             </Button>
+          )}
+          {isWatched && (
+            <div className="absolute top-2 left-2 bg-primary rounded-full p-1">
+              <Check className="h-3 w-3 text-primary-foreground" />
+            </div>
           )}
         </div>
         

@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Check, List } from "lucide-react";
+import { Plus, Check, List, Share2, Globe, Lock, Users } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -11,6 +11,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface WatchlistMenuProps {
   mediaId: number;
@@ -20,13 +22,19 @@ interface WatchlistMenuProps {
 // This component is a simplified version since we don't have actual backend integration
 export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [newListName, setNewListName] = useState("");
+  const [newListDescription, setNewListDescription] = useState("");
+  const [privacy, setPrivacy] = useState("private");
+  const [collaboratorEmail, setCollaboratorEmail] = useState("");
+  const [permission, setPermission] = useState("view");
   const { toast } = useToast();
   
   // Mock watchlists - in a real app, these would come from an API
   const mockWatchlists = [
-    { id: "1", name: "Must watch" },
-    { id: "2", name: "Favorites" }
+    { id: "1", name: "Must watch", privacy: "private" },
+    { id: "2", name: "Favorites", privacy: "public" },
+    { id: "3", name: "Movie Night with Friends", privacy: "shared" }
   ];
   
   const handleAddToWatchlist = (listId: string, listName: string) => {
@@ -48,6 +56,20 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
     
     setIsCreateOpen(false);
     setNewListName("");
+    setNewListDescription("");
+  };
+  
+  const handleShareWatchlist = () => {
+    if (!collaboratorEmail.trim()) return;
+    
+    // This would call an API in a real implementation
+    toast({
+      title: "Invitation sent",
+      description: `Invited ${collaboratorEmail} to collaborate with ${permission} permission`,
+    });
+    
+    setIsShareOpen(false);
+    setCollaboratorEmail("");
   };
   
   return (
@@ -71,6 +93,9 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
               >
                 <List className="h-4 w-4 mr-2" />
                 {list.name}
+                {list.privacy === "private" && <Lock className="h-3 w-3 ml-auto" />}
+                {list.privacy === "public" && <Globe className="h-3 w-3 ml-auto" />}
+                {list.privacy === "shared" && <Users className="h-3 w-3 ml-auto" />}
               </Button>
             ))}
             <Button
@@ -101,12 +126,73 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
                 onChange={(e) => setNewListName(e.target.value)}
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description (optional)</Label>
+              <Textarea
+                id="description"
+                placeholder="What's this watchlist about?"
+                value={newListDescription}
+                onChange={(e) => setNewListDescription(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Privacy</Label>
+              <RadioGroup value={privacy} onValueChange={setPrivacy} className="flex gap-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="private" id="private" />
+                  <Label htmlFor="private" className="cursor-pointer">Private</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="public" id="public" />
+                  <Label htmlFor="public" className="cursor-pointer">Public</Label>
+                </div>
+              </RadioGroup>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleCreateWatchlist}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Invite collaborators</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="friend@example.com"
+                value={collaboratorEmail}
+                onChange={(e) => setCollaboratorEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Permission level</Label>
+              <RadioGroup value={permission} onValueChange={setPermission} className="flex gap-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="view" id="view" />
+                  <Label htmlFor="view" className="cursor-pointer">View only</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="edit" id="edit" />
+                  <Label htmlFor="edit" className="cursor-pointer">Can edit</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsShareOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleShareWatchlist}>Send invitation</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
