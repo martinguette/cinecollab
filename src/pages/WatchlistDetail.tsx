@@ -5,7 +5,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { useTMDbConfig } from "@/hooks/use-tmdb-config";
 import { MediaCard } from "@/components/movies/MediaCard";
-import { TMDbMediaItem } from "@/types";
+import { TMDbMediaItem, TMDbMovie, TMDbTV } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Globe, Lock, MessageCircle, Share2, Users, X, Check } from "lucide-react";
 import {
@@ -25,9 +25,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 
 // Extend the TMDbMediaItem type for our watchlist items
-interface WatchlistMediaItem extends TMDbMediaItem {
+type WatchlistMediaItem = TMDbMediaItem & {
   watched?: boolean;
-}
+};
 
 const WatchlistDetail = () => {
   const { id } = useParams();
@@ -240,7 +240,7 @@ const WatchlistDetail = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {items.map((item) => (
                   <div key={item.id} className="relative group">
-                    <MediaCard key={`${item.id}-${item.media_type || 'unknown'}`} item={item} config={config} />
+                    <MediaCard item={item} config={config} />
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -298,7 +298,7 @@ const WatchlistDetail = () => {
                           <p className="text-sm">{comment.text}</p>
                           {item && (
                             <div className="text-xs text-muted-foreground mt-1">
-                              On: {item.title || item.name}
+                              On: {('title' in item) ? item.title : item.name}
                             </div>
                           )}
                         </div>
