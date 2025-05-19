@@ -7,7 +7,7 @@ import { useTMDbConfig } from "@/hooks/use-tmdb-config";
 import { MediaCard } from "@/components/movies/MediaCard";
 import { TMDbMediaItem } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Globe, Lock, MessageCircle, Share2, Users, X } from "lucide-react";
+import { ArrowLeft, Globe, Lock, MessageCircle, Share2, Users, X, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +23,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
+
+// Extend the TMDbMediaItem type for our watchlist items
+interface WatchlistMediaItem extends TMDbMediaItem {
+  watched?: boolean;
+}
 
 const WatchlistDetail = () => {
   const { id } = useParams();
@@ -92,7 +97,7 @@ const WatchlistDetail = () => {
   };
 
   // Mock items in the watchlist - in a real app, these would come from an API
-  const [items, setItems] = useState<TMDbMediaItem[]>([]);
+  const [items, setItems] = useState<WatchlistMediaItem[]>([]);
 
   // Load mock data
   useEffect(() => {
