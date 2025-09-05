@@ -14,7 +14,7 @@ export function NavBar() {
       <div className="container max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-semibold text-lg">
           <Film className="h-5 w-5 text-pastel" />
-          <span className="hidden sm:inline">CineCollab</span>
+          <span className="hidden sm:inline">Cinematic</span>
         </Link>
         
         <div className="flex items-center gap-2">
