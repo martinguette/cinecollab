@@ -5,6 +5,7 @@ import { SearchBar } from "@/components/search/SearchBar";
 import { SearchFilters, TMDbMediaItem } from "@/types";
 import { useSearch } from "@/hooks/use-search";
 import { useTMDbConfig } from "@/hooks/use-tmdb-config";
+import { useAuth } from "@/hooks/use-auth";
 import { MediaCard } from "@/components/movies/MediaCard";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";

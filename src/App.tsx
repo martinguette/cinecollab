@@ -8,7 +8,9 @@ import Search from "./pages/Search";
 import Watchlists from "./pages/Watchlists";
 import WatchlistDetail from "./pages/WatchlistDetail";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -19,10 +21,27 @@ const App = () => (
         <Toaster />
         <Sonner />
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/watchlists" element={<Watchlists />} />
-          <Route path="/watchlists/:id" element={<WatchlistDetail />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <Index />
+            </ProtectedRoute>
+          } />
+          <Route path="/search" element={
+            <ProtectedRoute>
+              <Search />
+            </ProtectedRoute>
+          } />
+          <Route path="/watchlists" element={
+            <ProtectedRoute>
+              <Watchlists />
+            </ProtectedRoute>
+          } />
+          <Route path="/watchlists/:id" element={
+            <ProtectedRoute>
+              <WatchlistDetail />
+            </ProtectedRoute>
+          } />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </TooltipProvider>
