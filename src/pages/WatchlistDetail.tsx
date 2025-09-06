@@ -11,4 +11,13 @@ import { TMDbMediaItem } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { ArrowLeft, Globe, Lock, Share2, Users, X, Check } from 'lucide-react';
 
-// ...existing code inside WatchlistDetail component only...
+const WatchlistDetail = () => {
+  // TODO: Add your component logic and JSX here
+  return (
+    <Layout>
+      <div className="p-4">Watchlist detail page (restaurado)</div>
+    </Layout>
+  );
+};
+
+export default WatchlistDetail;
