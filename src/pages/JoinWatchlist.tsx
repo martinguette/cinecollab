@@ -29,7 +29,11 @@ const JoinWatchlist = () => {
       .single()
       .then(({ data, error }) => {
         if (error || !data) {
-          setError(`No se encontró la watchlist.\nID recibido: ${id}\nError: ${error ? error.message : 'No data'}`);
+          setError(
+            `No se encontró la watchlist.\nID recibido: ${id}\nError: ${
+              error ? error.message : 'No data'
+            }`
+          );
         } else {
           setWatchlist(data);
         }
@@ -77,7 +81,7 @@ const JoinWatchlist = () => {
         title: '¡Listo!',
         description: 'La watchlist se agregó a tus listas.',
       });
-      setTimeout(() => navigate('/watchlists'), 1500);
+      setTimeout(() => navigate(`/watchlists/${watchlist.id}`), 1200);
     }
   };
 

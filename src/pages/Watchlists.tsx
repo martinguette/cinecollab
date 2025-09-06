@@ -66,15 +66,23 @@ const Watchlists = () => {
         invite_code,
       })
       .select();
-    setCreating(false);
-    if (error) {
-      setCreateError(error.message);
+    if (error || !data || data.length === 0) {
+      setCreating(false);
+      setCreateError(error ? error.message : 'Error creando la lista');
       return;
     }
+    // Insertar al usuario como miembro (owner) en watchlist_members
+    const newWatchlist = data[0];
+    const { error: memberError } = await supabase
+      .from('watchlist_members')
+      .insert({ watchlist_id: newWatchlist.id, user_id: user.id, role: 'owner' });
+    setCreating(false);
     setIsCreateOpen(false);
     setNewListName('');
-    if (data && data.length > 0) {
-      setWatchlists((prev) => [data[0], ...prev]);
+    if (memberError) {
+      setCreateError('La lista fue creada pero no se pudo agregar como miembro.');
+    } else {
+      setWatchlists((prev) => [newWatchlist, ...prev]);
     }
   };
 
