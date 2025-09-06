@@ -1,18 +1,25 @@
-
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Plus, Check, List, Share2, Globe, Lock, Users } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Plus, Check, List, Share2, Globe, Lock, Users } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { useToast } from "@/components/ui/use-toast";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from '@/components/ui/popover';
+import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/use-auth';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface WatchlistMenuProps {
   mediaId: number;
@@ -23,55 +30,102 @@ interface WatchlistMenuProps {
 export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const [newListName, setNewListName] = useState("");
-  const [newListDescription, setNewListDescription] = useState("");
-  const [privacy, setPrivacy] = useState("private");
-  const [collaboratorEmail, setCollaboratorEmail] = useState("");
-  const [permission, setPermission] = useState("view");
+  const [newListName, setNewListName] = useState('');
+  const [newListDescription, setNewListDescription] = useState('');
+  const [privacy, setPrivacy] = useState('private');
+  const [collaboratorEmail, setCollaboratorEmail] = useState('');
+  const [permission, setPermission] = useState('view');
   const { toast } = useToast();
-  
-  // Mock watchlists - in a real app, these would come from an API
-  const mockWatchlists = [
-    { id: "1", name: "Must watch", privacy: "private" },
-    { id: "2", name: "Favorites", privacy: "public" },
-    { id: "3", name: "Movie Night with Friends", privacy: "shared" }
-  ];
-  
-  const handleAddToWatchlist = (listId: string, listName: string) => {
-    // This would call an API in a real implementation
-    toast({
-      title: "Added to watchlist",
-      description: `Added to "${listName}"`,
+
+  // Real watchlists from Supabase
+  const { user } = useAuth();
+  const [watchlists, setWatchlists] = useState<
+    Array<{ id: string; name: string; privacy?: string }>
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [addLoading, setAddLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) {
+      setWatchlists([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    supabase
+      .from('watchlists')
+      .select('id, name')
+      .eq('owner_id', user.id)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          toast({
+            title: 'Error',
+            description: error.message,
+            variant: 'destructive',
+          });
+          setWatchlists([]);
+        } else {
+          setWatchlists(data || []);
+        }
+        setLoading(false);
+      });
+  }, [user, toast]);
+
+  // Add movie to watchlist (Supabase: watchlist_movies table)
+  const handleAddToWatchlist = async (listId: string, listName: string) => {
+    if (!user) return;
+    setAddLoading(listId);
+    // @ts-expect-error: watchlist_movies is not in the generated Supabase types yet. Add it for full type safety.
+    const { error } = await supabase.from('watchlist_movies').insert({
+      watchlist_id: listId,
+      media_id: mediaId,
+      media_type: mediaType,
+      added_by: user.id,
+      added_at: new Date().toISOString(),
     });
+    setAddLoading(null);
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'Added to watchlist',
+        description: `Added to "${listName}"`,
+      });
+    }
   };
-  
+
   const handleCreateWatchlist = () => {
     if (!newListName.trim()) return;
-    
+
     // This would call an API in a real implementation
     toast({
-      title: "Watchlist created",
+      title: 'Watchlist created',
       description: `Created "${newListName}" and added item`,
     });
-    
+
     setIsCreateOpen(false);
-    setNewListName("");
-    setNewListDescription("");
+    setNewListName('');
+    setNewListDescription('');
   };
-  
+
   const handleShareWatchlist = () => {
     if (!collaboratorEmail.trim()) return;
-    
+
     // This would call an API in a real implementation
     toast({
-      title: "Invitation sent",
+      title: 'Invitation sent',
       description: `Invited ${collaboratorEmail} to collaborate with ${permission} permission`,
     });
-    
+
     setIsShareOpen(false);
-    setCollaboratorEmail("");
+    setCollaboratorEmail('');
   };
-  
+
   return (
     <>
       <Popover>
@@ -83,21 +137,32 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
         </PopoverTrigger>
         <PopoverContent className="w-56 p-2" align="start">
           <div className="space-y-1">
-            {mockWatchlists.map((list) => (
-              <Button
-                key={list.id}
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => handleAddToWatchlist(list.id, list.name)}
-              >
-                <List className="h-4 w-4 mr-2" />
-                {list.name}
-                {list.privacy === "private" && <Lock className="h-3 w-3 ml-auto" />}
-                {list.privacy === "public" && <Globe className="h-3 w-3 ml-auto" />}
-                {list.privacy === "shared" && <Users className="h-3 w-3 ml-auto" />}
-              </Button>
-            ))}
+            {loading ? (
+              <div className="text-center text-xs text-muted-foreground py-2">
+                Loading...
+              </div>
+            ) : watchlists.length === 0 ? (
+              <div className="text-center text-xs text-muted-foreground py-2">
+                No watchlists found
+              </div>
+            ) : (
+              watchlists.map((list) => (
+                <Button
+                  key={list.id}
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => handleAddToWatchlist(list.id, list.name)}
+                  disabled={!!addLoading}
+                >
+                  <List className="h-4 w-4 mr-2" />
+                  {list.name}
+                  {addLoading === list.id && (
+                    <span className="ml-2 text-xs">Adding...</span>
+                  )}
+                </Button>
+              ))
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -110,7 +175,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
           </div>
         </PopoverContent>
       </Popover>
-      
+
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent>
           <DialogHeader>
@@ -137,14 +202,22 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
             </div>
             <div className="space-y-2">
               <Label>Privacy</Label>
-              <RadioGroup value={privacy} onValueChange={setPrivacy} className="flex gap-4">
+              <RadioGroup
+                value={privacy}
+                onValueChange={setPrivacy}
+                className="flex gap-4"
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="private" id="private" />
-                  <Label htmlFor="private" className="cursor-pointer">Private</Label>
+                  <Label htmlFor="private" className="cursor-pointer">
+                    Private
+                  </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="public" id="public" />
-                  <Label htmlFor="public" className="cursor-pointer">Public</Label>
+                  <Label htmlFor="public" className="cursor-pointer">
+                    Public
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
@@ -157,7 +230,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
         <DialogContent>
           <DialogHeader>
@@ -176,14 +249,22 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
             </div>
             <div className="space-y-2">
               <Label>Permission level</Label>
-              <RadioGroup value={permission} onValueChange={setPermission} className="flex gap-4">
+              <RadioGroup
+                value={permission}
+                onValueChange={setPermission}
+                className="flex gap-4"
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="view" id="view" />
-                  <Label htmlFor="view" className="cursor-pointer">View only</Label>
+                  <Label htmlFor="view" className="cursor-pointer">
+                    View only
+                  </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="edit" id="edit" />
-                  <Label htmlFor="edit" className="cursor-pointer">Can edit</Label>
+                  <Label htmlFor="edit" className="cursor-pointer">
+                    Can edit
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
