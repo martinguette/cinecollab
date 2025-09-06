@@ -54,9 +54,13 @@ const AuthProvider: React.FC<IAppProviderProps> = ({
   }, []);
 
   const loginWithGoogle = async () => {
+    console.log('loginWithGoogle called');
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
       });
       if (error)
         throw new Error('A ocurrido un error durante la autenticación');
