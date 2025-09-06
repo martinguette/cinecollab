@@ -9,6 +9,12 @@ export default function Auth() {
 
   // Redirect authenticated users to home
   if (!loading && user) {
+    // Redirigir a la ruta guardada si existe, luego limpiar
+    const redirect = localStorage.getItem('join_watchlist_redirect');
+    if (redirect) {
+      localStorage.removeItem('join_watchlist_redirect');
+      return <Navigate to={redirect} replace />;
+    }
     return <Navigate to="/" replace />;
   }
 

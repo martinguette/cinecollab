@@ -85,7 +85,43 @@ export type Database = {
           }
         ];
       };
-      // ...otras tablas aquí
+      watchlist_members: {
+        Row: {
+          id: string;
+          watchlist_id: string;
+          user_id: string;
+          joined_at: string;
+          role: string | null;
+        };
+        Insert: {
+          id?: string;
+          watchlist_id: string;
+          user_id: string;
+          joined_at?: string;
+          role?: string | null;
+        };
+        Update: {
+          id?: string;
+          watchlist_id?: string;
+          user_id?: string;
+          joined_at?: string;
+          role?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'watchlist_members_watchlist_id_fkey';
+            columns: ['watchlist_id'];
+            referencedRelation: 'watchlists';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'watchlist_members_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;

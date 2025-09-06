@@ -53,10 +53,9 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
     }
     setLoading(true);
     supabase
-      .from('watchlists')
-      .select('id, name')
-      .eq('owner_id', user.id)
-      .order('created_at', { ascending: false })
+      .from('watchlist_members')
+      .select('watchlist_id, watchlists(id, name)')
+      .eq('user_id', user.id)
       .then(({ data, error }) => {
         if (error) {
           toast({
@@ -66,7 +65,11 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
           });
           setWatchlists([]);
         } else {
-          setWatchlists(data || []);
+          // Extraer las watchlists anidadas
+          const lists = (data || [])
+            .map((row: any) => row.watchlists)
+            .filter(Boolean);
+          setWatchlists(lists);
         }
         setLoading(false);
       });

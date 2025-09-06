@@ -33,17 +33,21 @@ const Watchlists = () => {
       return;
     }
     setLoading(true);
+    // Traer todas las watchlists donde el usuario es miembro (incluye owner)
     supabase
-      .from('watchlists')
-      .select('*')
-      .eq('owner_id', user.id)
-      .order('created_at', { ascending: false })
+      .from('watchlist_members')
+      .select('watchlist_id, watchlists(*)')
+      .eq('user_id', user.id)
       .then(({ data, error }) => {
         if (error) {
           setError(error.message);
           setWatchlists([]);
         } else {
-          setWatchlists(data || []);
+          // Extraer las watchlists anidadas
+          const lists = (data || [])
+            .map((row: any) => row.watchlists)
+            .filter(Boolean);
+          setWatchlists(lists);
         }
         setLoading(false);
       });
