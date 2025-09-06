@@ -1,11 +1,14 @@
-
-import React, { useState, useRef } from "react";
-import { Search, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { SearchFilters } from "@/types";
-import { SearchFiltersPanel } from "./SearchFiltersPanel";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import React, { useState, useRef } from 'react';
+import { Search, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { SearchFilters } from '@/types';
+import { SearchFiltersPanel } from './SearchFiltersPanel';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 interface SearchBarProps {
   filters: SearchFilters;
@@ -13,7 +16,11 @@ interface SearchBarProps {
   className?: string;
 }
 
-export function SearchBar({ filters, onFiltersChange, className = "" }: SearchBarProps) {
+export function SearchBar({
+  filters,
+  onFiltersChange,
+  className = '',
+}: SearchBarProps) {
   const [showFilters, setShowFilters] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -22,11 +29,12 @@ export function SearchBar({ filters, onFiltersChange, className = "" }: SearchBa
   };
 
   const handleClearSearch = () => {
-    onFiltersChange({ ...filters, query: "" });
+    onFiltersChange({ ...filters, query: '' });
     inputRef.current?.focus();
   };
 
-  const hasActiveFilters = filters.genres.length > 0 || !!filters.year || !!filters.region;
+  const hasActiveFilters =
+    filters.genres.length > 0 || !!filters.year || !!filters.region;
 
   return (
     <div className={`w-full ${className}`}>
@@ -34,7 +42,7 @@ export function SearchBar({ filters, onFiltersChange, className = "" }: SearchBa
         <div className="absolute left-3 text-muted-foreground">
           <Search className="h-4 w-4" />
         </div>
-        
+
         <Input
           ref={inputRef}
           type="text"
@@ -44,7 +52,7 @@ export function SearchBar({ filters, onFiltersChange, className = "" }: SearchBa
           onChange={handleQueryChange}
           aria-label="Search for movies or TV shows"
         />
-        
+
         <div className="absolute right-3 flex items-center gap-2">
           {filters.query && (
             <Button
@@ -57,7 +65,8 @@ export function SearchBar({ filters, onFiltersChange, className = "" }: SearchBa
               <X className="h-4 w-4" />
             </Button>
           )}
-          
+
+          {/*
           <Popover open={showFilters} onOpenChange={setShowFilters}>
             <PopoverTrigger asChild>
               <Button
@@ -77,6 +86,7 @@ export function SearchBar({ filters, onFiltersChange, className = "" }: SearchBa
               />
             </PopoverContent>
           </Popover>
+          */}
         </div>
       </div>
     </div>
