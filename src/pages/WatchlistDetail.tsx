@@ -12,7 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { ArrowLeft, Globe, Lock, Share2, Users, X, Check } from 'lucide-react';
 
 const WatchlistDetail = () => {
-  // TODO: Add your component logic and JSX here
+  // Aquí puedes restaurar tu lógica y JSX real
   return (
     <Layout>
       <div className="p-4">Watchlist detail page (restaurado)</div>
