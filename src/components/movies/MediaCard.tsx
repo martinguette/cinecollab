@@ -116,9 +116,12 @@ function MediaCard({ item, config }: MediaCardProps) {
 
       {/* Media details dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent
+          className="max-w-2xl p-2 sm:p-6"
+          style={{ maxHeight: '90vh', overflowY: 'auto' }}
+        >
           <DialogHeader>
-            <DialogTitle className="text-xl flex justify-between items-center gap-2">
+            <DialogTitle className="text-lg sm:text-xl flex justify-between items-center gap-2">
               <span>
                 {title}{' '}
                 <span className="text-muted-foreground">({formattedDate})</span>
@@ -141,8 +144,8 @@ function MediaCard({ item, config }: MediaCardProps) {
               </AspectRatio>
             </div>
           ) : (
-            <div className="flex flex-col md:flex-row gap-4 mt-2">
-              <div className="w-full md:w-1/3">
+            <div className="flex flex-col md:flex-row gap-2 md:gap-4 mt-2">
+              <div className="w-32 mx-auto md:w-1/3 md:mx-0">
                 <AspectRatio
                   ratio={2 / 3}
                   className="overflow-hidden rounded-md bg-muted"
@@ -155,7 +158,7 @@ function MediaCard({ item, config }: MediaCardProps) {
                 </AspectRatio>
                 {/* Géneros */}
                 {((details && details.genres) || item.genres) && (
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2 flex flex-wrap gap-1 md:gap-2 justify-center md:justify-start">
                     {((details && details.genres) || item.genres)?.map(
                       (genre: any) => (
                         <span
@@ -169,14 +172,14 @@ function MediaCard({ item, config }: MediaCardProps) {
                   </div>
                 )}
               </div>
-              <div className="flex-1">
-                <p className="text-sm mb-4">
+              <div className="flex-1 mt-2 md:mt-0">
+                <p className="text-xs sm:text-sm mb-2 sm:mb-4">
                   {item.overview || 'No overview available.'}
                 </p>
                 {trailer && (
                   <Button
                     onClick={() => setShowTrailer(true)}
-                    className="mb-4"
+                    className="mb-2 sm:mb-4 w-full sm:w-auto"
                     variant="outline"
                   >
                     <Play className="h-4 w-4 mr-2" /> Watch Trailer
@@ -184,7 +187,7 @@ function MediaCard({ item, config }: MediaCardProps) {
                 )}
                 {/* Director */}
                 {details?.credits?.crew && (
-                  <div className="mb-2 text-xs">
+                  <div className="mb-1 sm:mb-2 text-xs">
                     <strong>Director:</strong>{' '}
                     {details.credits.crew
                       .filter((c: any) => c.job === 'Director')
@@ -194,7 +197,7 @@ function MediaCard({ item, config }: MediaCardProps) {
                 )}
                 {/* Reparto */}
                 {details?.credits?.cast && (
-                  <div className="mb-2 text-xs">
+                  <div className="mb-1 sm:mb-2 text-xs">
                     <strong>Cast:</strong>{' '}
                     {details.credits.cast
                       .slice(0, 5)
@@ -205,7 +208,16 @@ function MediaCard({ item, config }: MediaCardProps) {
               </div>
             </div>
           )}
-          <CardFooter className="px-0 pt-4 flex justify-between">
+          <CardFooter
+            className="px-0 pt-4 flex justify-between"
+            style={{
+              position: 'sticky',
+              bottom: 0,
+              background: 'white',
+              zIndex: 10,
+              paddingBottom: 'env(safe-area-inset-bottom, 0.5rem)',
+            }}
+          >
             <WatchlistMenu mediaId={item.id} mediaType={mediaType} />
           </CardFooter>
         </DialogContent>
