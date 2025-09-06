@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Film, Mail, Lock, User, LogIn } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { AuthContext } from '@/context/AuthContext';
 
 interface AuthFormProps {
   mode: 'login' | 'register';
@@ -42,6 +50,8 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
     }
   };
 
+  const { loginWithGoogle } = useContext(AuthContext);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
@@ -54,10 +64,9 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
             {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
           </CardTitle>
           <CardDescription>
-            {mode === 'login' 
-              ? 'Ingresa tus credenciales para acceder' 
-              : 'Crea una cuenta para comenzar'
-            }
+            {mode === 'login'
+              ? 'Ingresa tus credenciales para acceder'
+              : 'Crea una cuenta para comenzar'}
           </CardDescription>
         </CardHeader>
 
@@ -65,7 +74,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
           <Button
             variant="outline"
             className="w-full"
-            onClick={handleGoogleAuth}
+            onClick={loginWithGoogle}
             disabled={loading}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -140,7 +149,11 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  {mode === 'login' ? <LogIn className="h-4 w-4" /> : <User className="h-4 w-4" />}
+                  {mode === 'login' ? (
+                    <LogIn className="h-4 w-4" />
+                  ) : (
+                    <User className="h-4 w-4" />
+                  )}
                   {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
                 </div>
               )}
@@ -154,7 +167,9 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
             <Button
               variant="link"
               className="p-0 h-auto font-semibold"
-              onClick={() => onModeChange(mode === 'login' ? 'register' : 'login')}
+              onClick={() =>
+                onModeChange(mode === 'login' ? 'register' : 'login')
+              }
             >
               {mode === 'login' ? 'Regístrate' : 'Inicia sesión'}
             </Button>
