@@ -4,7 +4,8 @@ import { Bell, Film, List, Search, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { NotificationPopover } from '../notifications/NotificationPopover';
-import { useAuth } from '@/hooks/use-auth';
+import { useContext } from 'react';
+import { AuthContext } from '@/context/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,10 +16,10 @@ import {
 
 export function NavBar() {
   const isMobile = useIsMobile();
-  const { user, signOut } = useAuth();
+  const { user, logout } = useContext(AuthContext);
 
   const handleSignOut = async () => {
-    await signOut();
+    await logout();
   };
 
   return (
@@ -58,7 +59,7 @@ export function NavBar() {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem className="cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
-                <span>Perfil</span>
+                <span>{user?.name}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
