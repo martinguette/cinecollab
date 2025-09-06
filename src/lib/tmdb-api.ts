@@ -111,14 +111,14 @@ export async function searchMedia(
 // Get details for a movie with videos
 export async function getMovieDetails(id: number): Promise<TMDbMovie> {
   return callApi<TMDbMovie>(`/movie/${id}`, {
-    append_to_response: 'videos',
+    append_to_response: 'videos,credits',
   });
 }
 
 // Get details for a TV show with videos
 export async function getTVDetails(id: number): Promise<TMDbTV> {
   return callApi<TMDbTV>(`/tv/${id}`, {
-    append_to_response: 'videos',
+    append_to_response: 'videos,credits',
   });
 }
 
