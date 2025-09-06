@@ -1,50 +1,59 @@
+import {
+  TMDbConfig,
+  TMDbGenre,
+  TMDbMediaItem,
+  TMDbMovie,
+  TMDbSearchResults,
+  TMDbTV,
+} from '@/types';
+import { toast } from '@/components/ui/use-toast';
 
-import { TMDbConfig, TMDbGenre, TMDbMediaItem, TMDbMovie, TMDbSearchResults, TMDbTV } from "@/types";
-import { toast } from "@/components/ui/use-toast";
-
-// Mock API key - in a real app, this would be stored securely
-const API_KEY = "3fd2be6f0c70a2a598f084ddfb75487c"; // This is a sample key for demonstration
-const BASE_URL = "https://api.themoviedb.org/3";
+// API key desde variables de entorno
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 // Cache for storing API responses
 const apiCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
 // Generic API caller with caching
-async function callApi<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
+async function callApi<T>(
+  endpoint: string,
+  params: Record<string, string> = {}
+): Promise<T> {
   const queryParams = new URLSearchParams({
     api_key: API_KEY,
-    ...params
+    ...params,
   }).toString();
-  
+
   const url = `${BASE_URL}${endpoint}?${queryParams}`;
   const cacheKey = url;
-  
+
   // Check cache
   const cached = apiCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return cached.data as T;
   }
-  
+
   try {
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       throw new Error(`TMDb API error: ${response.status}`);
     }
-    
+
     const data = await response.json();
-    
+
     // Store in cache
     apiCache.set(cacheKey, { data, timestamp: Date.now() });
-    
+
     return data as T;
   } catch (error) {
-    console.error("API request failed:", error);
+    console.error('API request failed:', error);
     toast({
-      title: "API Error",
-      description: "Failed to fetch data from TMDb",
-      variant: "destructive",
+      title: 'API Error',
+      description: 'Failed to fetch data from TMDb',
+      variant: 'destructive',
     });
     throw error;
   }
@@ -52,7 +61,7 @@ async function callApi<T>(endpoint: string, params: Record<string, string> = {})
 
 // Get API configuration
 export async function getConfiguration(): Promise<TMDbConfig> {
-  return callApi<TMDbConfig>("/configuration");
+  return callApi<TMDbConfig>('/configuration');
 }
 
 // Search movies and TV shows
@@ -64,47 +73,49 @@ export async function searchMedia(
   if (!query.trim()) {
     return { page: 0, results: [], total_pages: 0, total_results: 0 };
   }
-  
+
   const params: Record<string, string> = {
     query: query.trim(),
     page: page.toString(),
-    include_adult: "false",
-    language: "en-US",
+    include_adult: 'false',
+    language: 'en-US',
   };
-  
+
   if (options.year) params.year = options.year;
   if (options.region) params.region = options.region;
-  
-  const results = await callApi<TMDbSearchResults>("/search/multi", params);
-  
+
+  const results = await callApi<TMDbSearchResults>('/search/multi', params);
+
   // Filter by genre if specified
   if (options.genres && options.genres.length > 0) {
-    results.results = results.results.filter(item => {
+    results.results = results.results.filter((item) => {
       const genreIds = (item as TMDbMovie | TMDbTV).genre_ids || [];
-      return options.genres!.some(g => genreIds.includes(g));
+      return options.genres!.some((g) => genreIds.includes(g));
     });
   }
-  
+
   return results;
 }
 
 // Get details for a movie with videos
 export async function getMovieDetails(id: number): Promise<TMDbMovie> {
   return callApi<TMDbMovie>(`/movie/${id}`, {
-    append_to_response: "videos",
+    append_to_response: 'videos',
   });
 }
 
 // Get details for a TV show with videos
 export async function getTVDetails(id: number): Promise<TMDbTV> {
   return callApi<TMDbTV>(`/tv/${id}`, {
-    append_to_response: "videos",
+    append_to_response: 'videos',
   });
 }
 
 // Get a list of genres
 export async function getGenres(type: 'movie' | 'tv'): Promise<TMDbGenre[]> {
-  const response = await callApi<{ genres: TMDbGenre[] }>(`/genre/${type}/list`);
+  const response = await callApi<{ genres: TMDbGenre[] }>(
+    `/genre/${type}/list`
+  );
   return response.genres;
 }
 
@@ -124,15 +135,19 @@ export function getReleaseDate(item: TMDbMediaItem): string {
 }
 
 // Format a TMDb poster path to a complete URL with appropriate size
-export function formatPosterPath(path: string | null, config: TMDbConfig | null, size = "w342"): string {
+export function formatPosterPath(
+  path: string | null,
+  config: TMDbConfig | null,
+  size = 'w342'
+): string {
   if (!path) return '/placeholder.svg'; // Use placeholder if no path
   if (!config) return path; // Return original path if no config
-  
+
   const baseUrl = config.images.secure_base_url;
   const availableSizes = config.images.poster_sizes;
-  
+
   // Use requested size if available, otherwise use the smallest size that's larger than the requested size
   let useSize = availableSizes.includes(size) ? size : availableSizes[0];
-  
+
   return `${baseUrl}${useSize}${path}`;
 }
