@@ -3,6 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { useTMDbConfig } from '@/hooks/use-tmdb-config';
 import { supabase } from '@/integrations/supabase/client';
 import { getMovieDetails, getTVDetails } from '@/lib/tmdb-api';
@@ -68,6 +76,29 @@ const WatchlistDetail = () => {
       });
   }, [id]);
 
+  const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const shareUrl = `${window.location.origin}/watchlist/join/${id}`;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      toast({
+        title: '¡Enlace copiado!',
+        description: 'El enlace ha sido copiado al portapapeles.',
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: 'No se pudo copiar el enlace.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <Layout>
       <div className="p-4">
@@ -77,9 +108,57 @@ const WatchlistDetail = () => {
         >
           ← Volver a mis listas
         </Link>
-        <h1 className="text-2xl font-bold mb-4 mt-2">
-          Películas/Series guardadas
-        </h1>
+        <div className="flex items-center justify-between mt-2 mb-4">
+          <h1 className="text-2xl font-bold ">Películas/Series guardadas</h1>
+          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="default"
+                className="gap-1 bg-black text-white hover:bg-neutral-800"
+                type="button"
+              >
+                <Share2 className="inline-block" />
+                Compartir
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Compartir esta watchlist</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="share-link" className="text-sm font-medium">
+                  Enlace para compartir:
+                </label>
+                <input
+                  id="share-link"
+                  type="text"
+                  value={shareUrl}
+                  readOnly
+                  className="w-full px-2 py-1 border rounded bg-gray-100 text-gray-800 text-sm"
+                  onFocus={(e) => e.target.select()}
+                />
+                <Button
+                  variant="default"
+                  className="mt-2 bg-black text-white hover:bg-neutral-800"
+                  type="button"
+                  onClick={handleCopy}
+                  disabled={copied}
+                >
+                  {copied ? '¡Copiado!' : 'Copiar enlace'}
+                </Button>
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setModalOpen(false)}
+                  type="button"
+                >
+                  Cerrar
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
         {(loading || configLoading) && <div>Cargando...</div>}
         {error && <div className="text-red-500">{error}</div>}
         {!loading && !configLoading && config && items.length === 0 && (
