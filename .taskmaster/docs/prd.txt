@@ -1,0 +1,285 @@
+# CineCollab MVP - Product Requirements Document
+
+## Overview
+CineCollab solves the problem of collaborative movie selection by enabling users to create shared watchlists that multiple people can contribute to in real-time. Current platforms like Letterboxd focus on individual experiences, leaving couples and friend groups without effective tools for jointly planning what to watch together.
+
+The product targets couples (25-40) who spend too much time deciding what to watch, and friend groups (20-35) organizing movie nights. The core value proposition is **effortless collaborative curation** - create a list, share a link, and everyone can contribute instantly.
+
+The MVP validates the collaborative watchlist concept with the simplest possible implementation: **Create → Share → Collaborate** in real-time.
+
+## Core Features
+
+### 1. Collaborative Watchlist Creation
+- **What it does**: Users create movie watchlists that automatically generate unique invitation links
+- **Why it's important**: This is the foundation of collaboration - without easy list creation and sharing, there's no product
+- **How it works**: One-click list creation with auto-generated shareable URLs, no complex setup required
+
+### 2. Real-time Invitation System  
+- **What it does**: Unique links allow anyone to join a watchlist and immediately start contributing
+- **Why it's important**: Removes friction from collaboration - no friend requests, approvals, or complex permissions
+- **How it works**: Invitation codes in URLs that automatically add authenticated users as collaborators
+
+### 3. Live Collaborative Editing
+- **What it does**: Multiple users can simultaneously add/remove movies with changes appearing instantly for everyone
+- **Why it's important**: Creates the "magic moment" of seeing others' contributions appear in real-time
+- **How it works**: WebSocket subscriptions through Supabase real-time, optimistic UI updates for responsiveness
+
+### 4. Movie Search and Addition
+- **What it does**: TMDB integration for searching and adding movies to watchlists with rich metadata
+- **Why it's important**: Users need comprehensive movie data and search functionality to build meaningful lists
+- **How it works**: Debounced search with TMDB API, one-click addition to lists with duplicate prevention
+
+### 5. Collaboration Attribution  
+- **What it does**: Shows who added each movie and when, providing social context to list building
+- **Why it's important**: Social proof and accountability make collaboration more engaging
+- **How it works**: User avatars and timestamps stored with each movie addition
+
+## User Experience
+
+### User Personas
+
+**Primary: Sarah & Mike (Couple, 28 & 30)**
+- Problem: Spend 15+ minutes every weekend deciding what to watch
+- Goal: Pre-plan movie options during the week when they think of them
+- Behavior: One person usually manages "the list" but both want input
+
+**Secondary: College Friend Group (5 people, 22-26)**  
+- Problem: Coordinating monthly movie night selections across different schedules
+- Goal: Everyone contributes suggestions, group votes/discusses before meeting
+- Behavior: Active in group chats, share recommendations frequently
+
+### Key User Flows
+
+**Flow 1: List Creator Journey**
+1. Login with Google OAuth (already implemented)
+2. Navigate to Watchlists page → Click "Create Watchlist"
+3. Enter list name → List created with auto-generated invite code
+4. Click "Share" button → Copy invitation link
+5. Send link to collaborators via text/email/chat
+
+**Flow 2: Collaborator Journey** 
+1. Receive invitation link → Click link
+2. If not logged in → Redirect to Google OAuth
+3. After authentication → Automatically join watchlist
+4. See existing movies + add new ones from search
+5. Real-time updates as others contribute
+
+**Flow 3: Collaborative Movie Addition**
+1. User searches for movie using search bar
+2. Click "Add to List" from search results
+3. Movie appears immediately in list for all collaborators
+4. Other users see notification/update in real-time
+
+### UI/UX Considerations
+- **Mobile-first design**: Most sharing happens via mobile messaging
+- **One-tap actions**: Add movie, share list, mark watched - all single interactions  
+- **Visual feedback**: Clear loading states, success confirmations, real-time indicators
+- **Progressive disclosure**: Start simple, reveal advanced features as users engage
+
+## Technical Architecture
+
+### System Components
+```
+Frontend (React SPA)
+├── Authentication (Supabase Auth + Google OAuth)
+├── Routing (React Router)
+├── State Management (Zustand + React Query)
+├── Real-time Updates (Supabase WebSockets)
+└── UI Components (Shadcn/ui + Tailwind)
+
+Backend (Supabase)
+├── PostgreSQL Database with RLS
+├── Auto-generated REST API (PostgREST)
+├── Real-time Subscriptions
+└── Edge Functions (if needed)
+
+External APIs
+├── TMDB API v3 (Movie data and search)
+└── Google OAuth 2.0 (Authentication)
+```
+
+### Data Models
+
+**Core Tables:**
+- `users`: OAuth user data synchronized from Supabase Auth
+- `watchlists`: List metadata with unique invitation codes  
+- `watchlist_collaborators`: Many-to-many relationship with roles
+- `watchlist_movies`: Movies in lists with attribution and timestamps
+
+**Key Relationships:**
+- Users → Watchlists (creator relationship)
+- Users ↔ Watchlists (collaborator many-to-many)  
+- Watchlists → Movies (one-to-many with metadata)
+- Users → Movies (attribution via foreign key)
+
+### APIs and Integrations
+
+**Internal API Management:**
+```
+Direct Supabase client calls for:
+- Watchlist CRUD operations
+- Movie management within lists  
+- User data and preferences
+- Real-time subscriptions
+
+Custom utility functions for:
+- Invitation link handling
+- TMDB API integration
+- Authentication flow management
+```
+
+**External Integrations:**
+- **TMDB API**: Movie search, metadata, and poster images
+- **Supabase Auth**: OAuth provider management and session handling
+- **Supabase Real-time**: WebSocket subscriptions for live updates
+
+### Infrastructure Requirements
+- **Database**: PostgreSQL 15+ with Row Level Security enabled
+- **Hosting**: Static hosting (Netlify/Vercel) for React SPA, Supabase for backend/database
+- **CDN**: Automatic via hosting provider for static assets, TMDB for movie posters
+- **Monitoring**: Hosting provider analytics, Supabase dashboard metrics
+
+## Development Roadmap
+
+### Phase 1: Foundation (Database & Auth Sync)
+**Scope**: Backend infrastructure that connects existing OAuth to database
+- Set up PostgreSQL schema with proper relationships and indexes
+- Implement Row Level Security policies for data protection
+- Create triggers to automatically sync OAuth users to users table
+- Test database operations and security policies
+- **Deliverable**: Working database with existing users synchronized
+
+### Phase 2: Basic Watchlist CRUD
+**Scope**: Core list management without real-time features
+- Build Supabase client integration for watchlist operations
+- Implement invitation code generation and validation
+- Create basic list viewing and management UI components
+- Handle edge cases (duplicate codes, deleted lists)
+- **Deliverable**: Users can create lists and generate shareable links
+
+### Phase 3: Invitation System & Collaboration Setup  
+**Scope**: Users can join lists via invitation links
+- Build invitation redemption flow with React Router parameters
+- Handle user authentication during invitation flow
+- Set up collaborator relationships and permissions
+- Create collaborator management UI (see who's in the list)
+- **Deliverable**: Complete invitation flow from link to collaboration
+
+### Phase 4: Movie Search & Management
+**Scope**: Adding/removing movies from lists
+- Integrate TMDB API with proper error handling and caching  
+- Build movie search interface with debouncing
+- Implement add/remove movie functionality with optimistic updates
+- Handle duplicate prevention and data validation
+- **Deliverable**: Fully functional movie list management
+
+### Phase 5: Real-time Collaboration
+**Scope**: Live updates across all collaborators
+- Set up Supabase real-time subscriptions for watchlist changes
+- Implement WebSocket connection management and reconnection
+- Build real-time UI updates with conflict resolution
+- Add collaboration indicators (who's active, recent changes)
+- **Deliverable**: True real-time collaborative experience
+
+### Phase 6: Polish & Production Readiness
+**Scope**: Error handling, performance, and deployment
+- Comprehensive error handling and user feedback
+- Performance optimization (loading states, caching)
+- Security audit and rate limiting
+- Production deployment and monitoring setup
+- **Deliverable**: Production-ready MVP
+
+## Logical Dependency Chain
+
+### Foundation First (Phase 1)
+- **Database schema** must exist before any features can work
+- **User synchronization** must work before any user-specific features
+- **Security policies** must be in place before building features
+
+### Quick Visible Progress (Phases 2-3)  
+- **Basic CRUD** gives immediate visible functionality on existing UI
+- **Invitation system** completes the sharing flow that's already UI-implemented
+- At this point, the entire flow works but without real-time updates
+
+### Core Value Delivery (Phases 4-5)
+- **Movie management** makes the lists actually useful
+- **Real-time collaboration** delivers the key differentiating feature
+- These phases can be developed in parallel once foundation is solid
+
+### Atomic Feature Development
+Each phase builds complete, testable functionality:
+- Phase 1: Database works independently  
+- Phase 2: Static list management works without collaboration
+- Phase 3: Invitation flow works without real-time updates
+- Phase 4: Movie management works without real-time (manual refresh)
+- Phase 5: Real-time layer enhances existing functionality
+- Phase 6: Production concerns that don't break existing features
+
+## Risks and Mitigations
+
+### Technical Challenges
+
+**Risk**: Real-time synchronization complexity
+- **Mitigation**: Start with manual refresh, add real-time as enhancement layer
+- **Fallback**: Polling mechanism if WebSockets fail
+
+**Risk**: Client-side API key exposure for TMDB
+- **Mitigation**: TMDB API keys are safe for client-side use, implement rate limiting awareness
+- **Fallback**: Proxy TMDB requests through Supabase Edge Functions if needed
+
+**Risk**: Supabase Row Level Security complexity
+- **Mitigation**: Start with simple policies, iterate based on testing
+- **Fallback**: Application-level security as temporary measure
+
+### MVP Scope Management
+
+**Risk**: Feature creep beyond core collaboration value
+- **Mitigation**: Ruthless focus on create→share→collaborate flow only
+- **Success criteria**: Measure collaboration rate, not feature completeness
+
+**Risk**: Over-engineering real-time features
+- **Mitigation**: Optimistic updates provide 90% of the UX benefit
+- **Validation**: Test with actual collaborative usage, not theoretical load
+
+### Resource Constraints  
+
+**Risk**: React Router complexity with invitation links
+- **Mitigation**: Use React Router's built-in parameter handling for clean URLs
+- **Fallback**: Query parameter approach if path parameters cause issues
+
+**Risk**: Authentication edge cases consuming too much time
+- **Mitigation**: Leverage Supabase Auth's built-in flows, customize minimally
+- **Boundary**: OAuth-only for MVP, no email/password complexity
+
+## Appendix
+
+### Research Findings
+- **Primary pain point**: Decision paralysis when choosing what to watch together
+- **Current solutions**: Shared notes apps, text messages - no purpose-built tools
+- **Key insight**: Real-time collaboration creates "magic moment" but basic sharing delivers most value
+
+### Technical Specifications
+
+**Database Schema Highlights:**
+```sql
+-- Auto-generate invite codes on watchlist creation
+CREATE TRIGGER before_watchlist_insert
+  BEFORE INSERT ON watchlists
+  FOR EACH ROW EXECUTE FUNCTION set_invite_code();
+
+-- Sync OAuth users automatically  
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+```
+
+**Performance Targets:**
+- List creation: < 2 seconds end-to-end
+- Movie search: < 1 second with caching
+- Real-time updates: < 500ms propagation
+- Page load: < 3 seconds on 3G
+
+**Browser Support:**
+- Modern browsers with ES6+ support
+- WebSocket support for real-time features
+- Mobile browsers (iOS Safari, Chrome Mobile)
