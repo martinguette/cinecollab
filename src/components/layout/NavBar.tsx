@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Bell, Film, List, Search, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { NotificationPopover } from '../notifications/NotificationPopover';
+/* import { NotificationPopover } from '../notifications/NotificationPopover'; */
 import { useContext } from 'react';
 import { AuthContext } from '@/context/AuthContext';
 import {
@@ -47,7 +47,7 @@ export function NavBar() {
             </Link>
           </Button>
 
-          <NotificationPopover />
+          {/*   <NotificationPopover /> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
