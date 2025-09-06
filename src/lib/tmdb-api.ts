@@ -1,3 +1,14 @@
+// Obtener trending del momento (películas o todo)
+export async function getTrendingMedia(
+  type: 'all' | 'movie' | 'tv' = 'movie',
+  timeWindow: 'day' | 'week' = 'day'
+): Promise<TMDbMediaItem[]> {
+  // type: 'all', 'movie', 'tv' | timeWindow: 'day', 'week'
+  const data = await callApi<{ results: TMDbMediaItem[] }>(
+    `/trending/${type}/${timeWindow}`
+  );
+  return data.results;
+}
 import {
   TMDbConfig,
   TMDbGenre,
