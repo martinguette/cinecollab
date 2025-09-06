@@ -61,7 +61,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Film className="h-8 w-8 text-pastel" />
-            <span className="text-2xl font-bold">Cinematic</span>
+            <span className="text-2xl font-bold">Cinecollab</span>
           </div>
           <CardTitle className="text-2xl">
             {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
