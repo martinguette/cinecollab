@@ -45,6 +45,46 @@ export type Database = {
           }
         ];
       };
+      watchlist_movies: {
+        Row: {
+          id: string;
+          watchlist_id: string;
+          media_id: number;
+          media_type: 'movie' | 'tv';
+          added_by: string;
+          added_at: string;
+        };
+        Insert: {
+          id?: string;
+          watchlist_id: string;
+          media_id: number;
+          media_type: 'movie' | 'tv';
+          added_by: string;
+          added_at?: string;
+        };
+        Update: {
+          id?: string;
+          watchlist_id?: string;
+          media_id?: number;
+          media_type?: 'movie' | 'tv';
+          added_by?: string;
+          added_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'watchlist_movies_watchlist_id_fkey';
+            columns: ['watchlist_id'];
+            referencedRelation: 'watchlists';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'watchlist_movies_added_by_fkey';
+            columns: ['added_by'];
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          }
+        ];
+      };
       // ...otras tablas aquí
     };
     Views: {

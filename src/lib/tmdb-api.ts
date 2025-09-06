@@ -152,12 +152,20 @@ export function formatPosterPath(
   size = 'w342'
 ): string {
   if (!path) return '/placeholder.svg'; // Use placeholder if no path
-  if (!config) return path; // Return original path if no config
+  if (
+    !config ||
+    !config.images ||
+    !config.images.secure_base_url ||
+    !config.images.poster_sizes
+  ) {
+    // Fallback: return path or placeholder
+    return path || '/placeholder.svg';
+  }
 
   const baseUrl = config.images.secure_base_url;
   const availableSizes = config.images.poster_sizes;
 
-  // Use requested size if available, otherwise use the smallest size that's larger than the requested size
+  // Use requested size if available, otherwise use the smallest size
   let useSize = availableSizes.includes(size) ? size : availableSizes[0];
 
   return `${baseUrl}${useSize}${path}`;
