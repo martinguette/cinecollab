@@ -75,12 +75,18 @@ const Watchlists = () => {
     const newWatchlist = data[0];
     const { error: memberError } = await supabase
       .from('watchlist_members')
-      .insert({ watchlist_id: newWatchlist.id, user_id: user.id, role: 'owner' });
+      .insert({
+        watchlist_id: newWatchlist.id,
+        user_id: user.id,
+        role: 'owner',
+      });
     setCreating(false);
     setIsCreateOpen(false);
     setNewListName('');
     if (memberError) {
-      setCreateError('La lista fue creada pero no se pudo agregar como miembro.');
+      setCreateError(
+        'La lista fue creada pero no se pudo agregar como miembro.'
+      );
     } else {
       setWatchlists((prev) => [newWatchlist, ...prev]);
     }
