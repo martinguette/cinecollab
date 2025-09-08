@@ -9,6 +9,8 @@ import WatchlistDetail from './pages/WatchlistDetail';
 import NotFound from './pages/NotFound';
 import Auth from './pages/Auth';
 import JoinWatchlist from './pages/JoinWatchlist';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
@@ -54,6 +56,8 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
           <Route path="/watchlist/join/:id" element={<JoinWatchlist />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
