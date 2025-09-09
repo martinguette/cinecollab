@@ -16,7 +16,7 @@ CineCollab is a collaborative platform for creating and sharing movie watchlists
 
 ## Screenshots
 
-![CineCollab Screenshot](public/favicon.ico)
+![CineCollab Logo](public/logo.svg)
 
 ## Getting Started
 
