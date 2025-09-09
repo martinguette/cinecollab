@@ -138,7 +138,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
             Add to Watchlist
           </Button>
         </PopoverTrigger>
-  <PopoverContent className="w-56 p-2" align="end" side="right">
+        <PopoverContent className="w-56 p-2" align="end" side="right">
           <div className="space-y-1">
             {loading ? (
               <div className="text-center text-xs text-muted-foreground py-2">
