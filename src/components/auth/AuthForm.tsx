@@ -60,7 +60,11 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <img src="/logo.svg" alt="CineCollab Logo" className="h-10 w-10" />
+            <img
+              src="/logo.svg"
+              alt="CineCollab Logo"
+              className="h-10 w-10 object-contain"
+            />
             <span className="text-2xl font-bold">Cinecollab</span>
           </div>
           <CardTitle className="text-2xl">

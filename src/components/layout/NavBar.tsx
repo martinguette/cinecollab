@@ -26,7 +26,11 @@ export function NavBar() {
     <nav className="sticky top-0 z-10 w-full bg-background/80 backdrop-blur-md border-b border-border py-3 px-4">
       <div className="container max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-semibold text-lg">
-          <img src="/logo.svg" alt="CineCollab Logo" className="h-7 w-7" />
+          <img
+            src="/logo.svg"
+            alt="CineCollab Logo"
+            className="h-7 w-7 object-contain"
+          />
           <span className="hidden sm:inline">Cinecollab</span>
         </Link>
 
