@@ -96,8 +96,8 @@ const Watchlists = () => {
     <Layout>
       <div className="space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Mis Watchlists</h1>
-          <Button onClick={() => setIsCreateOpen(true)}>Crear Watchlist</Button>
+          <h1 className="text-2xl font-semibold">My lists</h1>
+          <Button onClick={() => setIsCreateOpen(true)}>Create List</Button>
         </div>
         <div className="mt-6">
           {loading ? (

@@ -135,7 +135,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
         <PopoverTrigger asChild>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Add to Watchlist
+            Add to List
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-56 p-2" align="end" side="right">
