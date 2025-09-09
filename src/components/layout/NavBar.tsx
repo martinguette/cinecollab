@@ -46,8 +46,14 @@ export function NavBar() {
 
           <Button variant="ghost" size="sm" asChild>
             <Link to="/watchlists" className="flex items-center gap-1">
-              <List className="h-4 w-4" />
-              <span className="hidden sm:inline">Watchlists</span>
+              {!isMobile ? (
+                <>
+                  <List className="h-4 w-4" />
+                  <span className="hidden sm:inline">Watchlists</span>
+                </>
+              ) : (
+                <span>Lists</span>
+              )}
             </Link>
           </Button>
 
