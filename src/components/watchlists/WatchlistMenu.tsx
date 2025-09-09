@@ -159,7 +159,12 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
                   disabled={!!addLoading}
                 >
                   <List className="h-4 w-4 mr-2" />
-                  {list.name}
+                  <span
+                    className="truncate max-w-[140px] inline-block align-middle"
+                    title={list.name}
+                  >
+                    {list.name}
+                  </span>
                   {addLoading === list.id && (
                     <span className="ml-2 text-xs">Adding...</span>
                   )}
