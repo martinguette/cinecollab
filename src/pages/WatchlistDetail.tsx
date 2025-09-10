@@ -26,17 +26,23 @@ const WatchlistDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [watchlistName, setWatchlistName] = useState<string>('');
+  const [watchlistDescription, setWatchlistDescription] = useState<
+    string | null
+  >(null);
   const { config, loading: configLoading } = useTMDbConfig();
   // Obtener el nombre de la watchlist
   useEffect(() => {
     if (!id) return;
     supabase
       .from('watchlists')
-      .select('name')
+      .select('name, description')
       .eq('id', id)
       .single()
       .then(({ data, error }) => {
-        if (!error && data) setWatchlistName(data.name);
+        if (!error && data) {
+          setWatchlistName(data.name);
+          setWatchlistDescription(data.description ?? null);
+        }
       });
   }, [id]);
 
@@ -122,9 +128,16 @@ const WatchlistDetail = () => {
           ← Volver a mis listas
         </Link>
         <div className="flex items-center justify-between mt-2 mb-4">
-          <h1 className="text-2xl font-bold ">
-            {watchlistName || 'Películas/Series guardadas'}
-          </h1>
+          <div>
+            <h1 className="text-2xl font-bold ">
+              {watchlistName || 'Películas/Series guardadas'}
+            </h1>
+            {watchlistDescription && (
+              <p className="text-muted-foreground text-base mt-1 whitespace-pre-line">
+                {watchlistDescription}
+              </p>
+            )}
+          </div>
           <Dialog open={modalOpen} onOpenChange={setModalOpen}>
             <DialogTrigger asChild>
               <Button

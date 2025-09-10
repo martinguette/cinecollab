@@ -19,7 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { CreateWatchlistDialog } from './CreateWatchlistDialog';
 
 interface WatchlistMenuProps {
   mediaId: number;
@@ -30,9 +30,7 @@ interface WatchlistMenuProps {
 export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const [newListName, setNewListName] = useState('');
-  const [newListDescription, setNewListDescription] = useState('');
-  const [privacy, setPrivacy] = useState('private');
+  const [newListDialogOpen, setNewListDialogOpen] = useState(false);
   const [collaboratorEmail, setCollaboratorEmail] = useState('');
   const [permission, setPermission] = useState('view');
   const { toast } = useToast();
@@ -66,10 +64,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
           setWatchlists([]);
         } else {
           // Extraer las watchlists anidadas
-          const lists = (data || [])
-            .map((row: any) => row.watchlists)
-            .filter(Boolean);
-          setWatchlists(lists);
+          setWatchlists((data || []).map((row: any) => row.watchlists));
         }
         setLoading(false);
       });
@@ -102,19 +97,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
     }
   };
 
-  const handleCreateWatchlist = () => {
-    if (!newListName.trim()) return;
-
-    // This would call an API in a real implementation
-    toast({
-      title: 'Watchlist created',
-      description: `Created "${newListName}" and added item`,
-    });
-
-    setIsCreateOpen(false);
-    setNewListName('');
-    setNewListDescription('');
-  };
+  //
 
   const handleShareWatchlist = () => {
     if (!collaboratorEmail.trim()) return;
@@ -175,7 +158,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
               variant="ghost"
               size="sm"
               className="w-full justify-start text-pastel"
-              onClick={() => setIsCreateOpen(true)}
+              onClick={() => setNewListDialogOpen(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
               Create new list
@@ -184,107 +167,13 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
         </PopoverContent>
       </Popover>
 
-      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create new watchlist</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Watchlist name</Label>
-              <Input
-                id="name"
-                placeholder="My awesome watchlist"
-                value={newListName}
-                onChange={(e) => setNewListName(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Description (optional)</Label>
-              <Textarea
-                id="description"
-                placeholder="What's this watchlist about?"
-                value={newListDescription}
-                onChange={(e) => setNewListDescription(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Privacy</Label>
-              <RadioGroup
-                value={privacy}
-                onValueChange={setPrivacy}
-                className="flex gap-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="private" id="private" />
-                  <Label htmlFor="private" className="cursor-pointer">
-                    Private
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="public" id="public" />
-                  <Label htmlFor="public" className="cursor-pointer">
-                    Public
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreateWatchlist}>Create</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Invite collaborators</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="friend@example.com"
-                value={collaboratorEmail}
-                onChange={(e) => setCollaboratorEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Permission level</Label>
-              <RadioGroup
-                value={permission}
-                onValueChange={setPermission}
-                className="flex gap-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="view" id="view" />
-                  <Label htmlFor="view" className="cursor-pointer">
-                    View only
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="edit" id="edit" />
-                  <Label htmlFor="edit" className="cursor-pointer">
-                    Can edit
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsShareOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleShareWatchlist}>Send invitation</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <CreateWatchlistDialog
+        open={newListDialogOpen}
+        setOpen={setNewListDialogOpen}
+        onCreated={(newWatchlist) =>
+          setWatchlists((prev) => [newWatchlist, ...prev])
+        }
+      />
     </>
   );
 }
