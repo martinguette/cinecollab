@@ -7,7 +7,8 @@ import Search from './pages/Search';
 import Watchlists from './pages/Watchlists';
 import WatchlistDetail from './pages/WatchlistDetail';
 import NotFound from './pages/NotFound';
-import Auth from './pages/Auth';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 import JoinWatchlist from './pages/JoinWatchlist';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
@@ -23,7 +24,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <Routes>
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
+          <Route path="/auth" element={<Login />} />
           <Route
             path="/"
             element={

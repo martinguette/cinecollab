@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +18,7 @@ import { AuthContext } from '@/context/AuthContext';
 
 interface AuthFormProps {
   mode: 'login' | 'register';
-  onModeChange: (mode: 'login' | 'register') => void;
+  onModeChange?: (mode: 'login' | 'register') => void;
 }
 
 export function AuthForm({ mode, onModeChange }: AuthFormProps) {
@@ -180,15 +181,12 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
         <CardFooter className="flex flex-col items-center gap-2">
           <p className="text-sm text-muted-foreground">
             {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}{' '}
-            <Button
-              variant="link"
-              className="p-0 h-auto font-semibold"
-              onClick={() =>
-                onModeChange(mode === 'login' ? 'register' : 'login')
-              }
+            <Link
+              to={mode === 'login' ? '/auth/register' : '/auth/login'}
+              className="underline font-semibold hover:text-primary"
             >
               {mode === 'login' ? 'Regístrate' : 'Inicia sesión'}
-            </Button>
+            </Link>
           </p>
           <div className="flex gap-2 text-xs text-muted-foreground">
             <a
