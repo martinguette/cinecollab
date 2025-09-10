@@ -107,7 +107,7 @@ const Index = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Trending Now</h2>
               <Button asChild variant="link" size="sm">
-                <Link to="/search">See all</Link>
+                {/*  <Link to="/search">See all</Link> */}
               </Button>
             </div>
 

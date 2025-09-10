@@ -49,10 +49,10 @@ export function NavBar() {
               {!isMobile ? (
                 <>
                   <List className="h-4 w-4" />
-                  <span className="hidden sm:inline">Watchlists</span>
+                  <span className="hidden sm:inline">Lists</span>
                 </>
               ) : (
-                <span>Lists</span>
+                <span>Watchlists</span>
               )}
             </Link>
           </Button>
