@@ -22,7 +22,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   // Redirect to auth if not authenticated
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/auth/login" replace />;
   }
 
   return <>{children}</>;

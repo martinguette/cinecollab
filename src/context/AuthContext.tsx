@@ -1,7 +1,13 @@
-import { createContext, ReactNode, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useEffect,
+  useState,
+  useContext,
+} from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-interface AuthContext {
+interface AuthContextType {
   user: null | {
     id: string;
     email: string;
@@ -13,20 +19,14 @@ interface AuthContext {
   logout: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContext>({
-  user: null,
-  loginWithGoogle: async () => {},
-  loginWithFacebook: async () => {},
-  logout: async () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export { AuthContext };
 
 interface IAppProviderProps {
   children: ReactNode;
 }
 
-const AuthProvider: React.FC<IAppProviderProps> = ({
-  children,
-}: IAppProviderProps) => {
+const AuthProvider = ({ children }: IAppProviderProps) => {
   const [user, setUser] = useState<null | {
     id: string;
     email: string;
@@ -81,27 +81,46 @@ const AuthProvider: React.FC<IAppProviderProps> = ({
     }
   };
 
-  const logout = async () => {
-    try {
-      await supabase.auth.signOut();
-      setUser(null);
-    } catch (error) {
-      console.error(error);
-    }
+  // Custom hook to get navigate, only works inside a component
+
+  function useLogoutWithRedirect() {
+    return async () => {
+      try {
+        await supabase.auth.signOut();
+        setUser(null);
+        window.location.href = '/auth/login';
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  }
+
+  // Fallback for context value (will be replaced in provider)
+  let logout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    window.location.href = '/auth/login';
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loginWithGoogle,
-        loginWithFacebook,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  // Use a wrapper component to get access to useNavigate
+  function AuthProviderWithNavigate({ children }: { children: ReactNode }) {
+    const logoutWithRedirect = useLogoutWithRedirect();
+    return (
+      <AuthContext.Provider
+        value={{
+          user,
+          loginWithGoogle,
+          loginWithFacebook,
+          logout: logoutWithRedirect,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    );
+  }
+
+  // Export the wrapper as default
+  return <AuthProviderWithNavigate>{children}</AuthProviderWithNavigate>;
 };
 
 export default AuthProvider;

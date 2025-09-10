@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 /* import { NotificationPopover } from '../notifications/NotificationPopover'; */
 import { useContext } from 'react';
-import { AuthContext } from '@/context/AuthContext';
+import { useAuth } from '@/context/useAuth';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
 
 export function NavBar() {
   const isMobile = useIsMobile();
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuth();
 
   const handleSignOut = async () => {
     await logout();

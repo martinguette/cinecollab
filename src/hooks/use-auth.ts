@@ -11,13 +11,13 @@ export function useAuth() {
 
   useEffect(() => {
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -29,41 +29,46 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    metadata?: Record<string, any>
+  ) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
-      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl
-        }
+          emailRedirectTo: redirectUrl,
+          data: metadata || {},
+        },
       });
 
       if (error) {
         toast({
-          title: "Error al registrarse",
+          title: 'Error al registrarse',
           description: error.message,
-          variant: "destructive",
+          variant: 'destructive',
         });
         return { error };
       }
 
       if (data.user && !data.session) {
         toast({
-          title: "¡Revisa tu email!",
-          description: "Te hemos enviado un enlace de confirmación.",
+          title: '¡Revisa tu email!',
+          description: 'Te hemos enviado un enlace de confirmación.',
         });
       }
 
       return { data, error: null };
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error desconocido';
+      const message =
+        error instanceof Error ? error.message : 'Error desconocido';
       toast({
-        title: "Error",
+        title: 'Error',
         description: message,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return { error: { message } };
     }
@@ -78,25 +83,26 @@ export function useAuth() {
 
       if (error) {
         toast({
-          title: "Error al iniciar sesión",
+          title: 'Error al iniciar sesión',
           description: error.message,
-          variant: "destructive",
+          variant: 'destructive',
         });
         return { error };
       }
 
       toast({
-        title: "¡Bienvenido!",
-        description: "Has iniciado sesión correctamente.",
+        title: '¡Bienvenido!',
+        description: 'Has iniciado sesión correctamente.',
       });
 
       return { data, error: null };
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error desconocido';
+      const message =
+        error instanceof Error ? error.message : 'Error desconocido';
       toast({
-        title: "Error",
+        title: 'Error',
         description: message,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return { error: { message } };
     }
@@ -107,26 +113,27 @@ export function useAuth() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`
-        }
+          redirectTo: `${window.location.origin}/`,
+        },
       });
 
       if (error) {
         toast({
-          title: "Error al iniciar sesión con Google",
+          title: 'Error al iniciar sesión con Google',
           description: error.message,
-          variant: "destructive",
+          variant: 'destructive',
         });
         return { error };
       }
 
       return { data, error: null };
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error desconocido';
+      const message =
+        error instanceof Error ? error.message : 'Error desconocido';
       toast({
-        title: "Error",
+        title: 'Error',
         description: message,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return { error: { message } };
     }
@@ -135,28 +142,29 @@ export function useAuth() {
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      
+
       if (error) {
         toast({
-          title: "Error al cerrar sesión",
+          title: 'Error al cerrar sesión',
           description: error.message,
-          variant: "destructive",
+          variant: 'destructive',
         });
         return { error };
       }
 
       toast({
-        title: "Sesión cerrada",
-        description: "Has cerrado sesión correctamente.",
+        title: 'Sesión cerrada',
+        description: 'Has cerrado sesión correctamente.',
       });
 
       return { error: null };
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error desconocido';
+      const message =
+        error instanceof Error ? error.message : 'Error desconocido';
       toast({
-        title: "Error",
+        title: 'Error',
         description: message,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return { error: { message } };
     }
@@ -169,6 +177,6 @@ export function useAuth() {
     signUp,
     signIn,
     signInWithGoogle,
-    signOut
+    signOut,
   };
 }

@@ -19,53 +19,51 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/register" element={<Register />} />
-          <Route path="/auth" element={<Login />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/search"
-            element={
-              <ProtectedRoute>
-                <Search />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/watchlists"
-            element={
-              <ProtectedRoute>
-                <Watchlists />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/watchlists/:id"
-            element={
-              <ProtectedRoute>
-                <WatchlistDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/watchlist/join/:id" element={<JoinWatchlist />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </TooltipProvider>
-    </BrowserRouter>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <Routes>
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
+        <Route path="/auth" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Index />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <Search />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watchlists"
+          element={
+            <ProtectedRoute>
+              <Watchlists />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watchlists/:id"
+          element={
+            <ProtectedRoute>
+              <WatchlistDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/watchlist/join/:id" element={<JoinWatchlist />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 

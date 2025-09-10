@@ -1,4 +1,7 @@
 import { useContext, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,11 +25,39 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ mode, onModeChange }: AuthFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const { loginWithGoogle } = useContext(AuthContext);
+
+  // Zod schemas
+  const registerSchema = z
+    .object({
+      name: z.string().min(2, 'El nombre es requerido'),
+      email: z.string().email('Email inválido'),
+      password: z.string().min(6, 'Mínimo 6 caracteres'),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: 'Las contraseñas no coinciden',
+      path: ['confirmPassword'],
+    });
+  const loginSchema = z.object({
+    email: z.string().email('Email inválido'),
+    password: z.string().min(6, 'Mínimo 6 caracteres'),
+  });
+
+  const form = useForm({
+    resolver: zodResolver(mode === 'register' ? registerSchema : loginSchema),
+    defaultValues:
+      mode === 'register'
+        ? { name: '', email: '', password: '', confirmPassword: '' }
+        : { email: '', password: '' },
+  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
 
   // Manejo de loading para Google
   const [loadingGoogle, setLoadingGoogle] = useState(false);
@@ -41,15 +72,14 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: any) => {
     setLoading(true);
-
     try {
       if (mode === 'login') {
-        await signIn(email, password);
+        await signIn(data.email, data.password);
       } else {
-        await signUp(email, password);
+        // Registro: enviar nombre como metadata
+        await signUp(data.email, data.password, { name: data.name });
       }
     } finally {
       setLoading(false);
@@ -124,7 +154,25 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {mode === 'register' && (
+              <div className="space-y-2">
+                <Label htmlFor="name">Nombre</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Tu nombre"
+                  {...register('name')}
+                  className="pl-3"
+                  disabled={loading}
+                />
+                {errors.name && (
+                  <span className="text-xs text-red-500">
+                    {errors.name.message as string}
+                  </span>
+                )}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -133,14 +181,17 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
                   id="email"
                   type="email"
                   placeholder="tu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  {...register('email')}
                   className="pl-10"
-                  required
+                  disabled={loading}
                 />
+                {errors.email && (
+                  <span className="text-xs text-red-500">
+                    {errors.email.message as string}
+                  </span>
+                )}
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
               <div className="relative">
@@ -149,15 +200,35 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
                   id="password"
                   type="password"
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...register('password')}
                   className="pl-10"
-                  required
-                  minLength={6}
+                  disabled={loading}
                 />
+                {errors.password && (
+                  <span className="text-xs text-red-500">
+                    {errors.password.message as string}
+                  </span>
+                )}
               </div>
             </div>
-
+            {mode === 'register' && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Repite tu contraseña"
+                  {...register('confirmPassword')}
+                  className="pl-3"
+                  disabled={loading}
+                />
+                {errors.confirmPassword && (
+                  <span className="text-xs text-red-500">
+                    {errors.confirmPassword.message as string}
+                  </span>
+                )}
+              </div>
+            )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
                 <div className="flex items-center gap-2">
