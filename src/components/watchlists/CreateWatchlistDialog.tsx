@@ -12,19 +12,25 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/components/ui/use-toast';
 
 interface CreateWatchlistDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   onCreated?: (watchlist: any) => void;
+  mediaId?: number;
+  mediaType?: 'movie' | 'tv';
 }
 
 export function CreateWatchlistDialog({
   open,
   setOpen,
   onCreated,
+  mediaId,
+  mediaType,
 }: CreateWatchlistDialogProps) {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -58,12 +64,44 @@ export function CreateWatchlistDialog({
         user_id: user.id,
         role: 'owner',
       });
+
+    // Notificación de lista creada
+    toast({
+      title: 'Watchlist creada',
+      description: `La lista "${name}" fue creada correctamente.`,
+    });
+
+    // Si mediaId y mediaType están presentes, agregar el ítem a la nueva lista
+    let addMovieError = null;
+    if (mediaId && mediaType) {
+      const { error: addError } = await supabase
+        .from('watchlist_movies')
+        .insert({
+          watchlist_id: newWatchlist.id,
+          media_id: mediaId,
+          media_type: mediaType,
+          added_by: user.id,
+          added_at: new Date().toISOString(),
+        });
+      addMovieError = addError;
+      if (!addError) {
+        toast({
+          title: 'Película agregada',
+          description: `La película/serie fue agregada a "${name}".`,
+        });
+      }
+    }
+
     setLoading(false);
     setOpen(false);
     setName('');
     setDescription('');
     if (memberError) {
       setError('La lista fue creada pero no se pudo agregar como miembro.');
+    } else if (addMovieError) {
+      setError(
+        'La lista fue creada pero no se pudo agregar la película/serie.'
+      );
     } else if (onCreated) {
       onCreated(newWatchlist);
     }

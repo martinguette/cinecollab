@@ -173,6 +173,8 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
         onCreated={(newWatchlist) =>
           setWatchlists((prev) => [newWatchlist, ...prev])
         }
+        mediaId={mediaId}
+        mediaType={mediaType}
       />
     </>
   );
