@@ -6,7 +6,18 @@ interface WatchlistItemProps {
   watchlist: Watchlist;
 }
 
+
 export const WatchlistItem: React.FC<WatchlistItemProps> = ({ watchlist }) => {
+  // Formatear la fecha: día, mes, año y hora (ej: 10 septiembre 2025, 14:30)
+  const date = new Date(watchlist.created_at);
+  const formattedDate = date.toLocaleString('es-ES', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
   return (
     <Link
       to={`/watchlists/${watchlist.id}`}
@@ -16,7 +27,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({ watchlist }) => {
       <div>
         <div className="font-semibold">{watchlist.name}</div>
         <div className="text-xs text-gray-500">
-          Creada: {watchlist.created_at}
+          Creada: {formattedDate}
         </div>
       </div>
       {/* Placeholder for future actions (e.g., Share, Edit, Delete) */}

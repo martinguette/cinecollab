@@ -24,19 +24,24 @@ const Watchlists = () => {
       return;
     }
     setLoading(true);
-    // Traer todas las watchlists donde el usuario es miembro (incluye owner)
+    // Traer todas las watchlists donde el usuario es miembro (incluye owner) y hacer join con users para obtener el nombre del creador
     supabase
       .from('watchlist_members')
-      .select('watchlist_id, watchlists(*)')
+      .select('watchlist_id, watchlists(*, users!owner_id(name))')
       .eq('user_id', user.id)
       .then(({ data, error }) => {
         if (error) {
           setError(error.message);
           setWatchlists([]);
         } else {
-          // Extraer las watchlists anidadas
+          // Extraer las watchlists anidadas y el nombre del creador
           const lists = (data || [])
-            .map((row: any) => row.watchlists)
+            .map((row: any) => {
+              const wl = row.watchlists;
+              // El join trae users como un objeto
+              const creator_name = wl?.users?.name || '';
+              return wl ? { ...wl, creator_name } : null;
+            })
             .filter(Boolean);
           setWatchlists(lists);
         }
