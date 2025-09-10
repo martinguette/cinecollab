@@ -1,6 +1,5 @@
-
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 export function Footer() {
   return (
@@ -14,14 +13,35 @@ export function Footer() {
             </p>
           </div>
           <nav className="flex gap-6">
-            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              to="/"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Home
             </Link>
-            <Link to="/search" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              to="/search"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Search
             </Link>
-            <Link to="/watchlists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              to="/watchlists"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Watchlists
+            </Link>
+            <Link
+              to="/terms"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
+              to="/privacy"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Privacy
             </Link>
           </nav>
         </div>

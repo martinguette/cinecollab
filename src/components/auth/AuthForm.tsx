@@ -177,7 +177,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
           </form>
         </CardContent>
 
-        <CardFooter className="justify-center">
+        <CardFooter className="flex flex-col items-center gap-2">
           <p className="text-sm text-muted-foreground">
             {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}{' '}
             <Button
@@ -190,6 +190,25 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
               {mode === 'login' ? 'Regístrate' : 'Inicia sesión'}
             </Button>
           </p>
+          <div className="flex gap-2 text-xs text-muted-foreground">
+            <a
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              Terms
+            </a>
+            <span>|</span>
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              Privacy
+            </a>
+          </div>
         </CardFooter>
       </Card>
     </div>
