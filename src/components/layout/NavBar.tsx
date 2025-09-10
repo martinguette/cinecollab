@@ -25,7 +25,10 @@ export function NavBar() {
   return (
     <nav className="sticky top-0 z-10 w-full bg-background/80 backdrop-blur-md border-b border-border py-3 px-2 sm:px-4">
       <div className="w-full max-w-7xl mx-auto flex items-center justify-between px-0 sm:px-2">
-        <Link to="/" className="flex items-center gap-2 font-semibold text-lg">
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-semibold text-lg pl-2 sm:pl-0"
+        >
           <img
             src="/logo.svg"
             alt="CineCollab Logo"
@@ -34,12 +37,12 @@ export function NavBar() {
           <span className="hidden sm:inline">Cinecollab</span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pr-2 sm:pr-0">
           <Button variant="ghost" size="sm" asChild>
             <Link to="/search" className="flex items-center gap-1">
               <Search className="h-4 w-4" />
               <span className="hidden sm:inline">Search</span>
-              <span className="sm:hidden">Buscar</span>
+              <span className="sm:hidden">Search</span>
             </Link>
           </Button>
 
@@ -60,7 +63,11 @@ export function NavBar() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="rounded-full p-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full p-2 ml-1 sm:ml-0"
+              >
                 <User className="h-5 w-5" />
                 <span className="sr-only">Menú de usuario</span>
               </Button>
