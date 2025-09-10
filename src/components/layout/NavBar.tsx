@@ -23,8 +23,8 @@ export function NavBar() {
   };
 
   return (
-    <nav className="sticky top-0 z-10 w-full bg-background/80 backdrop-blur-md border-b border-border py-3 px-4">
-      <div className="container max-w-7xl mx-auto flex items-center justify-between">
+    <nav className="sticky top-0 z-10 w-full bg-background/80 backdrop-blur-md border-b border-border py-3 px-2 sm:px-4">
+      <div className="w-full max-w-7xl mx-auto flex items-center justify-between px-0 sm:px-2">
         <Link to="/" className="flex items-center gap-2 font-semibold text-lg">
           <img
             src="/logo.svg"
@@ -35,21 +35,20 @@ export function NavBar() {
         </Link>
 
         <div className="flex items-center gap-2">
-          {!isMobile && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/search" className="flex items-center gap-1">
-                <Search className="h-4 w-4" />
-                <span>Search</span>
-              </Link>
-            </Button>
-          )}
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/search" className="flex items-center gap-1">
+              <Search className="h-4 w-4" />
+              <span className="hidden sm:inline">Search</span>
+              <span className="sm:hidden">Buscar</span>
+            </Link>
+          </Button>
 
           <Button variant="ghost" size="sm" asChild>
             <Link to="/watchlists" className="flex items-center gap-1">
               {!isMobile ? (
                 <>
                   <List className="h-4 w-4" />
-                  <span className="hidden sm:inline">Lists</span>
+                  <span className="hidden sm:inline">Watchlists</span>
                 </>
               ) : (
                 <span>Watchlists</span>
