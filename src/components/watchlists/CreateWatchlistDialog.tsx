@@ -109,7 +109,7 @@ export function CreateWatchlistDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
+      <DialogContent className="px-2 sm:px-6">
         <DialogHeader>
           <DialogTitle>Crear nueva watchlist</DialogTitle>
         </DialogHeader>
