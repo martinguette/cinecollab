@@ -17,36 +17,36 @@ const Watchlists = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   // Eliminados estados de creación, ahora los maneja el modal reutilizable
 
-  useEffect(() => {
+  const fetchWatchlists = async () => {
     if (!user) {
       setWatchlists([]);
       setLoading(false);
       return;
     }
     setLoading(true);
-    // Traer todas las watchlists donde el usuario es miembro (incluye owner) y hacer join con users para obtener el nombre del creador
-    supabase
+    const { data, error } = await supabase
       .from('watchlist_members')
       .select('watchlist_id, watchlists(*, users!owner_id(name))')
-      .eq('user_id', user.id)
-      .then(({ data, error }) => {
-        if (error) {
-          setError(error.message);
-          setWatchlists([]);
-        } else {
-          // Extraer las watchlists anidadas y el nombre del creador
-          const lists = (data || [])
-            .map((row: any) => {
-              const wl = row.watchlists;
-              // El join trae users como un objeto
-              const creator_name = wl?.users?.name || '';
-              return wl ? { ...wl, creator_name } : null;
-            })
-            .filter(Boolean);
-          setWatchlists(lists);
-        }
-        setLoading(false);
-      });
+      .eq('user_id', user.id);
+    if (error) {
+      setError(error.message);
+      setWatchlists([]);
+    } else {
+      const lists = (data || [])
+        .map((row: any) => {
+          const wl = row.watchlists;
+          const creator_name = wl?.users?.name || '';
+          return wl ? { ...wl, creator_name } : null;
+        })
+        .filter(Boolean);
+      setWatchlists(lists);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchWatchlists();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Ahora la creación se maneja en el modal reutilizable
@@ -64,7 +64,10 @@ const Watchlists = () => {
           ) : error ? (
             <div className="text-center text-red-500">{error}</div>
           ) : (
-            <WatchlistList watchlists={watchlists} />
+            <WatchlistList
+              watchlists={watchlists}
+              onRefresh={fetchWatchlists}
+            />
           )}
         </div>
       </div>
