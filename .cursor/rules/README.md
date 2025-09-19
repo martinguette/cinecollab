@@ -15,6 +15,10 @@ Esta aplicación está en **PRODUCCIÓN** con usuarios reales y datos críticos.
 - **`react_production.mdc`** - Reglas para desarrollo seguro de componentes React
 - **`taskmaster_production.mdc`** - Reglas para manejo seguro de tareas en producción
 
+### **🎬 Reglas de Funcionalidad**
+
+- **`collaborative_watchlists.mdc`** - Reglas para funcionalidad colaborativa de watchlists
+
 ### **🛠️ Reglas de Desarrollo**
 
 - **`cursor_rules.mdc`** - Reglas generales de Cursor

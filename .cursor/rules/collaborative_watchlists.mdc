@@ -1,0 +1,201 @@
+# 🎬 **REGLAS DE WATCHLISTS COLABORATIVAS**
+
+## **⚠️ CONTEXTO CRÍTICO**
+
+- **Aplicación en PRODUCCIÓN con usuarios reales**
+- **Funcionalidad colaborativa de watchlists**
+- **NUNCA romper la funcionalidad existente de colaboración**
+
+---
+
+## **🔒 PRINCIPIOS DE COLABORACIÓN**
+
+### **✅ ROLES Y PERMISOS:**
+
+#### **CREADOR DE LA LISTA (Owner):**
+
+- **Acceso completo** a su watchlist
+- **Crear, editar, actualizar y eliminar** la lista
+- **Agregar y eliminar películas** (propias y de otros)
+- **Gestionar colaboradores** (agregar, eliminar, cambiar roles)
+- **Control total** sobre la lista
+
+#### **COLABORADORES (Members):**
+
+- **Ver** todas las películas de la lista
+- **Agregar películas** a la lista
+- **Eliminar solo las películas que ellos agregaron**
+- **NO pueden** eliminar películas de otros colaboradores
+- **NO pueden** gestionar la lista (editar nombre, descripción, etc.)
+- **NO pueden** gestionar otros colaboradores
+
+---
+
+## **🛡️ POLÍTICAS RLS REQUERIDAS**
+
+### **✅ Watchlists:**
+
+```sql
+-- Solo propietarios pueden ver/editar/eliminar sus propias watchlists
+CREATE POLICY "watchlists_owner_full_access" ON public.watchlists
+    FOR ALL USING (auth.uid() = owner_id);
+```
+
+### **✅ Watchlist_movies:**
+
+```sql
+-- Creador: acceso completo a todas las películas de sus listas
+CREATE POLICY "watchlist_movies_owner_full_access" ON public.watchlist_movies
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.watchlists
+            WHERE id = watchlist_movies.watchlist_id
+            AND owner_id = auth.uid()
+        )
+    );
+
+-- Colaboradores: solo pueden ver, agregar y eliminar películas
+CREATE POLICY "watchlist_movies_collaborator_access" ON public.watchlist_movies
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.watchlist_collaborators
+            WHERE watchlist_id = watchlist_movies.watchlist_id
+            AND user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "watchlist_movies_collaborator_insert" ON public.watchlist_movies
+    FOR INSERT WITH CHECK (
+        auth.uid() = added_by AND
+        EXISTS (
+            SELECT 1 FROM public.watchlist_collaborators
+            WHERE watchlist_id = watchlist_movies.watchlist_id
+            AND user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "watchlist_movies_collaborator_delete" ON public.watchlist_movies
+    FOR DELETE USING (
+        auth.uid() = added_by AND
+        EXISTS (
+            SELECT 1 FROM public.watchlist_collaborators
+            WHERE watchlist_id = watchlist_movies.watchlist_id
+            AND user_id = auth.uid()
+        )
+    );
+```
+
+### **✅ Watchlist_members:**
+
+```sql
+-- Solo propietarios pueden gestionar miembros
+CREATE POLICY "watchlist_members_owner_only" ON public.watchlist_members
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM public.watchlists
+            WHERE id = watchlist_members.watchlist_id
+            AND owner_id = auth.uid()
+        )
+    );
+```
+
+---
+
+## **🔍 VALIDACIÓN DE FUNCIONALIDAD**
+
+### **Checklist obligatorio antes de modificar:**
+
+- [ ] **¿El creador mantiene acceso completo a sus listas?** → ✅ Verificar
+- [ ] **¿Los colaboradores pueden agregar películas?** → ✅ Verificar
+- [ ] **¿Los colaboradores pueden eliminar solo sus películas?** → ✅ Verificar
+- [ ] **¿El creador puede eliminar cualquier película?** → ✅ Verificar
+- [ ] **¿Se mantiene la funcionalidad colaborativa?** → ✅ Verificar
+
+### **Funcionalidades críticas identificadas:**
+
+```typescript
+// Funcionalidades del CREADOR:
+- Crear watchlists
+- Editar nombre y descripción de watchlists
+- Eliminar watchlists
+- Agregar películas a la lista
+- Eliminar cualquier película (propias y de otros)
+- Agregar colaboradores
+- Eliminar colaboradores
+- Cambiar roles de colaboradores
+
+// Funcionalidades de COLABORADORES:
+- Ver todas las películas de la lista
+- Agregar películas a la lista
+- Eliminar solo las películas que ellos agregaron
+- Ver información de la lista (nombre, descripción)
+```
+
+---
+
+## **🚨 ALERTAS CRÍTICAS**
+
+### **Si detectas estos patrones, DETENER inmediatamente:**
+
+- Políticas que impidan al creador eliminar películas de otros
+- Políticas que permitan a colaboradores eliminar películas de otros
+- Políticas que impidan a colaboradores agregar películas
+- Políticas que permitan a colaboradores gestionar la lista
+- Recursión infinita en políticas RLS
+
+### **Comandos de emergencia:**
+
+- **Detener desarrollo** si hay riesgo de romper colaboración
+- **Informar al usuario** sobre cualquier cambio que pueda afectar colaboración
+- **Sugerir testing** antes de implementar cambios
+- **Validar funcionalidad colaborativa** antes de proceder
+
+---
+
+## **💡 MEJORES PRÁCTICAS**
+
+### **Para nuevas funcionalidades:**
+
+1. **Mantener roles claros** (creador vs colaborador)
+2. **Preservar permisos existentes** sin modificarlos
+3. **Agregar funcionalidades opcionales** para colaboradores
+4. **Probar funcionalidad colaborativa** antes de implementar
+
+### **Para políticas RLS:**
+
+1. **Evitar recursión infinita** en consultas
+2. **Usar consultas simples** y directas
+3. **Verificar que no bloqueen acceso existente**
+4. **Probar políticas** en entorno de desarrollo
+
+### **Para testing:**
+
+1. **Probar como creador** de la lista
+2. **Probar como colaborador** de la lista
+3. **Verificar permisos** de cada rol
+4. **Validar que no se rompa funcionalidad existente**
+
+---
+
+## **🔧 FUNCIONALIDADES FUTURAS**
+
+### **Espacio reservado para mejoras:**
+
+- **Roles avanzados** para colaboradores (moderador, editor, etc.)
+- **Permisos granulares** por funcionalidad
+- **Historial de cambios** en la lista
+- **Notificaciones** para colaboradores
+- **Comentarios** en películas
+- **Votaciones** para películas
+- **Eventos** de visualización grupal
+
+### **Consideraciones para futuras implementaciones:**
+
+- **Mantener compatibilidad** con funcionalidad actual
+- **No romper permisos existentes**
+- **Agregar funcionalidades opcionales**
+- **Probar exhaustivamente** antes de implementar
+
+---
+
+**🎯 OBJETIVO: Mantener la funcionalidad colaborativa existente mientras se agregan nuevas características de manera segura y sin interrupciones.**
