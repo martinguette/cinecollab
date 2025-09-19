@@ -1,285 +1,776 @@
-# CineCollab MVP - Product Requirements Document
+# CineCollab - Product Requirements Document
 
-## Overview
-CineCollab solves the problem of collaborative movie selection by enabling users to create shared watchlists that multiple people can contribute to in real-time. Current platforms like Letterboxd focus on individual experiences, leaving couples and friend groups without effective tools for jointly planning what to watch together.
+**Version:** 1.1
 
-The product targets couples (25-40) who spend too much time deciding what to watch, and friend groups (20-35) organizing movie nights. The core value proposition is **effortless collaborative curation** - create a list, share a link, and everyone can contribute instantly.
+**Date:** September 2025
 
-The MVP validates the collaborative watchlist concept with the simplest possible implementation: **Create → Share → Collaborate** in real-time.
+**Product Manager:** [Name]
 
-## Core Features
+**Engineering Lead:** [Name]
 
-### 1. Collaborative Watchlist Creation
-- **What it does**: Users create movie watchlists that automatically generate unique invitation links
-- **Why it's important**: This is the foundation of collaboration - without easy list creation and sharing, there's no product
-- **How it works**: One-click list creation with auto-generated shareable URLs, no complex setup required
+**Designer:** [Name]
 
-### 2. Real-time Invitation System  
-- **What it does**: Unique links allow anyone to join a watchlist and immediately start contributing
-- **Why it's important**: Removes friction from collaboration - no friend requests, approvals, or complex permissions
-- **How it works**: Invitation codes in URLs that automatically add authenticated users as collaborators
+---
 
-### 3. Live Collaborative Editing
-- **What it does**: Multiple users can simultaneously add/remove movies with changes appearing instantly for everyone
-- **Why it's important**: Creates the "magic moment" of seeing others' contributions appear in real-time
-- **How it works**: WebSocket subscriptions through Supabase real-time, optimistic UI updates for responsiveness
+## 1. Introduction
 
-### 4. Movie Search and Addition
-- **What it does**: TMDB integration for searching and adding movies to watchlists with rich metadata
-- **Why it's important**: Users need comprehensive movie data and search functionality to build meaningful lists
-- **How it works**: Debounced search with TMDB API, one-click addition to lists with duplicate prevention
+This Product Requirements Document (PRD) outlines the development of CineCollab, a web application designed to solve the collaborative movie and TV show list management problem that existing platforms like Letterboxd fail to address. This document serves as the comprehensive guide for the MVP development, defining features, technical requirements, user stories, and success criteria.
 
-### 5. Collaboration Attribution  
-- **What it does**: Shows who added each movie and when, providing social context to list building
-- **Why it's important**: Social proof and accountability make collaboration more engaging
-- **How it works**: User avatars and timestamps stored with each movie addition
+The document is intended for the development team, stakeholders, and future contributors to understand the product vision, scope, and implementation strategy for the initial release.
 
-## User Experience
+---
 
-### User Personas
+## 2. Product overview
 
-**Primary: Sarah & Mike (Couple, 28 & 30)**
-- Problem: Spend 15+ minutes every weekend deciding what to watch
-- Goal: Pre-plan movie options during the week when they think of them
-- Behavior: One person usually manages "the list" but both want input
+### 2.1 Problem statement
 
-**Secondary: College Friend Group (5 people, 22-26)**  
-- Problem: Coordinating monthly movie night selections across different schedules
-- Goal: Everyone contributes suggestions, group votes/discusses before meeting
-- Behavior: Active in group chats, share recommendations frequently
+Current movie tracking platforms like Letterboxd, IMDb, and others focus primarily on individual user experiences. They lack robust collaborative features that allow couples, friends, and groups to jointly manage what they want to watch together. This creates friction in shared entertainment decisions and limits the social aspect of movie and TV show discovery.
 
-### Key User Flows
+### 2.2 Solution
 
-**Flow 1: List Creator Journey**
-1. Login with Google OAuth (already implemented)
-2. Navigate to Watchlists page → Click "Create Watchlist"
-3. Enter list name → List created with auto-generated invite code
-4. Click "Share" button → Copy invitation link
-5. Send link to collaborators via text/email/chat
+CineCollab is a web application that enables users to create, manage, and collaborate on movie and TV show watchlists. The platform combines personal list management with seamless collaborative features, allowing multiple users to contribute to shared lists through simple invitation links.
 
-**Flow 2: Collaborator Journey** 
-1. Receive invitation link → Click link
-2. If not logged in → Redirect to Google OAuth
-3. After authentication → Automatically join watchlist
-4. See existing movies + add new ones from search
-5. Real-time updates as others contribute
+### 2.3 Product vision
 
-**Flow 3: Collaborative Movie Addition**
-1. User searches for movie using search bar
-2. Click "Add to List" from search results
-3. Movie appears immediately in list for all collaborators
-4. Other users see notification/update in real-time
+To become the go-to platform for collaborative entertainment planning, making it effortless for people to discover, organize, and track movies and shows together.
 
-### UI/UX Considerations
-- **Mobile-first design**: Most sharing happens via mobile messaging
-- **One-tap actions**: Add movie, share list, mark watched - all single interactions  
-- **Visual feedback**: Clear loading states, success confirmations, real-time indicators
-- **Progressive disclosure**: Start simple, reveal advanced features as users engage
+### 2.4 Key differentiators
 
-## Technical Architecture
+- **True collaboration:** Real-time collaborative list editing with conflict resolution
+- **Seamless sharing:** One-click invitation links for instant collaboration
+- **Unified experience:** Both personal and collaborative lists in one platform
+- **Social tracking:** See who added what and when items were watched
+- **Public sharing:** Generate shareable links for recommendations
 
-### System Components
-```
-Frontend (React SPA)
-├── Authentication (Supabase Auth + Google OAuth)
-├── Routing (React Router)
-├── State Management (Zustand + React Query)
-├── Real-time Updates (Supabase WebSockets)
-└── UI Components (Shadcn/ui + Tailwind)
+---
 
-Backend (Supabase)
-├── PostgreSQL Database with RLS
-├── Auto-generated REST API (PostgREST)
-├── Real-time Subscriptions
-└── Edge Functions (if needed)
+## 3. Goals and objectives
 
-External APIs
-├── TMDB API v3 (Movie data and search)
-└── Google OAuth 2.0 (Authentication)
-```
+### 3.1 Primary objectives
 
-### Data Models
+- **Solve the collaboration gap:** Enable seamless collaborative list creation and management
+- **Establish market presence:** Launch a functional MVP that addresses core user needs
+- **Build user base:** Achieve initial user adoption and retention metrics
+- **Technical foundation:** Create scalable architecture for future feature expansion
 
-**Core Tables:**
-- `users`: OAuth user data synchronized from Supabase Auth
-- `watchlists`: List metadata with unique invitation codes  
-- `watchlist_collaborators`: Many-to-many relationship with roles
-- `watchlist_movies`: Movies in lists with attribution and timestamps
+### 3.2 Success metrics
 
-**Key Relationships:**
-- Users → Watchlists (creator relationship)
-- Users ↔ Watchlists (collaborator many-to-many)  
-- Watchlists → Movies (one-to-many with metadata)
-- Users → Movies (attribution via foreign key)
+**Functionality metrics:**
 
-### APIs and Integrations
+- 100% of core features implemented and functional
+- < 2 second search response time
+- < 3 second initial page load time
+- 0 critical bugs in primary user flows
+- 99% uptime during business hours
 
-**Internal API Management:**
-```
-Direct Supabase client calls for:
-- Watchlist CRUD operations
-- Movie management within lists  
-- User data and preferences
-- Real-time subscriptions
+**User engagement metrics:**
 
-Custom utility functions for:
-- Invitation link handling
-- TMDB API integration
-- Authentication flow management
-```
+- 90% successful registration rate
+- 40% user retention at 7 days
+- 30% invitation acceptance rate
+- < 5 minutes time to create first list after registration
+- Average of 2+ lists created per active user
 
-**External Integrations:**
-- **TMDB API**: Movie search, metadata, and poster images
-- **Supabase Auth**: OAuth provider management and session handling
-- **Supabase Real-time**: WebSocket subscriptions for live updates
+### 3.3 Key performance indicators (KPIs)
 
-### Infrastructure Requirements
-- **Database**: PostgreSQL 15+ with Row Level Security enabled
-- **Hosting**: Static hosting (Netlify/Vercel) for React SPA, Supabase for backend/database
-- **CDN**: Automatic via hosting provider for static assets, TMDB for movie posters
-- **Monitoring**: Hosting provider analytics, Supabase dashboard metrics
+- Monthly Active Users (MAU)
+- List creation rate
+- Collaboration invitation success rate
+- Content addition frequency
+- User session duration
+- Feature adoption rates
 
-## Development Roadmap
+---
 
-### Phase 1: Foundation (Database & Auth Sync)
-**Scope**: Backend infrastructure that connects existing OAuth to database
-- Set up PostgreSQL schema with proper relationships and indexes
-- Implement Row Level Security policies for data protection
-- Create triggers to automatically sync OAuth users to users table
-- Test database operations and security policies
-- **Deliverable**: Working database with existing users synchronized
+## 4. Target audience
 
-### Phase 2: Basic Watchlist CRUD
-**Scope**: Core list management without real-time features
-- Build Supabase client integration for watchlist operations
-- Implement invitation code generation and validation
-- Create basic list viewing and management UI components
-- Handle edge cases (duplicate codes, deleted lists)
-- **Deliverable**: Users can create lists and generate shareable links
+### 4.1 Primary users
 
-### Phase 3: Invitation System & Collaboration Setup  
-**Scope**: Users can join lists via invitation links
-- Build invitation redemption flow with React Router parameters
-- Handle user authentication during invitation flow
-- Set up collaborator relationships and permissions
-- Create collaborator management UI (see who's in the list)
-- **Deliverable**: Complete invitation flow from link to collaboration
+**Couples (25-40 years old)**
 
-### Phase 4: Movie Search & Management
-**Scope**: Adding/removing movies from lists
-- Integrate TMDB API with proper error handling and caching  
-- Build movie search interface with debouncing
-- Implement add/remove movie functionality with optimistic updates
-- Handle duplicate prevention and data validation
-- **Deliverable**: Fully functional movie list management
+- Pain point: Deciding what to watch together
+- Behavior: Frequently discuss and plan entertainment choices
+- Needs: Shared decision-making tools, progress tracking
 
-### Phase 5: Real-time Collaboration
-**Scope**: Live updates across all collaborators
-- Set up Supabase real-time subscriptions for watchlist changes
-- Implement WebSocket connection management and reconnection
-- Build real-time UI updates with conflict resolution
-- Add collaboration indicators (who's active, recent changes)
-- **Deliverable**: True real-time collaborative experience
+**Friend groups (20-35 years old)**
 
-### Phase 6: Polish & Production Readiness
-**Scope**: Error handling, performance, and deployment
-- Comprehensive error handling and user feedback
-- Performance optimization (loading states, caching)
-- Security audit and rate limiting
-- Production deployment and monitoring setup
-- **Deliverable**: Production-ready MVP
+- Pain point: Coordinating group movie nights
+- Behavior: Active on social media, share recommendations
+- Needs: Group list management, social features
 
-## Logical Dependency Chain
+### 4.2 Secondary users
 
-### Foundation First (Phase 1)
-- **Database schema** must exist before any features can work
-- **User synchronization** must work before any user-specific features
-- **Security policies** must be in place before building features
+**Movie enthusiasts (25-50 years old)**
 
-### Quick Visible Progress (Phases 2-3)  
-- **Basic CRUD** gives immediate visible functionality on existing UI
-- **Invitation system** completes the sharing flow that's already UI-implemented
-- At this point, the entire flow works but without real-time updates
+- Pain point: Organizing personal watchlists and sharing recommendations
+- Behavior: Actively track and rate content
+- Needs: Advanced organization tools, public sharing
 
-### Core Value Delivery (Phases 4-5)
-- **Movie management** makes the lists actually useful
-- **Real-time collaboration** delivers the key differentiating feature
-- These phases can be developed in parallel once foundation is solid
+**Content creators/influencers (20-45 years old)**
 
-### Atomic Feature Development
-Each phase builds complete, testable functionality:
-- Phase 1: Database works independently  
-- Phase 2: Static list management works without collaboration
-- Phase 3: Invitation flow works without real-time updates
-- Phase 4: Movie management works without real-time (manual refresh)
-- Phase 5: Real-time layer enhances existing functionality
-- Phase 6: Production concerns that don't break existing features
+- Pain point: Sharing curated recommendations with followers
+- Behavior: Create content around entertainment
+- Needs: Public list features, analytics
 
-## Risks and Mitigations
+### 4.3 User personas
 
-### Technical Challenges
+**Sarah & Mike (Couple, 28 & 30)**
 
-**Risk**: Real-time synchronization complexity
-- **Mitigation**: Start with manual refresh, add real-time as enhancement layer
-- **Fallback**: Polling mechanism if WebSockets fail
+- Busy professionals who want to optimize their limited movie time
+- Often spend 15+ minutes deciding what to watch
+- Need a shared system to queue movies and track progress
 
-**Risk**: Client-side API key exposure for TMDB
-- **Mitigation**: TMDB API keys are safe for client-side use, implement rate limiting awareness
-- **Fallback**: Proxy TMDB requests through Supabase Edge Functions if needed
+**Gaming Group (Friends, 22-26)**
 
-**Risk**: Supabase Row Level Security complexity
-- **Mitigation**: Start with simple policies, iterate based on testing
-- **Fallback**: Application-level security as temporary measure
+- College friends who do monthly movie nights
+- Want everyone to contribute suggestions
+- Need coordination tools for group decisions
 
-### MVP Scope Management
+---
 
-**Risk**: Feature creep beyond core collaboration value
-- **Mitigation**: Ruthless focus on create→share→collaborate flow only
-- **Success criteria**: Measure collaboration rate, not feature completeness
+## 5. Features and requirements
 
-**Risk**: Over-engineering real-time features
-- **Mitigation**: Optimistic updates provide 90% of the UX benefit
-- **Validation**: Test with actual collaborative usage, not theoretical load
+### 5.1 Core authentication
 
-### Resource Constraints  
+| **Requirement ID** | **Requirement** | **Description** | **Priority** |
+| --- | --- | --- | --- |
+| AU-101 | Multi-provider authentication | Implement authentication with email/password and Google OAuth integration via Supabase Auth | High |
+| AU-102 | Session management | Configure secure session handling with Supabase Auth JWT tokens and automatic refresh | High |
+| AU-103 | Account linking | Enable automatic linking of accounts with matching email addresses across providers | High |
+| AU-104 | Password recovery | Implement secure password reset functionality using Supabase Auth flows | Medium |
+| AU-105 | Route protection | Ensure all private routes redirect unauthenticated users to login page using middleware | High |
 
-**Risk**: React Router complexity with invitation links
-- **Mitigation**: Use React Router's built-in parameter handling for clean URLs
-- **Fallback**: Query parameter approach if path parameters cause issues
+### 5.2 Content search and discovery
 
-**Risk**: Authentication edge cases consuming too much time
-- **Mitigation**: Leverage Supabase Auth's built-in flows, customize minimally
-- **Boundary**: OAuth-only for MVP, no email/password complexity
+| **Requirement ID** | **Requirement** | **Description** | **Priority** |
+| --- | --- | --- | --- |
+| CS-101 | TMDB API integration | Implement integration with The Movie Database API v3 for content search | High |
+| CS-102 | Real-time search | Configure search input using React Hook Form with debouncing (300ms delay) | High |
+| CS-103 | Search caching | Implement client-side caching of search results using React Query to reduce API calls | Medium |
+| CS-105 | Result pagination | Implement pagination with 20 results per page and infinite scroll | High |
+| CS-106 | Content details | Create detailed view pages showing synopsis, cast, crew, director, trailer, and metadata | High |
 
-## Appendix
+### 5.3 Personal list management
 
-### Research Findings
-- **Primary pain point**: Decision paralysis when choosing what to watch together
-- **Current solutions**: Shared notes apps, text messages - no purpose-built tools
-- **Key insight**: Real-time collaboration creates "magic moment" but basic sharing delivers most value
+| **Requirement ID** | **Requirement** | **Description** | **Priority** |
+| --- | --- | --- | --- |
+| PL-101 | List CRUD operations | Allow users to create, read, update, and delete personal lists with optimistic updates | High |
+| PL-102 | Content management | Enable adding and removing movies/shows from lists with duplicate prevention | High |
+| PL-104 | Watched tracking | Allow users to mark content as watched with automatic timestamp recording | High |
+| PL-105 | List organization | Provide sorting options (alphabetical, date added) for viewing lists | Medium |
+| PL-106 | List search | Enable search within individual lists for content discovery | Medium |
 
-### Technical Specifications
+### 5.4 Collaborative features
 
-**Database Schema Highlights:**
-```sql
--- Auto-generate invite codes on watchlist creation
-CREATE TRIGGER before_watchlist_insert
-  BEFORE INSERT ON watchlists
-  FOR EACH ROW EXECUTE FUNCTION set_invite_code();
+| **Requirement ID** | **Requirement** | **Description** | **Priority** |
+| --- | --- | --- | --- |
+| CF-101 | Collaborative list creation | Allow users to create lists that support multiple collaborators | High |
+| CF-102 | Invitation system | Generate unique invitation links for joining collaborative lists | High |
+| CF-103 | Real-time updates | Implement real-time synchronization using Supabase real-time subscriptions | High |
+| CF-104 | Permission management | Establish role-based permissions (owner vs. collaborator) with appropriate access levels | High |
+| CF-105 | Activity tracking | Track and display who added each item and when changes were made | Medium |
+| CF-106 | Conflict resolution | Handle simultaneous edits with optimistic updates and conflict resolution | Medium |
 
--- Sync OAuth users automatically  
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
-```
+### 5.5 List sharing and privacy
 
-**Performance Targets:**
-- List creation: < 2 seconds end-to-end
-- Movie search: < 1 second with caching
-- Real-time updates: < 500ms propagation
-- Page load: < 3 seconds on 3G
+| **Requirement ID** | **Requirement** | **Description** | **Priority** |
+| --- | --- | --- | --- |
+| LS-101 | Public list sharing | Generate shareable URLs for read-only public access to lists | High |
+| LS-102 | Privacy controls | Implement toggle between public and private list visibility | High |
+| LS-104 | View analytics | Track and display view counts and engagement metrics for shared lists | Low |
+| LS-105 | Link management | Allow users to regenerate sharing links and revoke access | Medium |
 
-**Browser Support:**
-- Modern browsers with ES6+ support
-- WebSocket support for real-time features
-- Mobile browsers (iOS Safari, Chrome Mobile)
+### 5.6 Data management and storage
+
+| **Requirement ID** | **Requirement** | **Description** | **Priority** |
+| --- | --- | --- | --- |
+| DM-101 | Database schema | Implement PostgreSQL schema with proper relationships and indexing | High |
+| DM-102 | Data synchronization | Ensure data consistency across all user sessions and devices using Zustand | High |
+| DM-103 | Backup and recovery | Implement automated database backups with point-in-time recovery | High |
+| DM-104 | Data validation | Apply client and server-side validation using Zod schemas for all data inputs | High |
+| DM-105 | Performance optimization | Optimize database queries and implement proper indexing strategies | Medium |
+
+---
+
+## 6. User stories and acceptance criteria
+
+### 6.1 Authentication and user management
+
+**ST-101: User registration with email**
+*As a new user, I want to register with my email and password so that I can create an account.*
+
+**Acceptance Criteria:**
+
+- User can enter email and password using React Hook Form validation
+- System validates email format and password strength using Zod schemas
+- Account is created successfully with Supabase Auth email verification
+- User is redirected to dashboard after verification
+- Duplicate email addresses are handled gracefully
+
+**ST-102: User login with Google OAuth**
+*As a user, I want to log in with my Google account so that I can access the platform quickly.*
+
+**Acceptance Criteria:**
+
+- Google OAuth integration is functional via Supabase Auth
+- User can complete authentication flow
+- Account is automatically created if new user
+- Existing accounts are linked if email matches
+- User is redirected to dashboard after successful login
+
+**ST-103: Secure session management**
+*As a user, I want my session to remain active across browser sessions so that I don't need to log in repeatedly.*
+
+**Acceptance Criteria:**
+
+- Sessions persist across browser restarts using Supabase Auth tokens
+- Session expires after 30 days of inactivity
+- User can manually log out
+- Concurrent sessions are supported
+- Protected routes redirect unauthenticated users using Next.js middleware
+
+### 6.2 Content search and discovery
+
+**ST-201: Search movies and TV shows**
+*As a user, I want to search for movies and TV shows so that I can find content to add to my lists.*
+
+**Acceptance Criteria:**
+
+- Search input provides real-time results using React Hook Form with debouncing
+- Results include title, year, poster, and type (movie/TV)
+- Search handles typos and partial matches
+- Results show both movies and TV shows together
+- Results are paginated (20 items per page)
+- Loading states and error handling are implemented with React Query
+
+**ST-202: View content details**
+*As a user, I want to view detailed information about a movie or show so that I can make informed decisions.*
+
+**Acceptance Criteria:**
+
+- Detail page shows poster, synopsis, year, duration, genre, rating
+- Cast and crew information displayed (director, main actors, key crew members)
+- Trailer is embedded when available
+- Page loads within 2 seconds
+- "Add to list" and "Mark as watched" buttons are present
+- Responsive design works on all screen sizes using Tailwind CSS
+
+### 6.3 Personal list management
+
+**ST-301: Create personal list**
+*As a user, I want to create a personal list so that I can organize content I want to watch.*
+
+**Acceptance Criteria:**
+
+- User can create list with name and optional description using React Hook Form
+- Form validation handled by Zod schemas
+- List is saved to user's account and synced with Zustand store
+- User is redirected to the new list page
+- Maximum of 50 lists per user
+
+**ST-302: Add content to personal list**
+*As a user, I want to add movies and shows to my lists so that I can track what I want to watch.*
+
+**Acceptance Criteria:**
+
+- User can add content from search results
+- User can add content from detail pages
+- Duplicate content is prevented with user notification
+- Content is added with timestamp and user attribution
+- List updates are reflected immediately with optimistic updates
+
+**ST-303: Remove content from personal list**
+*As a user, I want to remove content from my lists so that I can keep them current.*
+
+**Acceptance Criteria:**
+
+- Remove button is available on each list item
+- Confirmation dialog prevents accidental deletion
+- Content is removed immediately with optimistic updates
+- Other users are notified if it's a collaborative list via real-time subscriptions
+- Undo functionality available for 10 seconds
+
+**ST-304: Edit list metadata**
+*As a user, I want to edit my list name and description so that I can keep my lists organized and up to date.*
+
+**Acceptance Criteria:**
+
+- User can edit list name and description using inline forms with React Hook Form
+- Changes are validated with Zod schemas
+- Updated metadata is reflected immediately across all views
+- Character limits are enforced (50 chars for name, 500 for description)
+- Changes sync in real-time for collaborative lists using Supabase real-time
+
+### 6.4 Collaborative features
+
+**ST-401: Create collaborative list**
+*As a user, I want to create a collaborative list so that others can help me organize content.*
+
+**Acceptance Criteria:**
+
+- Option to make list collaborative during creation
+- Unique invitation link is generated automatically
+- List creator becomes the owner with full permissions
+- Invitation link can be copied to clipboard
+- List settings can be modified by owner
+
+**ST-402: Join collaborative list via invitation**
+*As a user, I want to join a collaborative list using an invitation link so that I can contribute to shared planning.*
+
+**Acceptance Criteria:**
+
+- Clicking invitation link redirects to join page
+- Unauthenticated users are prompted to register/login with Supabase Auth
+- User is automatically added as collaborator after authentication
+- User receives confirmation of successful joining
+- User can view and edit the list immediately
+
+**ST-403: Real-time collaboration**
+*As a collaborator, I want to see changes made by others in real-time so that we can coordinate effectively.*
+
+**Acceptance Criteria:**
+
+- Changes by other users appear within 2 seconds via Supabase real-time subscriptions
+- Visual indicators show who is currently active
+- Conflict resolution prevents data loss using optimistic updates
+- Activity feed shows recent additions/removals
+- Collaborator avatars are displayed
+
+**ST-404: Manage collaborator permissions**
+*As a list owner, I want to control collaborator permissions so that I can maintain list quality.*
+
+**Acceptance Criteria:**
+
+- Owner can remove collaborators
+- Owner can change list settings
+- Collaborators can add/remove content but not delete the list
+- Permission changes take effect immediately
+- Removed collaborators lose access instantly
+
+### 6.5 Content tracking
+
+**ST-501: Mark content as watched**
+*As a user, I want to mark content as watched so that I can track my viewing progress.*
+
+**Acceptance Criteria:**
+
+- "Mark as watched" button available on content items
+- Watched items are visually distinguished (strikethrough/badge) using Tailwind CSS
+- Timestamp is recorded automatically
+- Watched status syncs across all lists containing the item using Zustand
+- User can unmark content as watched
+
+**ST-502: View watched history**
+*As a user, I want to see my watched history so that I can review what I've seen.*
+
+**Acceptance Criteria:**
+
+- Dedicated "Watched" section in user dashboard
+- Chronological list of watched content
+- Search within watched history using React Hook Form
+
+### 6.6 List sharing
+
+**ST-601: Generate public list link**
+*As a user, I want to share my list publicly so that others can see my recommendations.*
+
+**Acceptance Criteria:**
+
+- Toggle to make list public/private
+- Unique shareable URL is generated
+- Public lists are read-only for non-collaborators
+- Link can be copied to clipboard
+
+**ST-602: View public list**
+*As a visitor, I want to view shared lists so that I can discover new content.*
+
+**Acceptance Criteria:**
+
+- Public lists load without authentication required
+- Visitor can see all list content and metadata
+- Creator information is displayed
+- Links to join as collaborator (if applicable)
+
+### 6.7 Database modeling
+
+**ST-701: User data management**
+*As a system, I need to store user information securely so that authentication and personalization work correctly.*
+
+**Acceptance Criteria:**
+
+- User table with required fields (id, email, username, timestamps)
+- Support for multiple authentication providers via Supabase Auth
+- Proper indexing for performance
+- Data encryption for sensitive information
+- GDPR compliance for data deletion
+
+**ST-702: List and content relationship modeling**
+*As a system, I need to model the relationships between users, lists, and content so that all features work correctly.*
+
+**Acceptance Criteria:**
+
+- Proper foreign key relationships between all entities
+- Support for both personal and collaborative lists
+- Efficient queries for list operations
+- Audit trail for collaborative changes
+- Data consistency across all operations
+
+---
+
+## 7. Technical requirements / Stack
+
+### 7.1 Frontend technology stack
+
+**Framework and Libraries:**
+
+- **Next.js 15.x** - React framework with App Router, Server Components, and latest performance optimizations
+- **React 18.x** - UI library with hooks, Suspense, and concurrent features
+- **TypeScript 5.x** - Type safety and enhanced developer experience
+- **Tailwind CSS 3.x** - Utility-first CSS framework for rapid UI development
+- **Shadcn/ui** - Accessible, customizable component library built on Radix UI
+- **React Hook Form** - Performant forms with minimal re-renders and built-in validation
+- **Zod** - TypeScript-first schema validation for forms and API responses
+
+**State Management:**
+
+- **Zustand** - Lightweight state management for global application state
+- **React Query 5.x** - Server state management, caching, and synchronization
+- **Supabase Real-time** - WebSocket connections for collaborative features
+
+**Build and Development:**
+
+- **ESLint** - Code linting with Next.js and TypeScript configurations
+- **Prettier** - Automatic code formatting
+- **Husky** - Git hooks for pre-commit quality gates
+- **Jest + React Testing Library** - Unit and integration testing
+
+### 7.2 Backend technology stack
+
+**Database and Backend:**
+
+- **Supabase** - PostgreSQL 15.x with real-time subscriptions and Edge Functions
+- **Supabase Edge Functions** - Serverless API functions for complex business logic
+- **Row Level Security (RLS)** - Database-level authorization and data protection
+- **PostgREST** - Automatic REST API generation from PostgreSQL schema
+
+**Authentication:**
+
+- **Supabase Auth** - Multi-provider authentication with built-in security features
+- **Google OAuth 2.0** - Social login integration
+- **JWT tokens** - Secure session management with automatic refresh
+- **Magic Links** - Passwordless authentication option
+
+**External APIs:**
+
+- **The Movie Database (TMDB) API v3** - Content metadata, search, and imagery
+- **Rate limiting** - API usage optimization and abuse prevention
+
+### 7.3 Infrastructure and deployment
+
+**Hosting and Deployment:**
+
+- **Vercel** - Frontend hosting with global edge deployment and automatic scaling
+- **Supabase Cloud** - Managed database and backend services
+- **Vercel Analytics** - Performance monitoring and user insights
+- **Sentry** - Error tracking, performance monitoring, and alerting
+
+**Development Environment:**
+
+- **Git** - Version control with conventional commits
+- **GitHub** - Repository hosting with automated CI/CD workflows
+- **Environment variables** - Secure configuration management across environments
+- **SSL/TLS** - End-to-end encryption for all data transmission
+
+### 7.4 Performance requirements
+
+**Response Time:**
+
+- Initial page load: < 3 seconds (with Next.js 15 optimizations)
+- Search results: < 2 seconds (with React Query caching)
+- List operations: < 1 second (with optimistic updates)
+- Real-time updates: < 2 seconds (via Supabase real-time)
+
+**Scalability:**
+
+- Support 1,000 concurrent users
+- Handle 10,000 API requests per hour
+- Database queries optimized for < 100ms response
+- CDN integration for static assets and images
+
+### 7.5 Security requirements
+
+**Data Protection:**
+
+- HTTPS encryption for all communications
+- SQL injection prevention through Supabase RLS policies
+- XSS protection via Next.js built-in security features
+- CSRF protection with SameSite cookies
+- Rate limiting on all API endpoints
+
+**Authentication Security:**
+
+- Secure password hashing via Supabase Auth
+- OAuth 2.0 implementation best practices
+- JWT token rotation and secure storage
+- Session management with httpOnly cookies
+- Multi-factor authentication support (future enhancement)
+
+### 7.6 Browser compatibility
+
+**Supported Browsers:**
+
+- Chrome 90+ (primary development target)
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+**Progressive Enhancement:**
+
+- Core functionality works with JavaScript disabled
+- Responsive design optimized for mobile-first approach
+- Accessibility compliance (WCAG 2.1 AA) via Shadcn/ui components
+- Service Worker support for offline functionality (future)
+
+### 7.7 Development workflow
+
+**Code Quality:**
+
+- TypeScript strict mode enabled
+- ESLint with Next.js, React, and TypeScript rules
+- Prettier integration for consistent formatting
+- Pre-commit hooks with Husky for quality gates
+
+**Testing Strategy:**
+
+- Unit tests for utility functions and components
+- Integration tests for user flows
+- End-to-end tests with Playwright
+- API testing with Supabase test database
+
+**State Management Architecture:**
+
+- Zustand stores for global UI state (user preferences, navigation)
+- React Query for server state and caching
+- Local component state with useState for ephemeral UI state
+- Supabase real-time subscriptions for collaborative features
+
+---
+
+## 8. Design and user interface
+
+### 8.1 Design principles
+
+**Simplicity First:**
+
+- Clean, uncluttered interface focusing on core actions
+- Minimal cognitive load for collaborative features
+- Clear visual hierarchy and information architecture
+
+**Collaboration-Focused:**
+
+- Real-time indicators for collaborative activities
+- Clear attribution of who added what content
+- Intuitive sharing and invitation flows
+
+**Content-Centric:**
+
+- High-quality movie/show imagery as primary visual element
+- Rich metadata presentation without overwhelming users
+- Consistent content card design across all views
+
+### 8.2 User interface specifications
+
+**Design System:**
+
+- Built on Shadcn/ui components for accessibility and consistency
+- Custom Tailwind CSS configuration with project-specific design tokens
+- Dark mode support with system preference detection
+- Responsive typography scale using Tailwind's built-in system
+
+**Color Scheme:**
+
+- Primary: Modern dark theme with high contrast ratios
+- Secondary: Accent colors for interactive elements and branding
+- Success/Error: Semantic colors for user feedback and states
+- Neutral: Carefully crafted gray scale for hierarchy
+
+**Typography:**
+
+- Primary font: Inter via Google Fonts with fallback to system fonts
+- Font sizes: Responsive scale using Tailwind's typography plugin
+- Line heights: Optimized for readability across all device sizes
+- Font weights: Strategic use of weight variations for hierarchy
+
+**Layout System:**
+
+- CSS Grid and Flexbox via Tailwind utilities
+- Mobile-first responsive design approach
+- Consistent spacing using Tailwind's spacing scale (4px base unit)
+- Maximum content width: 1280px (Tailwind's max-w-7xl)
+
+### 8.3 Key user interface components
+
+**Navigation:**
+
+- Sticky top navigation with logo, search, and user profile
+- Collapsible sidebar navigation for list management (desktop)
+- Bottom tab navigation for mobile devices
+- Breadcrumb navigation using Shadcn/ui Breadcrumb component
+
+**Content Cards:**
+
+- Movie/show poster with aspect ratio preservation
+- Overlay information with gradient backgrounds
+- Hover states with smooth Tailwind transitions
+- Action buttons using Shadcn/ui Button variants
+
+**Forms and Inputs:**
+
+- React Hook Form integration with Shadcn/ui form components
+- Real-time validation using Zod schemas
+- Accessible form labels and error messages
+- Loading states and submission feedback
+
+**Lists and Collections:**
+
+- Virtualized scrolling for large lists (future optimization)
+- Drag-and-drop reordering with visual feedback
+- Real-time collaboration indicators
+- Skeleton loading states during data fetching
+
+### 8.4 Responsive design requirements
+
+**Mobile (< 768px):**
+
+- Single column layout with touch-optimized interactions
+- Minimum 44px touch targets for accessibility
+- Swipe gestures for list item actions
+- Collapsible sections to maximize content space
+
+**Tablet (768px - 1024px):**
+
+- Two-column layout where content allows
+- Hybrid touch and pointer input support
+- Adaptive component sizing with Tailwind breakpoints
+
+**Desktop (> 1024px):**
+
+- Multi-column layouts with persistent sidebar
+- Keyboard shortcuts and hover interactions
+- Advanced features like bulk operations and multi-select
+
+### 8.5 Animation and interactions
+
+**Tailwind CSS Animations:**
+
+- Smooth transitions using Tailwind's transition utilities
+- Transform animations for interactive elements
+- Custom animations for loading states and micro-interactions
+- Respect user's motion preferences (prefers-reduced-motion)
+
+**Real-time Updates:**
+
+- Subtle animations for new content appearing in lists
+- Visual indicators for other users' actions
+- Optimistic UI updates with rollback on errors
+- Progress indicators for long-running operations
+
+### 8.6 Accessibility features
+
+**Built-in Accessibility:**
+
+- Shadcn/ui components include ARIA attributes and keyboard navigation
+- High contrast color combinations meeting WCAG standards
+- Screen reader compatibility with semantic HTML structure
+- Focus management for modal dialogs and dynamic content
+
+**Enhanced Features:**
+
+- Skip to main content links
+- Keyboard shortcuts for power users
+- Alternative text for all images and icons
+- Form validation announcements for screen readers
+
+---
+
+## Appendices
+
+### A. API specifications
+
+**TMDB API Integration:**
+
+- Base URL: `https://api.themoviedb.org/3/`
+- Required endpoints: Search, Movie Details, TV Details, Credits
+- Rate limits: 40 requests per 10 seconds
+- Image base URL: `https://image.tmdb.org/t/p/`
+- Authentication: API key in query parameters
+
+**Supabase API Integration:**
+
+- Auto-generated REST API via PostgREST
+- Real-time subscriptions using WebSocket connections
+- Row Level Security for data authorization
+- Edge Functions for complex business logic
+
+### B. Testing strategy
+
+**Unit Testing:**
+
+- Component testing with React Testing Library and Jest
+- Utility function testing with comprehensive coverage
+- Form validation testing with React Hook Form integration
+- Zustand store testing with mock data
+- Target coverage: 85%
+
+**Integration Testing:**
+
+- End-to-end user flows with Playwright
+- Database integration testing with Supabase
+- Authentication flow testing across providers
+- Real-time collaboration testing
+
+**Performance Testing:**
+
+- Load testing for concurrent collaborative sessions
+- API response time monitoring with realistic data volumes
+- Database query performance analysis
+- Bundle size optimization tracking
+
+### C. Deployment and monitoring
+
+**CI/CD Pipeline:**
+
+- GitHub Actions for automated testing and deployment
+- Staging environment deployment on pull requests
+- Production deployment with zero-downtime rolling updates
+- Environment-specific configuration management
+
+**Monitoring and Analytics:**
+
+- Application performance monitoring via Sentry
+- User behavior analytics with Vercel Analytics
+- Database performance monitoring through Supabase dashboard
+- Real-time error tracking and alerting
+
+### D. Future roadmap considerations
+
+**Phase 2 Features:**
+
+- User ratings and reviews with rich text editor
+- Advanced search filters and sorting options
+- AI-powered recommendation engine
+- Native mobile applications (React Native)
+
+**Phase 3 Features:**
+
+- Streaming platform availability integration
+- Social following and activity feed system
+- Machine learning content discovery algorithms
+- Premium subscription with advanced features
+
+**Technical Enhancements:**
+
+- Progressive Web App (PWA) capabilities
+- Offline functionality with background sync
+- Advanced caching strategies with Next.js 15
+- Microservices architecture for scalability

@@ -1,0 +1,503 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 11,
+        "title": "Initialize Project and Core Infrastructure",
+        "description": "Set up the Next.js 15 project foundation, including the frontend stack, development tools, and Supabase integration.",
+        "details": "Initialize a new Next.js 15 project with the App Router using `npx create-next-app`. Integrate TypeScript, Tailwind CSS, and initialize Shadcn/ui. Configure ESLint, Prettier, and Husky for code quality and pre-commit hooks. Create a new Supabase project and connect the Next.js application using environment variables for the project URL and anon key.",
+        "testStrategy": "Verify that the Next.js application runs successfully. Confirm Tailwind classes are applied. Test that a Shadcn/ui component (e.g., Button) can be added and rendered. Ensure pre-commit hooks for linting and formatting are triggered by Husky.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Design and Implement PostgreSQL Database Schema",
+        "description": "Define and create the database schema in Supabase PostgreSQL, including tables for users, lists, content, and collaboration, and set up Row Level Security (RLS) policies.",
+        "details": "Using the Supabase SQL editor, create tables: `profiles` (to extend `auth.users`), `lists` (with columns for name, description, owner_id, type: 'personal'/'collaborative', is_public), `list_items` (joining lists and content, with added_by, watched_at), and `collaborators` (joining users and lists with a role: 'owner'/'collaborator'). Establish foreign key relationships and add indexes on frequently queried columns (e.g., `list_id`, `user_id`). Implement initial RLS policies to ensure users can only access their own data.",
+        "testStrategy": "Write and run SQL scripts to verify table creation and relationships. Manually test RLS policies using the Supabase dashboard's role impersonation feature to ensure data access is correctly restricted.",
+        "priority": "high",
+        "dependencies": [
+          11
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Core User Authentication (Email/Password)",
+        "description": "Develop the user registration and login system using Supabase Auth with email and password.",
+        "details": "Create sign-up and sign-in pages with forms built using React Hook Form and Shadcn/ui components. Implement client-side and server-side validation using Zod schemas. Integrate Supabase Auth client functions (`signUp`, `signInWithPassword`). Set up the email verification flow and a server-side trigger to create a corresponding `profiles` entry upon new user registration.",
+        "testStrategy": "Unit test form validation logic. Perform integration tests for the complete sign-up flow, including email verification. Test login with valid and invalid credentials, and handle error states gracefully.",
+        "priority": "high",
+        "dependencies": [
+          12
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Integrate Google OAuth 2.0 Authentication",
+        "description": "Add 'Sign in with Google' functionality using Supabase Auth for a seamless login experience.",
+        "details": "Configure the Google OAuth provider in the Supabase dashboard with client ID and secret from Google Cloud Console. Add a 'Sign in with Google' button to the authentication pages that calls the Supabase `signInWithOAuth` function. Implement logic to handle the OAuth callback and automatically link accounts with matching email addresses as per AU-103.",
+        "testStrategy": "Test the full Google OAuth flow for both new and existing users. Verify that a new user is created in `auth.users` and `profiles`. Confirm that an existing user with a matching email can log in via Google and access their original account.",
+        "priority": "high",
+        "dependencies": [
+          13
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement Route Protection and Session Management",
+        "description": "Secure private application routes and ensure user sessions persist across browser restarts.",
+        "details": "Create a `middleware.ts` file in the Next.js App Router. In the middleware, use the Supabase server-side client to check for a valid user session from the request cookies. If no session exists on a protected route (e.g., `/dashboard`), redirect the user to the `/login` page. Ensure Supabase Auth is configured for secure JWT storage in cookies with automatic refresh.",
+        "testStrategy": "Attempt to access a protected dashboard URL while unauthenticated and verify redirection to the login page. Log in, close the browser, reopen it, and verify that the session is still active and protected routes are accessible without logging in again.",
+        "priority": "high",
+        "dependencies": [
+          13
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Develop Content Search with TMDB API",
+        "description": "Integrate The Movie Database (TMDB) API to allow users to search for movies and TV shows.",
+        "details": "Create a server-side API route or Edge Function to act as a proxy for the TMDB API, securing the API key. On the client, build a search component using a debounced input (300ms) with React Hook Form. Use React Query's `useInfiniteQuery` to fetch paginated search results from the proxy endpoint and implement an 'infinite scroll' behavior to load more results.",
+        "testStrategy": "Unit test the debouncing logic. Integration test the search functionality by typing queries and verifying that API calls are made and results are displayed correctly. Test the infinite scroll by scrolling to the bottom of the results list.",
+        "priority": "high",
+        "dependencies": [
+          11
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Create Content Detail Pages",
+        "description": "Build dynamic pages to display detailed information for a specific movie or TV show.",
+        "details": "Create a dynamic route structure like `/[type]/[id]/page.tsx`. Use Next.js Server Components to fetch detailed data (synopsis, cast, crew, trailer) for a given content ID from the TMDB API proxy. Lay out the information using Shadcn/ui components, ensuring the design is responsive and content-centric as per the PRD.",
+        "testStrategy": "Test that pages for various movies and TV shows load correctly with all expected data. Verify that the embedded trailer plays. Check the page's responsiveness across mobile, tablet, and desktop breakpoints.",
+        "priority": "high",
+        "dependencies": [
+          16
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Implement Personal List CRUD Operations",
+        "description": "Enable authenticated users to create, read, update, and delete their personal watchlists.",
+        "details": "Develop API endpoints (using Next.js API Routes or Supabase Functions) for list CRUD operations, governed by RLS policies. On the frontend, use React Query's `useMutation` for create, update, and delete actions, implementing optimistic updates for a responsive feel. Build forms for creating/editing lists using React Hook Form and Zod for validation.",
+        "testStrategy": "Write integration tests for each CRUD operation. Verify that a user can create a list, see it in their dashboard, edit its name/description, and delete it. Confirm that a user cannot access or modify another user's lists.",
+        "priority": "high",
+        "dependencies": [
+          15
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Implement Content Management within Lists",
+        "description": "Allow users to add content to and remove content from their lists.",
+        "details": "Add 'Add to List' functionality on content cards and detail pages, which triggers a mutation to create an entry in the `list_items` table. The mutation logic must include a check to prevent duplicate entries in the same list. Implement a 'Remove' button on list items that triggers a deletion mutation. Use optimistic updates for both adding and removing items.",
+        "testStrategy": "Test adding an item to a list from both the search results and a detail page. Verify that adding the same item again is prevented and provides user feedback. Test removing an item and confirm it disappears immediately from the UI.",
+        "priority": "high",
+        "dependencies": [
+          17,
+          18
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Develop 'Watched' Status Tracking",
+        "description": "Implement the ability for users to mark content as watched and view their watch history.",
+        "details": "Add a 'Mark as Watched' button to items within a list. This action will trigger a mutation to update the `watched_at` timestamp in the `list_items` table for that specific item. Visually distinguish watched items using a badge or strikethrough style with Tailwind CSS. Create a dedicated 'Watched' page that queries and displays all items marked as watched by the user, sorted chronologically.",
+        "testStrategy": "Test marking an item as watched and verify the UI change and database update. Test un-marking an item. Navigate to the 'Watched' history page and confirm the item appears/disappears accordingly.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "To Do",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Implement Collaborative List Creation and Invitation System",
+        "description": "Allow users to create collaborative lists and generate unique invitation links.",
+        "details": "Modify the 'Create List' flow to include a toggle for making a list collaborative. Upon creation of a collaborative list, generate a unique UUID as an `invite_token` and store it in the `lists` table. The UI should display this link (`/join/{invite_token}`) with a 'Copy to Clipboard' button. The list creator is automatically added to the `collaborators` table with the 'owner' role.",
+        "testStrategy": "Test creating both personal and collaborative lists. For collaborative lists, verify that a unique invite token is generated and stored. Test the copy-to-clipboard functionality.",
+        "priority": "high",
+        "dependencies": [
+          18
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Build Real-time Collaboration Engine",
+        "description": "Enable real-time synchronization of list content between multiple collaborators using Supabase Real-time.",
+        "details": "In the collaborative list component, use the Supabase client to subscribe to database changes on the `list_items` table, filtered for the current `list_id`. Set up `on('INSERT', ...)` and `on('DELETE', ...)` event handlers. When an event is received, update the local state managed by React Query using `queryClient.setQueryData` to reflect the change in the UI for all connected collaborators without a page refresh.",
+        "testStrategy": "Open the same collaborative list in two different browser windows/sessions. Add an item in one window and verify it appears in the second window within 2 seconds. Remove an item and verify it disappears from the other session in real-time.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          21
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Develop Collaborator Management and Permissions",
+        "description": "Implement the flow for joining a list via invitation and manage role-based permissions.",
+        "details": "Create a dynamic page at `/join/[token]`. When a logged-in user visits this page, validate the token, add the user to the `collaborators` table with the 'collaborator' role, and redirect them to the list. Update RLS policies on `lists` and `list_items` to grant permissions based on a user's role in the `collaborators` table (e.g., owners can delete the list, collaborators cannot).",
+        "testStrategy": "As a new user, click an invite link, get prompted to log in, and verify you are added as a collaborator. As a collaborator, test that you can add/remove items but cannot delete the list. As the owner, verify you have full permissions.",
+        "priority": "high",
+        "dependencies": [
+          22
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Implement Public List Sharing",
+        "description": "Allow users to make their lists public and share them via a read-only link.",
+        "details": "Add a privacy toggle component to the list settings page that updates the `is_public` boolean on the `lists` table. Create a public-facing dynamic route (e.g., `/[username]/lists/[list_slug]`). This page will fetch and display list content only if `is_public` is true. Adjust RLS policies to allow read-only access for unauthenticated (`anon`) users to public lists and their items.",
+        "testStrategy": "Toggle a list to public and verify the `is_public` flag is set. Access the public URL in an incognito window and confirm the list is visible. Toggle it back to private and verify the public URL now shows an error or 'not found' page.",
+        "priority": "medium",
+        "dependencies": [
+          18
+        ],
+        "status": "To Do",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "UI/UX Polish, Accessibility, and Responsive Design",
+        "description": "Finalize the user interface, ensuring it is responsive, accessible, and includes micro-interactions.",
+        "details": "Conduct a full review of the application against the design specifications in the PRD. Implement responsive layouts for mobile, tablet, and desktop using Tailwind's breakpoints. Add subtle animations for hover states and actions using Tailwind's transition utilities. Perform an accessibility audit using browser tools (e.g., Lighthouse) and ensure all components (especially forms from Shadcn/ui) are WCAG 2.1 AA compliant.",
+        "testStrategy": "Manually test the entire application on different screen sizes (Chrome DevTools, real devices). Use keyboard-only navigation to test all interactive elements. Run an automated accessibility checker like Axe to identify and fix issues. Verify `prefers-reduced-motion` is respected.",
+        "priority": "medium",
+        "dependencies": [
+          23,
+          24
+        ],
+        "status": "To Do",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Implement Internationalization (i18n) System",
+        "description": "Implement a comprehensive internationalization system using react-i18next to support multiple languages, starting with English and Spanish, and update all UI text to use translation keys.",
+        "details": "1. **Install Dependencies**: Add `react-i18next`, `i18next`, `i18next-browser-languagedetector`, and `i18next-http-backend` to the project.\n2. **Configuration**: Create a configuration file at `src/lib/i18n.ts`. Initialize `i18next` using the `initReactI18next` module. Configure `i18next-browser-languagedetector` to detect language from `localStorage` and the `navigator` object. Set the backend to load namespaces from `/locales/{{lng}}/{{ns}}.json`. Define `en` and `es` as supported languages, with `en` as the fallback.\n3. **Translation Files**: Create the directory `public/locales` with subdirectories `en` and `es`. Inside each, create a `common.json` file. Populate these files with key-value pairs for all user-facing strings currently in the application (e.g., from auth pages, list management, buttons, etc.).\n4. **Provider Setup**: Since the project uses the Next.js App Router, create a client-side provider component (`src/components/providers/I18nProvider.tsx`) to wrap the application's root layout (`src/app/layout.tsx`). This will make the i18n context available to all client components.\n5. **Component Refactoring**: Systematically go through all existing components and pages. Use the `useTranslation` hook from `react-i18next` in client components to replace hardcoded text with the `t('translationKey')` function. For Server Components, create a helper function to load the appropriate translations.\n6. **Language Switcher**: Develop a `LanguageSwitcher.tsx` component. Use `shadcn/ui` components like `DropdownMenu` or `Select` for a consistent look and feel. The component should call `i18n.changeLanguage(lang)` on selection. Add this component to a shared part of the layout, like the main navigation header.\n7. **Validation Messages**: Update the Zod schemas used with React Hook Form (as seen in Task 13 and 18) to display translated error messages. This can be achieved by creating a custom Zod error map that uses the `t` function.",
+        "testStrategy": "1. **Default Language**: On a clean browser session, verify that the application UI is displayed in English by default.\n2. **Language Switching**: Use the new language switcher to toggle between English and Spanish. Confirm that all text on the current page updates instantly without a full page reload. Navigate to other pages (e.g., Login, Dashboard) and verify they also render in the selected language.\n3. **Browser Language Detection**: Set the browser's primary language to Spanish, clear site data, and visit the application. Verify that it automatically loads in Spanish.\n4. **Persistence**: Select Spanish, refresh the page, and confirm the language choice is persisted and the UI remains in Spanish.\n5. **Validation**: Go to a form, such as the login or list creation form. Trigger a validation error (e.g., empty required field) and verify the error message is displayed in the currently selected language. Test this for both English and Spanish.\n6. **Completeness Audit**: Manually review all major user flows (authentication, list creation/editing, collaboration invites) to ensure no hardcoded English text remains visible when the language is set to Spanish.",
+        "status": "pending",
+        "dependencies": [
+          13,
+          18,
+          21,
+          23
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Implement Deletion with Confirmation for List Items",
+        "description": "Enhance the item removal functionality by adding a confirmation dialog to prevent accidental deletions from watchlists, and ensure the UI updates optimistically.",
+        "details": "1. **Locate and Modify Item Component**: Identify the React component responsible for rendering a single movie/show card within a list (likely named `ListItemCard.tsx` or similar). This component should already contain the 'Remove' button implemented in Task #19.\n2. **Integrate Shadcn/ui AlertDialog**: Wrap the existing 'Remove' button with the `<AlertDialogTrigger>` component from `shadcn/ui`. Configure the `<AlertDialog>` to present a confirmation message to the user.\n3. **Configure Dialog Content**: The `AlertDialogContent` should include:\n    - `AlertDialogTitle`: Use a translation key like `t('list.item.remove_confirm_title')`, e.g., \"Are you absolutely sure?\".\n    - `AlertDialogDescription`: Display a dynamic message, e.g., `t('list.item.remove_confirm_desc', { title: movie.title })`, which would render as \"This action will permanently remove '[Movie Title]' from the list.\"\n    - `AlertDialogFooter`: Provide an `<AlertDialogCancel>` button and an `<AlertDialogAction>` button for confirming the deletion.\n4. **Update Mutation Logic**: The `onClick` event handler for the `<AlertDialogAction>` button will now trigger the `useMutation` hook responsible for deleting the item. The existing optimistic update logic from Task #19 (using `onMutate` to remove the item from the React Query cache and `onError` to roll back) should be preserved.\n5. **Refine RLS Policy (If Needed)**: Review the Row Level Security policy on the `list_items` table to ensure it correctly allows `DELETE` operations for users with 'owner' or 'collaborator' roles, as established in Task #23.",
+        "testStrategy": "1. **Trigger Confirmation Dialog**: Navigate to a list page and click the 'Remove' icon/button on any item. Verify that a confirmation dialog (`AlertDialog`) appears.\n2. **Test Cancel Action**: In the dialog, click the 'Cancel' button. The dialog should close, and the item should remain in the list. No network request should be made.\n3. **Test Confirm Action & Optimistic Update**: Re-open the dialog and click the 'Confirm' (or 'Remove') button. Verify the item is immediately removed from the UI before the network request completes.\n4. **Verify Backend Deletion**: Check the browser's network tab to confirm a successful API call was made to delete the item. Subsequently, refresh the page and confirm the item is permanently gone, verifying the database record was deleted.\n5. **Test as Collaborator**: Log in as a user who is a 'collaborator' on a list but not the 'owner'. Repeat the deletion process and confirm it is successful, respecting the permissions defined in Task #23.",
+        "status": "done",
+        "dependencies": [
+          19,
+          23
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Import and Structure AlertDialog in ListItemCard.tsx",
+            "description": "Modify `src/components/list/ListItemCard.tsx` to import the necessary `AlertDialog` components from `@/components/ui/alert-dialog`. Add the main `<AlertDialog>` component to wrap the confirmation logic, which will be built out in subsequent steps.",
+            "dependencies": [],
+            "details": "In `src/components/list/ListItemCard.tsx`, add the following imports: `AlertDialog`, `AlertDialogAction`, `AlertDialogCancel`, `AlertDialogContent`, `AlertDialogDescription`, `AlertDialogFooter`, `AlertDialogHeader`, `AlertDialogTitle`, `AlertDialogTrigger`. Place the `<AlertDialog>` component inside the main returned JSX, likely near the existing `DropdownMenu`.",
+            "status": "done",
+            "testStrategy": "Verify that the file compiles without errors after adding the imports and the empty `<AlertDialog>` component."
+          },
+          {
+            "id": 2,
+            "title": "Integrate AlertDialogTrigger with the 'Remove' Dropdown Item",
+            "description": "Refactor the 'Remove from list' `DropdownMenuItem` to act as a trigger for the `AlertDialog` instead of directly calling the delete handler. This involves wrapping the item and preventing the dropdown from closing prematurely.",
+            "dependencies": [
+              "27.1"
+            ],
+            "details": "In `ListItemCard.tsx`, wrap the `DropdownMenuItem` for removal with `<AlertDialogTrigger asChild>`. Remove the `onClick={handleRemove}` from the `DropdownMenuItem`. Add an `onSelect={(e) => e.preventDefault()}` prop to the `DropdownMenuItem` to ensure that clicking it opens the dialog without closing the parent `DropdownMenu`.",
+            "status": "done",
+            "testStrategy": "Click the 'More' icon on a list item, then click 'Remove from list'. Verify that an (as-yet empty) alert dialog appears on screen and the dropdown menu does not close."
+          },
+          {
+            "id": 3,
+            "title": "Configure AlertDialog Content with Dynamic Text and Footer",
+            "description": "Populate the `AlertDialogContent` with the appropriate title, a dynamic description including the item's title, and footer buttons for cancellation and confirmation.",
+            "dependencies": [
+              "27.2"
+            ],
+            "details": "Within the `<AlertDialog>` structure in `ListItemCard.tsx`, build out the `AlertDialogContent`. Use `AlertDialogHeader` with `AlertDialogTitle` set to 'Are you absolutely sure?'. Add an `AlertDialogDescription` with the text `This action will permanently remove \"${item.details.title}\" from the list.`. Create an `AlertDialogFooter` with an `<AlertDialogCancel>` button ('Cancel') and an `<AlertDialogAction>` button ('Continue'). Note: Use hardcoded English strings; i18n keys will be added later per Task #26.",
+            "status": "done",
+            "testStrategy": "Trigger the dialog and verify the title, description (including the correct movie title), and the 'Cancel' and 'Continue' buttons are all rendered correctly."
+          },
+          {
+            "id": 4,
+            "title": "Connect Deletion Mutation to the AlertDialog's Action Button",
+            "description": "Move the `onClick` handler that triggers the item removal mutation from its original location to the `AlertDialogAction` button to finalize the confirmation flow.",
+            "dependencies": [
+              "27.3"
+            ],
+            "details": "In `ListItemCard.tsx`, locate the `handleRemove` function which calls `removeListItem({ listItemId: item.id })`. Add this function call to the `onClick` prop of the `<AlertDialogAction>` button created in the previous subtask. The optimistic update and rollback logic within the `useRemoveListItem` hook will be preserved and triggered correctly upon confirmation.",
+            "status": "done",
+            "testStrategy": "Click 'Remove', then 'Continue' in the dialog. Verify the item is optimistically removed from the UI. Reload the page to confirm the deletion persisted. Test the 'Cancel' button to ensure the dialog closes and no deletion occurs."
+          },
+          {
+            "id": 5,
+            "title": "Verify RLS Policy for `list_items` Deletion",
+            "description": "Review the Row Level Security (RLS) policy on the `list_items` table to ensure it correctly allows `DELETE` operations for authorized users.",
+            "dependencies": [],
+            "details": "Using the Supabase dashboard or by inspecting the SQL migration files in the codebase, find the RLS policies for the `public.list_items` table. Verify that a policy exists for the `DELETE` operation that allows users with an 'owner' or 'collaborator' role to perform the action. This is a verification step; no code changes are expected unless the policy is missing or incorrect.\n<info added on 2025-09-19T02:48:55.873Z>\n**Update:**\n\nA complete RLS policy file has been created at `supabase/rls_policies.sql`, defining security rules for the `watchlists`, `watchlist_movies`, and `watchlist_members` tables.\n\nThe verification for this subtask is complete. The new file contains a `DELETE` policy for the `watchlist_movies` table (the table containing list items) which allows a user to delete an item if they are either the owner of the parent watchlist or a member (collaborator) of it. This implementation fulfills the requirements of the parent task.\n\nThe next step is to execute this SQL file in the Supabase environment to apply the new policies.\n</info added on 2025-09-19T02:48:55.873Z>",
+            "status": "done",
+            "testStrategy": "As a list owner, successfully delete an item. If collaborator logic is implemented, log in as a collaborator and confirm you can also delete an item. Attempting to delete an item from a list where you are not an owner or collaborator should fail (though the UI may not allow this, the RLS policy provides the security)."
+          }
+        ]
+      },
+      {
+        "id": 28,
+        "title": "Implement Full Application Dark Mode",
+        "description": "Integrate a dark mode theme across the entire application using `next-themes`, define a dark color palette for all components, and add a user-facing toggle to switch between light and dark modes.",
+        "details": "1. **Install Dependencies**: Add `next-themes` to the project using `npm install next-themes`.\n2. **Configure Tailwind CSS**: In `tailwind.config.ts`, set the `darkMode` strategy to `\"class\"` to enable class-based theming: `darkMode: [\"class\"]`.\n3. **Define Color Palettes**: In `src/app/globals.css`, define the CSS variables for the dark theme under the `.dark` selector. Ensure all variables used by `shadcn/ui` in the `:root` block have a corresponding override in the `.dark` block (e.g., `--background`, `--foreground`, `--card`, `--primary`, `--destructive`, etc.).\n4. **Create Theme Provider**: Create a new client component at `src/components/providers/theme-provider.tsx`. This component will wrap the `NextThemesProvider`, configuring it with `attribute=\"class\"`, `defaultTheme=\"system\"`, and `enableSystem={true}`.\n5. **Update Root Layout**: In `app/layout.tsx`, import and wrap the main content within the new `ThemeProvider` to make the theme available globally. The structure should be `<body><ThemeProvider>...children...</ThemeProvider></body>`.\n6. **Create Theme Toggle Component**: Develop a new client component, `src/components/ui/theme-toggle.tsx`. Use the `useTheme` hook from `next-themes`. Implement a `DropdownMenu` from `shadcn/ui` that allows the user to select 'Light', 'Dark', or 'System'. The button for the dropdown should display a Sun icon in light mode and a Moon icon in dark mode.\n7. **Integrate Toggle into UI**: Add the newly created `ThemeToggle` component into a shared UI element, such as the main application header or within a user profile dropdown menu, ensuring it's easily accessible.",
+        "testStrategy": "1. **System Theme Detection**: On first load in a new browser session, verify that the application theme correctly defaults to the user's operating system preference (light or dark).\n2. **Manual Toggling**: Use the new theme toggle to switch between 'Light', 'Dark', and 'System' modes. Confirm that the UI updates instantly and correctly applies the corresponding color palette across all elements.\n3. **Theme Persistence**: Select a non-system theme (e.g., 'Dark' on a light-mode OS), refresh the page, and verify that the selected theme persists.\n4. **Component-wide Audit**: Navigate through all major pages and components, including login/signup forms (Task 13), list pages (Task 18), list item cards (Task 19), and confirmation dialogs (Task 27). Ensure all text is legible, backgrounds are correct, and there are no visual artifacts in either light or dark mode.",
+        "status": "pending",
+        "dependencies": [
+          13,
+          18,
+          19,
+          27
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Implement User Feedback Submission Form",
+        "description": "Create a feedback form for users to submit comments, bug reports, or suggestions, integrating with a Supabase table for storage and using shadcn/ui for the interface.",
+        "details": "1. **Database Schema (Supabase)**: Create a new table named `feedback` with the following columns: `id` (uuid, pk), `created_at` (timestampz), `user_id` (uuid, nullable, fk to `auth.users`), `email` (text), `type` (text, e.g., 'bug', 'suggestion', 'comment'), `message` (text, not null), and `status` (text, default 'new'). Enable Row Level Security (RLS) to allow `INSERT` for all users (`anon` and `authenticated`) but restrict `SELECT`, `UPDATE`, `DELETE` to an `admin` role.\n\n2. **UI Component (Frontend)**: Create a new component `src/components/feedback/FeedbackDialog.tsx`. Use the `<Dialog>` and `<DialogTrigger>` components from `shadcn/ui` to create a modal-based form. The trigger can be a new 'Feedback' link in the main navigation or site footer.\n\n3. **Form Implementation**: Inside `FeedbackDialog.tsx`, build the form using the `shadcn/ui` `<Form>` component, which leverages `react-hook-form` and `zod` for validation. The form should include:\n    - A `<Select>` component for the feedback `type`.\n    - A `<Textarea>` for the `message`.\n    - An `<Input>` for `email`. This field should be pre-filled and read-only if the user is authenticated (using the Supabase session), otherwise it should be editable for anonymous users.\n\n4. **Server Action for Submission**: Create a server action in a new file, e.g., `src/app/_actions/feedback.ts`. This action will receive the validated form data. It will initialize the server-side Supabase client, retrieve the authenticated user's ID (if available), and insert a new record into the `feedback` table. The action should return a success or error status to the client-side form to display an appropriate notification (e.g., using a toast component like `sonner`).\n\n5. **Internationalization**: Ensure all static text within the form (labels, placeholders, button text, validation messages, success/error notifications) uses translation keys compatible with the `react-i18next` setup from Task #26.",
+        "testStrategy": "1. **UI and Validation**: Click the trigger to verify the feedback dialog opens. Attempt to submit the form with empty fields and confirm that `zod` validation messages appear for the `type` and `message` fields. For an anonymous user, test that entering an invalid email format also shows a validation error.\n\n2. **Authenticated Submission**: Log in as a user. Open the feedback form and verify that the email input is pre-filled with the user's email and is not editable. Submit a valid feedback entry. Check the Supabase dashboard to confirm a new row exists in the `feedback` table with the correct `message`, `type`, and the corresponding `user_id`.\n\n3. **Anonymous Submission**: In an incognito window (or logged out), open the feedback form. Manually enter an email address and a message. Submit the form. Verify in the Supabase dashboard that a new row was created with the `user_id` column as `null` but the `email` column populated with the provided address.\n\n4. **Theming and Responsiveness**: Toggle between light and dark modes (as per Task #28) and ensure the dialog and form components adapt correctly. Test the form on various screen sizes to confirm it is responsive.",
+        "status": "pending",
+        "dependencies": [
+          14,
+          25,
+          26,
+          28
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Create Custom Supabase Account Confirmation Email Template",
+        "description": "Design and implement a custom HTML email template for Supabase account verification, incorporating CineCollab branding and personalized, multilingual content.",
+        "details": "1. **Access Supabase Dashboard**: Navigate to the project's Supabase dashboard, then go to the `Authentication` > `Email Templates` section.\n2. **Analyze Branding Assets**: Identify the project's branding colors from `src/app/globals.css` (specifically the CSS variables under `:root` and `.dark`) and locate the official logo file, likely in the `/public` directory. The production URL of this logo will be needed.\n3. **Develop HTML Template**: Create a responsive HTML email template using inline CSS for maximum compatibility across email clients. The template should include:\n    - The CineCollab logo, linked using its full public URL.\n    - A layout and color scheme consistent with the application's branding (defined in Task #28).\n    - A clear call-to-action button that uses the Supabase Liquid variable `{{ .ConfirmationURL }}` for the link.\n    - Other relevant variables like `{{ .Email }}` for personalization.\n4. **Implement Internationalization**: Based on the i18n system from Task #26, create two versions of the email content (subject and body): one for English (`en`) and one for Spanish (`es`).\n    - English Subject: `Confirm your CineCollab account`\n    - Spanish Subject: `Confirma tu cuenta de CineCollab`\n5. **Configure in Supabase**: In the Supabase dashboard, replace the default `Confirm signup` template with the new HTML. Create a separate template for each supported language (`en` and `es`) by selecting the language from the dropdown and pasting the corresponding translated content. Ensure the `Site URL` under `Authentication` > `URL Configuration` is correctly set to the production domain.",
+        "testStrategy": "1. **Trigger Email (English)**: With your browser language set to English, create a new user account. Verify that the custom English email is received.\n2. **Visual & Responsive Check**: Open the received email in major email clients (Gmail, Outlook) on both desktop and mobile. Confirm that the logo, colors, and layout render correctly and the design is responsive.\n3. **Confirmation Link Test**: Click the confirmation button/link in the email. Verify it redirects to the correct application URL and successfully confirms the user's account (check the `email_confirmed_at` field in the `auth.users` table in Supabase).\n4. **Trigger Email (Spanish)**: Change your browser's preferred language to Spanish and sign up with a different test email. Verify that the Spanish version of the email is received, checking both the subject and body for correct translation.\n5. **Link Functionality (Spanish)**: Click the confirmation link in the Spanish email and verify it works identically to the English version.",
+        "status": "pending",
+        "dependencies": [
+          25,
+          26,
+          28
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Implement Collage/Grid View for Watchlist Posters",
+        "description": "Create an alternative grid-based view for watchlists that displays movie/show posters in a collage format, and add a control for users to switch between the standard list view and the new grid view.",
+        "details": "1. **State Management & Persistence**: In the primary watchlist page component (likely `src/app/lists/[listId]/page.tsx` or similar), use `useState` to manage the view mode ('list' vs 'grid'). Persist the user's selection across sessions by synchronizing this state with `localStorage`.\n2. **View Switcher UI**: Integrate a `ToggleGroup` component from `shadcn/ui` into the watchlist page header. The group should contain two `ToggleGroupItem`s, one for 'List' and one for 'Grid', using appropriate icons from `lucide-react` (e.g., `List` and `LayoutGrid`).\n3. **Grid Item Component**: Create a new component, `GridItemCard.tsx`. This component will receive a list item as a prop and primarily render the item's poster using the `next/image` component for optimization. The image source will be constructed from the TMDB base URL and the `poster_path` field. On hover, an overlay should appear showing the item's title and the 'Remove' button, reusing the logic and confirmation dialog from Task #27.\n4. **Conditional Layout Rendering**: In the watchlist page, use the view mode state to conditionally render the list of items. If the mode is 'list', render the existing item components. If the mode is 'grid', render the items within a responsive CSS Grid container (e.g., `<div className=\"grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-4\">...</div>`), mapping the data to the new `GridItemCard.tsx` component.\n5. **Image Optimization**: Ensure the `next.config.js` file is configured to include the TMDB image domain (e.g., `image.tmdb.org`) in the `images.remotePatterns` array to enable Next.js image optimization. All posters in the grid must be rendered via `<Image />` to leverage lazy loading and format optimization.",
+        "testStrategy": "1. **Default View & Toggle**: Navigate to any watchlist and verify it defaults to the standard list view. Use the new toggle control to switch to 'Grid' view and confirm the layout changes to a poster collage. Refresh the page and verify the 'Grid' view selection persists.\n2. **Responsiveness**: In grid view, resize the browser viewport and confirm the number of columns in the grid adjusts correctly according to the defined responsive breakpoints in the Tailwind CSS classes.\n3. **Component Verification**: Use React DevTools to inspect the grid view and confirm that it is rendering a list of `GridItemCard` components. Use the browser's element inspector to verify that posters are rendered using `<img>` tags generated by `next/image`.\n4. **Network Performance**: Open the browser's Network tab, enable image filtering, and scroll down the grid. Verify that images below the fold are lazy-loaded as you scroll. Check that images are being served in an optimized format like WebP.\n5. **Interaction Test**: In grid view, hover over a poster to ensure the overlay with the title and 'Remove' button appears. Click the 'Remove' button and verify that the confirmation dialog from Task #27 is triggered and functions correctly.",
+        "status": "pending",
+        "dependencies": [
+          18,
+          19,
+          27
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 32,
+        "title": "Implement Slug-Based URLs for Watchlist Detail Pages",
+        "description": "Update watchlist detail routes to use user-friendly slugs generated from the list name instead of numeric IDs, and implement permanent redirects from the old ID-based URLs.",
+        "details": "1. **Database Schema Update**: Add a new `slug` column of type `text` with a `unique` constraint to the `lists` table in the Supabase schema.\n2. **Slug Generation Logic**: Install a library like `slugify` (`npm install slugify`). Create a utility function, e.g., `generateUniqueSlug(name: string)`, in `src/lib/utils.ts`. This function will convert the list name to a slug and query the database to ensure uniqueness. If a slug already exists, append a short unique string (e.g., using `nanoid`) to the end until a unique slug is found.\n3. **Update CRUD Actions**: Modify the server actions for creating and updating lists (from Task #18 and #21). When a list is created, call `generateUniqueSlug` and store the result. When a list's name is updated, regenerate and update the slug accordingly.\n4. **Update Frontend Routing**: Rename the dynamic route directory from `src/app/dashboard/lists/[listId]` to `src/app/dashboard/lists/[slug]`. Update the `page.tsx` within this directory to fetch list data using the `slug` parameter instead of the ID. Update all `<Link>` components and programmatic navigation (`router.push`) that point to list detail pages to use the list's `slug` property.\n5. **Implement Redirects**: In `middleware.ts` (established in Task #15), add logic to handle requests for the old URL pattern. If the path segment `/dashboard/lists/[param]` contains a numeric `param`, query the `lists` table for that `id`. If a match is found, issue a permanent redirect (status 308) to the new URL using the corresponding slug.\n6. **Data Backfill**: Create a one-time script or server action to iterate through all existing lists in the database, generate a slug for each one, and populate the new `slug` column. This ensures all pre-existing data is compatible with the new routing scheme.",
+        "testStrategy": "1. **Creation**: Create a new list and verify in the Supabase table that a correctly formatted, unique slug has been generated and saved.\n2. **Uniqueness**: Create two separate lists with the exact same name. Verify that the second list is assigned a different, unique slug (e.g., `my-list` and `my-list-2`).\n3. **Navigation**: On the user's dashboard, click on a list title. Confirm that the browser URL is the new slug-based URL (e.g., `/dashboard/lists/my-favorite-movies`) and the correct list content is displayed.\n4. **Update**: Edit the name of an existing list. Verify the slug is updated in the database and all links to that list now use the new slug.\n5. **Redirection**: Manually enter an old, ID-based URL into the browser (e.g., `/dashboard/lists/1`). Verify that the browser is permanently redirected to the corresponding slug-based URL and the correct page loads.\n6. **Backfill**: After running the backfill script, check an old list and confirm it can be accessed via a newly generated slug URL.",
+        "status": "pending",
+        "dependencies": [
+          18,
+          21
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 33,
+        "title": "Implement 'Added By' Feature for List Items",
+        "description": "Store and display which user added each movie or show to a watchlist, showing their avatar and name on the item card, especially for collaborative lists.",
+        "details": "1. **Database Schema Update**: Modify the `list_items` table in Supabase. Add a new column named `added_by` of type `uuid`. This column should have a foreign key constraint referencing `profiles(id)` and be non-nullable. Set a default value using `auth.uid()` to automatically populate the field upon insertion. Update the RLS policy for `list_items` insertion to ensure the `added_by` column must match the inserter's `auth.uid()`.\n2. **API/Data Fetching Update**: Modify the Supabase query used to fetch items for a list (likely in a server component or API route for a page like `src/app/lists/[listId]/page.tsx`). The query must be updated to join with the `profiles` table to retrieve the user's details. Example: `supabase.from('list_items').select('*, profiles(id, username, avatar_url)').eq('list_id', listId)`.\n3. **Frontend Component Modification**: Locate the React component that renders a single movie/show card (referred to as `ListItemCard.tsx` in other tasks). Use the new `profiles` data from the query to display who added the item.\n4. **UI Implementation**: Integrate `shadcn/ui` components. Use the `<Avatar>` and `<AvatarImage>` components to display the `avatar_url`. Wrap this in a `<Tooltip>` component. The `<TooltipTrigger>` will be the avatar, and the `<TooltipContent>` will display a string like \"Added by {username}\". Ensure there's a fallback UI for cases where the profile data might be missing.",
+        "testStrategy": "1. **Database Verification**: After adding a new movie to a list, use the Supabase SQL Editor to inspect the `list_items` table. Verify that the new row has the correct user UUID in the `added_by` column.\n2. **Single-User List Test**: Add an item to a personal (non-collaborative) list. Confirm that your own avatar is displayed on the item card and that hovering over it shows the tooltip with your username.\n3. **Collaborative List Test**: As User A, create a collaborative list and invite User B. User A adds a movie; verify User A's avatar appears on the card. User B then adds a different movie; verify User B's avatar appears on the second card. Both users should see the correct avatars for each item.\n4. **UI Fallback Test**: Manually set an `added_by` value in the database to a UUID that does not correspond to any user in the `profiles` table. Load the list and verify that the component displays a default fallback avatar and does not crash.",
+        "status": "pending",
+        "dependencies": [
+          13,
+          18,
+          21
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 34,
+        "title": "Display Watchlist Creator Information",
+        "description": "Enhance watchlist views to display the name and avatar of the user who created the list. This information should be visible on both private and public list pages.",
+        "details": "1. **Modify Supabase Query**: Update the data fetching logic for individual watchlists (likely used in `src/app/lists/[listId]/page.tsx` and the public list page from Task #24). The query must be modified to JOIN through the `collaborators` table to find the user with the 'owner' role, and then JOIN to the `profiles` table to retrieve their `username` and `avatar_url`.\n\n   ```sql\n   -- Example of the data to select with Supabase JS client\n   `\n     *,\n     collaborators!inner(\n       profiles(\n         username,\n         avatar_url\n       )\n     )\n   `\n   // Filtered with .eq('collaborators.role', 'owner')\n   ```\n\n2. **Update Data Types**: Adjust the TypeScript types associated with the watchlist data to include the nested creator profile information, for example: `creator: { username: string; avatar_url: string | null }`.\n\n3. **Integrate into UI**: In the component responsible for the watchlist header, use the fetched creator data. Implement the display using `shadcn/ui` components:\n   - Use the `<Avatar>`, `<AvatarImage>`, and `<AvatarFallback>` components to show the creator's avatar. The fallback should display the creator's initials.\n   - Add text next to the avatar, formatted as \"Created by [username]\".\n\n4. **Internationalization**: Use the i18n system (from Task #26) for the static text. Add a new translation key, such as `watchlist.createdBy`, and provide values for English (\"Created by\") and Spanish (\"Creado por\").\n\n5. **Apply to All Views**: Ensure this new UI element is present and functional on both the standard authenticated watchlist view and the public-facing read-only view (from Task #24).",
+        "testStrategy": "1. **Private List Verification**: Navigate to a list you created. Verify your avatar and username are displayed correctly with the \"Created by\" label. Then, navigate to a collaborative list you were invited to (but did not create) and verify the original creator's information is shown, not your own.\n\n2. **Public List Verification**: Make a list public and access its public URL in an incognito window. Confirm that the creator's avatar and username are correctly displayed for unauthenticated visitors.\n\n3. **Fallback Behavior**: Test with a user who has not uploaded an avatar. The `<AvatarFallback>` component should correctly display their initials. Verify the UI handles cases where profile information might be missing without crashing.\n\n4. **Internationalization Check**: Using the language switcher (from Task #26), toggle between English and Spanish. Confirm that the \"Created by\" text updates to \"Creado por\" and vice-versa.",
+        "status": "pending",
+        "dependencies": [
+          13,
+          18,
+          21,
+          24
+        ],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 35,
+        "title": "Implement Duplicate Movie Validation for Watchlists",
+        "description": "Implement validation to prevent users from adding the same movie to a single watchlist multiple times. This includes both frontend checks and a database constraint, with clear user feedback.",
+        "details": "1. **Database Constraint**: In the Supabase dashboard, navigate to the `list_items` table definition. Add a composite `UNIQUE` constraint on the `list_id` and `tmdb_id` columns. This will serve as the ultimate source of truth and prevent data corruption or race conditions at the database level.\n\n2. **API Endpoint Hardening**: Locate the Next.js API route responsible for adding items to a list (likely in `src/app/api/lists/items/route.ts` or similar). The Supabase client's `.insert()` call will now throw an error on duplicates. Wrap the insertion logic in a `try...catch` block. If the caught error has a database code of `23505` (unique_violation), return a `409 Conflict` HTTP status with a specific error message in the JSON body, like `{ \"error\": \"item_already_exists\" }`. For other errors, maintain the existing error handling.\n\n3. **Client-Side Pre-emptive Check**: In the frontend component that triggers the 'add to list' action (e.g., a modal or dropdown menu), you need access to the IDs of the movies already in the target list. This data is likely already fetched via React Query on the list page. Before calling the `useMutation` hook's `mutate` function, perform a check: `const isDuplicate = currentItems.some(item => item.tmdb_id === movieToAdd.id);`. If `isDuplicate` is true, do not call `mutate` and proceed directly to the next step.\n\n4. **User Feedback with Toast**: When a duplicate is detected by the client-side check (step 3), or if the API returns a 409 error (handled in the `onError` callback of `useMutation`), display an informative message to the user. Use a non-intrusive component like `shadcn/ui`'s `Toast` (via `useToast`) or a library like `sonner`. The message must use the internationalization system from Task #26. For example: `toast({ variant: 'default', title: t('watchlist.alreadyExists') });`. Add the key `watchlist.alreadyExists` to the translation files (e.g., `public/locales/en/common.json`).",
+        "testStrategy": "1. **Database Integrity Test**: Using the Supabase SQL Editor, attempt to manually `INSERT` a row into `list_items`. Note the `list_id` and `tmdb_id`. Execute the same `INSERT` statement again and verify that it fails with a `unique_violation` error.\n\n2. **API Endpoint Test**: Use a client like Postman or write an integration test to send two identical `POST` requests to the 'add item' API endpoint. Confirm that the first request succeeds (e.g., `201 Created`) and the second request fails with a `409 Conflict` status and the correct error body.\n\n3. **Frontend Experience Test**: Navigate to a list. Try to add a movie that is already present in that list. Verify that the action is prevented client-side (no network request is sent for the add operation) and a toast notification appears instantly. Confirm no console errors occur.\n\n4. **Error Fallback Test**: Temporarily disable the client-side check. Add a movie to a list. Try to add it again. Verify that the `useMutation` hook's `onError` callback is triggered by the API's 409 response and that the same toast notification is displayed to the user.\n\n5. **Internationalization Test**: Use the language switcher to change the language to Spanish. Repeat the frontend experience test and verify the toast message is displayed in Spanish.",
+        "status": "pending",
+        "dependencies": [
+          18,
+          26
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 36,
+        "title": "Implement Watchlist Movie Randomizer",
+        "description": "Add a feature to randomly select a movie from a user's watchlist, with an option to filter for unwatched movies, and display the result in a modal.",
+        "details": "1. **UI Components**: \n   - In the watchlist page header (`src/app/lists/[listId]/page.tsx`), alongside the view switcher from Task #31, add a `Button` component from `shadcn/ui`. Label it with an i18n key like `list.actions.randomize`.\n   - Next to the button, add a `Checkbox` component from `shadcn/ui` with a `Label`. The label should use an i18n key like `list.filters.unwatchedOnly`.\n   - Create a reusable modal component using `shadcn/ui`'s `Dialog`. This modal will display the randomly selected movie's poster, title, release year, and overview. It should also include a link to the movie's full details page.\n\n2. **State Management**:\n   - On the watchlist page component, use `useState` to manage the state of the 'Unwatched only' checkbox.\n   - Use another `useState` hook to manage the modal's open/closed state.\n   - Use a third `useState` hook to store the `selectedMovie` object that will be displayed in the modal.\n\n3. **Randomization Logic**:\n   - Create a handler function that is triggered when the 'Randomize' button is clicked.\n   - Inside the handler, access the list of movies already fetched for the page.\n   - Check the state of the 'Unwatched only' checkbox. If it's checked, filter the movie array to include only items where the `watched_at` field (from Task #20) is `null`.\n   - If the resulting array of movies is not empty, select a random movie using `const randomIndex = Math.floor(Math.random() * movies.length);`.\n   - Update the `selectedMovie` state with the chosen movie object and set the modal state to open.\n\n4. **Edge Case Handling**:\n   - If the user clicks 'Randomize' with the 'Unwatched only' filter active and there are no unwatched movies, the modal should open with a message (e.g., i18n key `randomizer.noResults`) instead of a movie.\n   - The 'Randomize' button should be disabled if the watchlist contains zero movies.",
+        "testStrategy": "1. **UI Verification**: Navigate to a watchlist. Confirm the 'Randomize' button and 'Unwatched only' checkbox are present in the header. Click the button and verify the result modal opens and displays movie details correctly. Test closing the modal.\n2. **Standard Randomization**: On a list with at least 5 movies, click 'Randomize' multiple times without the filter. Verify that different movies are selected and displayed.\n3. **Filtered Randomization**: Mark several movies on a list as 'watched' (requires Task #20). Check the 'Unwatched only' box and click 'Randomize' multiple times. Verify that the selected movie is always one of the unwatched items.\n4. **Filter Edge Case**: Mark all movies on a list as 'watched'. Check the 'Unwatched only' box and click 'Randomize'. Verify the modal shows a 'No unwatched movies found' message.\n5. **Empty List**: Navigate to a watchlist with 0 items. Verify that the 'Randomize' button is disabled.",
+        "status": "pending",
+        "dependencies": [
+          18,
+          20
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 37,
+        "title": "Implement Empty State and 'Add Movie' Button for Watchlists",
+        "description": "Create an engaging empty state for watchlists that have no movies, featuring a prominent button that navigates users to the search page to begin adding content.",
+        "details": "1. **Create Empty State Component**: In `src/components/`, create a new reusable component named `EmptyState.tsx`. This component should accept props for a title, a descriptive message, and an action button. Use `shadcn/ui` components for layout and styling, potentially including an icon from `lucide-react` for visual appeal.\n2. **Integrate Internationalization**: All text within the `EmptyState` component (title, message, button label) must use translation keys from the i18n system established in Task #26. For example: `t('list.empty.title')`, `t('list.empty.message')`, and `t('list.empty.cta')`.\n3. **Conditional Rendering in List Page**: Modify the list details page, located at `src/app/lists/[listId]/page.tsx`. After fetching the list items, add a conditional check. If the array of movies is empty, render the `<EmptyState />` component. Otherwise, render the existing movie grid or list.\n4. **Implement Navigation**: The action button within the `EmptyState` component should use the Next.js `<Link>` component to navigate the user. The `href` should point to the application's search page (e.g., `/search`).\n5. **Pass List Context via Query Params**: To provide context to the search page, pass the current list's ID and name as URL query parameters. The `Link`'s `href` should be constructed dynamically, like `` `/search?listId=${list.id}&listName=${encodeURIComponent(list.name)}` ``. This data is available within the `[listId]/page.tsx` component.",
+        "testStrategy": "1. **Verify Empty State Display**: Create a new, empty watchlist and navigate to its page. Confirm that the `EmptyState` component is rendered, displaying the correct icon, title, and message. Verify that the standard movie grid is not visible.\n2. **Verify Button Navigation**: Click the 'Add Movie' call-to-action button within the empty state. Confirm that the application correctly navigates to the `/search` page.\n3. **Confirm Context Passing**: After being redirected to the search page, inspect the browser's URL bar. Verify that it contains the correct `listId` and `listName` as query parameters (e.g., `/search?listId=...&listName=My%20Awesome%20List`).\n4. **Verify Non-Empty State**: Navigate to a watchlist that already contains at least one movie. Confirm that the `EmptyState` component is *not* rendered and the list of movies is displayed as expected.\n5. **Language Switching Test**: While viewing an empty list, use the language switcher (from Task #26) to toggle between English and Spanish. Verify that all text within the `EmptyState` component updates to the selected language.",
+        "status": "pending",
+        "dependencies": [
+          18,
+          26
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 38,
+        "title": "Implement Search Button Navigation and Input Focus",
+        "description": "Configure the main search button to navigate to the search page and automatically focus the search input field upon arrival, optionally pre-filling it based on URL parameters.",
+        "details": "1. **Update Header Component**: In the shared header component (e.g., `src/components/layout/Header.tsx`), locate the search button or icon. Ensure it uses Next.js's `<Link>` component to navigate to the `/search` page. Example: `<Link href=\"/search\" aria-label=\"Go to search page\">...Search Icon...</Link>`.\n\n2. **Modify Search Page (`src/app/search/page.tsx`)**: This page will contain the core logic for auto-focus and pre-filling.\n    *   Import necessary React and Next.js hooks: `import { useRef, useEffect } from 'react';` and `import { useSearchParams } from 'next/navigation';`.\n    *   Within the `SearchPage` component, create a ref for the input element: `const inputRef = useRef<HTMLInputElement>(null);`.\n    *   Use the `useSearchParams` hook to read any initial query from the URL: `const searchParams = useSearchParams(); const initialQuery = searchParams.get('q');`.\n    *   Implement a `useEffect` hook that runs on component mount to focus the input: `useEffect(() => { inputRef.current?.focus(); }, []);`.\n    *   Find the `Input` component (from `shadcn/ui`) and attach the ref and set its default value. This allows the input to be pre-filled from a URL parameter:\n        ```jsx\n        <Input \n          ref={inputRef}\n          defaultValue={initialQuery || ''}\n          placeholder=\"Search for movies, lists, or users...\"\n          // ... other props\n        />\n        ```",
+        "testStrategy": "1. **Navigation and Focus Test**: From the homepage or any other page, click the main search button/icon in the header. Verify that the browser navigates to the `/search` URL. Confirm that the search input field is immediately focused (e.g., the cursor is blinking inside it) without requiring a user click.\n2. **Pre-fill from URL Test**: Manually navigate your browser to `/search?q=matrix`. Verify that the page loads, the search input is focused, and the text \"matrix\" is pre-filled in the input field.\n3. **Empty State Test**: Manually navigate your browser directly to `/search` (with no query parameters). Verify that the search input is focused but remains empty.\n4. **Keyboard Accessibility**: Use the 'Tab' key to navigate through the interactive elements in the header. When the search button/icon is focused, press 'Enter'. Verify this triggers the navigation to `/search` and the input field on the new page receives focus as expected.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 39,
+        "title": "Optimize Watchlist Poster Sizing and Responsiveness",
+        "description": "Optimize the size and display of movie posters within watchlists to improve visual presentation and performance across different devices and screen resolutions.",
+        "details": "The current poster display in watchlists is not optimized for different contexts or screen sizes. This task involves a comprehensive overhaul of how posters are rendered.\n\n1. **Update Image Fetching Logic**: Modify the utility function responsible for generating TMDB image URLs (likely in `src/lib/utils.ts` or similar). Instead of fetching a single, fixed-size image, the function should be able to request specific sizes from the TMDB API (e.g., 'w342', 'w500', 'w780').\n\n2. **Refactor Movie Card Component**: Locate the primary component used to display a movie poster in a list (e.g., `src/components/movies/MovieCard.tsx`).\n   - Ensure it uses the Next.js `<Image>` component for automatic optimization, lazy loading, and `srcset` generation.\n   - Configure the `<Image>` component with `layout='fill'`, `objectFit='cover'`, and a `sizes` attribute to instruct the browser on which image resolution to load at different viewport widths.\n   - The parent container of the `<Image>` component should enforce a consistent aspect ratio (e.g., 2:3 for posters) using the `@tailwindcss/aspect-ratio` plugin (e.g., `aspect-w-2 aspect-h-3`).\n\n3. **Implement Responsive Grid Layout**: On the main watchlist page (`src/app/lists/[listId]/page.tsx` and the public equivalent from Task #24), implement a responsive grid for the movie posters using Tailwind CSS. The grid should adjust the number of columns based on the screen size.\n   ```css\n   // Example Tailwind CSS for the grid container\n   <div class=\"grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6\">\n     {/* MovieCard components go here */}\n   </div>\n   ```\n\n4. **Define Contextual Sizes**: Establish different poster sizes for various UI contexts. For the main grid view, use a medium size like `w342`. If a different view exists (e.g., a dense list view from Task #31) or a detail modal (like in Task #36), ensure a smaller or larger poster size is requested accordingly to balance quality and performance.",
+        "testStrategy": "1. **Responsiveness Verification**: Open a watchlist page. Using browser developer tools, resize the viewport from a small mobile width (~375px) to a large desktop width (~1920px). Verify that the number of posters per row adjusts correctly and that there are no visual bugs, overlaps, or distorted images.\n\n2. **Network Performance Analysis**: Open the Network tab in the developer tools. On a simulated mobile device, clear the cache and reload the page. Inspect the image requests and confirm that smaller-sized posters (e.g., `w342`) are being downloaded from TMDB.\n\n3. **Desktop Image Quality**: On a large desktop monitor with a high-resolution display, clear the cache and reload. Verify that higher-resolution images (e.g., `w500` or `w780`) are being loaded to ensure posters look sharp and not pixelated.\n\n4. **Aspect Ratio Consistency**: Confirm that all posters in the grid maintain a consistent aspect ratio (2:3) and do not appear stretched or squashed, regardless of screen size.\n\n5. **Cross-Page Consistency**: Check both a private watchlist (e.g., `/lists/123`) and a public watchlist (from Task #24) to ensure the optimizations are applied consistently.",
+        "status": "pending",
+        "dependencies": [
+          18
+        ],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 40,
+        "title": "Implement Action Buttons on Movie Cards (Like, Watched, Delete)",
+        "description": "Redesign movie cards to include action buttons for liking, marking as watched, and deleting from a list. This involves creating the backend functionality for 'likes' and connecting all UI actions to their respective APIs.",
+        "details": "1. **Database Schema for 'Likes'**: Create a new table in Supabase named `user_favorites` with columns: `id` (PK), `user_id` (FK to `profiles.id`), `tmdb_id` (integer), and `created_at` (timestamp). Add a composite `UNIQUE` constraint on `(user_id, tmdb_id)`. Configure Row Level Security (RLS) policies to allow users to only `INSERT`, `SELECT`, and `DELETE` their own favorite entries.\n\n2. **API Endpoint for 'Likes'**: Create a new Next.js API route at `src/app/api/movies/favorites/route.ts`. This route should handle:\n   - `POST`: To add a movie to the user's favorites. It will insert a row into the `user_favorites` table.\n   - `DELETE`: To remove a movie from favorites. It will delete the corresponding row.\n   - Use the Supabase server-side client to interact with the database, ensuring all operations are protected by user authentication and RLS.\n\n3. **Movie Card Component Redesign**: Locate the primary movie card component (e.g., `src/components/movies/MovieCard.tsx`). Add a new container at the bottom of the card. Inside this container, add three `Button` components from `shadcn/ui` with `variant=\"ghost\"` and `size=\"icon\"` for a minimal footprint. Use icons from `lucide-react`: `Heart` for like, `Eye` for watched, and `Trash2` for delete.\n\n4. **Frontend State Management (React Query)**:\n   - **Like**: Implement a `useLikeMutation` hook that calls the new `/api/movies/favorites` endpoint. Use optimistic updates to immediately toggle the `Heart` icon's fill state.\n   - **Watched**: Connect the 'Watched' button to the mutation defined in Task #20. This will update the `watched_at` column in the `list_items` table. The button's visual state (e.g., `Eye` vs `EyeOff` icon) should reflect the `watched_at` status of the movie within the current list.\n   - **Delete**: Connect the 'Delete' button to the existing item deletion mutation from Task #18. Before calling the mutation, trigger a `shadcn/ui` `AlertDialog` to confirm the user's intent to remove the movie from the list. Implement an optimistic update to immediately remove the card from the UI upon confirmation.\n\n5. **Accessibility and UX**: Wrap each action `Button` in a `shadcn/ui` `Tooltip` component. Use i18n keys (from Task #26) for the tooltip content (e.g., `movieActions.like`, `movieActions.markWatched`, `movieActions.deleteFromList`). The `aria-label` for each button should also be set using these same translation keys for screen reader support.",
+        "testStrategy": "1. **UI and Accessibility Verification**: Navigate to a watchlist page. Confirm the three action buttons are visible on each movie card. Hover over each button to verify its corresponding translated tooltip appears. Use a screen reader to confirm the `aria-label` for each button is read correctly.\n\n2. **'Like' Functionality Test**: Click the 'Like' (Heart) button on a movie. Verify the icon immediately fills. Refresh the page and confirm the 'liked' state persists. Check the `user_favorites` table in the Supabase dashboard to confirm the row was created. Click the button again to 'unlike', verify the icon becomes unfilled, and confirm the row is deleted from the database.\n\n3. **'Watched' Functionality Test**: On a movie within a list, click the 'Watched' (Eye) button. Verify the UI changes to reflect the watched state. Check the `list_items` table in Supabase to confirm the `watched_at` timestamp is correctly set for that specific item. Click the button again to 'unwatch' and verify the timestamp is set to `NULL`.\n\n4. **'Delete' Functionality Test**: Click the 'Delete' (Trash) button. Verify that a confirmation `AlertDialog` appears. Click 'Cancel' and confirm the movie card remains. Click 'Delete' again and then 'Confirm' in the dialog. Verify the movie card is optimistically removed from the UI. Refresh the page and confirm the movie is no longer in the list. Check the `list_items` table to ensure the corresponding row was deleted.",
+        "status": "pending",
+        "dependencies": [
+          18,
+          20,
+          26
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 41,
+        "title": "Mejorar el modo claro de la aplicación con mejor contraste y diseño",
+        "description": "Refinar la paleta de colores del modo claro para mejorar el contraste, la legibilidad y la estética general. Esto incluye ajustar los colores base, los estilos de los componentes y garantizar la consistencia visual en toda la aplicación.",
+        "details": "La implementación actual del modo claro carece de contraste suficiente, lo que afecta la legibilidad y la experiencia del usuario. Esta tarea se centrará en redefinir la paleta de colores del modo claro siguiendo las convenciones de `shadcn/ui` y Tailwind CSS.\n\n1. **Análisis y Definición de la Nueva Paleta de Colores**: \n   - Investigar y definir una nueva paleta de colores para el modo claro que cumpla con las pautas de accesibilidad WCAG AA (ratio de contraste de al menos 4.5:1 para texto normal).\n   - Colores a definir: `background`, `foreground`, `card`, `card-foreground`, `popover`, `popover-foreground`, `primary`, `primary-foreground`, `secondary`, `secondary-foreground`, `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`, `destructive-foreground`, `border`, `input`, `ring`.\n\n2. **Actualizar Variables de Tema en CSS**:\n   - Modificar el archivo `src/styles/globals.css` (o el archivo de estilos globales equivalente).\n   - Dentro del selector `:root` o `html[data-theme='light']`, actualizar los valores de las variables CSS para que coincidan con la nueva paleta de colores definida. Por ejemplo:\n     ```css\n     :root {\n       --background: 0 0% 98%; /* Ejemplo: Un blanco ligeramente roto */\n       --foreground: 222.2 84% 4.9%; /* Ejemplo: Un negro suave */\n       --card: 0 0% 100%;\n       --border: 214.3 31.8% 91.4%;\n       /* ...actualizar todas las demás variables */\n     }\n     ```\n\n3. **Revisión de Componentes Específicos**:\n   - Una vez actualizadas las variables globales, revisar todos los componentes principales de `shadcn/ui` y los componentes personalizados (`src/components/`) para asegurar que se renderizan correctamente con el nuevo tema.\n   - Prestar especial atención a los componentes que usan colores de forma explícita en lugar de variables de tema, como `Card` (Task #40), `EmptyState` (Task #37), y `Dialog` (Task #36).\n   - Asegurarse de que los estados `hover`, `focus` y `active` de los elementos interactivos (botones, inputs, enlaces) tengan un contraste claro y sean visualmente distintos.\n\n4. **Asegurar Consistencia Visual**:\n   - Navegar por todas las páginas clave de la aplicación (página de inicio, página de búsqueda, páginas de listas, modales) para verificar que el nuevo tema se aplique de manera consistente y no haya regresiones visuales.",
+        "testStrategy": "1. **Verificación de Contraste y Accesibilidad**:\n   - Utilizar las herramientas de desarrollo del navegador (por ejemplo, el inspector de accesibilidad de Chrome/Firefox) para medir el ratio de contraste del texto principal, subtítulos y texto de los componentes contra sus fondos. Asegurarse de que cumplen o superan el ratio 4.5:1.\n\n2. **Revisión Visual de Componentes**:\n   - Crear una página de prueba o navegar a páginas existentes para visualizar todos los componentes de la UI en modo claro.\n   - Verificar que `Button`, `Input`, `Card`, `Dialog`, `Checkbox`, `Select` y otros componentes se vean correctamente, con bordes visibles y texto legible.\n   - Probar los estados interactivos (hover, focus, disabled) de cada componente.\n\n3. **Pruebas de Flujo de Usuario**:\n   - Realizar flujos de usuario completos en modo claro, como buscar una película, agregarla a una lista y ver los detalles de la lista. Confirmar que la experiencia visual es coherente y agradable.\n\n4. **Pruebas de Regresión Visual**:\n   - Cambiar entre el modo claro y el modo oscuro para asegurarse de que la actualización no haya afectado negativamente al tema oscuro.\n   - Comprobar que no haya elementos que se hayan vuelto invisibles o difíciles de leer en el nuevo modo claro.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "low",
+        "subtasks": []
+      },
+      {
+        "id": 42,
+        "title": "Implement Movie Card Action Bar in Watchlists",
+        "description": "Implement a persistent action bar at the bottom of movie cards within watchlists, featuring buttons to delete, favorite, and mark as watched, with appropriate visual states and tooltips.",
+        "details": "1. **Database Schema Update**: Add a new boolean column `is_favorited` to the `list_items` table in Supabase. This will track the favorite status of a movie within a specific list.\n\n2. **Component Modification**: Locate the primary movie card component (likely `src/components/movies/MovieCard.tsx` or similar). Add a new `div` at the bottom of the card, styled with Flexbox (`flex`, `justify-around`, `items-center`) to serve as the action bar container.\n\n3. **Action Buttons**: Inside the new container, add three instances of the `shadcn/ui` `Button` component, using `variant=\"ghost\"` and `size=\"icon\"` for a minimal footprint. Use icons from `lucide-react`:\n    - **Delete**: `Trash2` icon.\n    - **Favorite**: `Heart` icon.\n    - **Watched**: `CheckCircle` icon.\n\n4. **Tooltips & i18n**: Wrap each button in a `shadcn/ui` `Tooltip` component. The tooltip content must use translation keys from the i18n system (Task 26), such as `movieCard.actions.delete`, `movieCard.actions.favorite`, and `movieCard.actions.markWatched`.\n\n5. **State Management & Mutations (React Query)**: Implement `useMutation` hooks for each action, following the pattern established in Task 18.\n    - **Delete**: The mutation will call a `DELETE` API endpoint (e.g., `/api/lists/items/[itemId]`) that removes the corresponding row from the `list_items` table. Implement an optimistic update to remove the card from the UI instantly.\n    - **Favorite**: The mutation will call a `PATCH` API endpoint to toggle the `is_favorited` boolean for the specific `list_items` row. The `Heart` icon's style should be conditionally updated (e.g., `fill-red-500 text-red-500` when `is_favorited` is true).\n    - **Mark as Watched**: This mutation will implement the logic from Task 20, calling a `PATCH` endpoint to set/unset the `watched_at` timestamp. The `CheckCircle` icon should conditionally change color (e.g., `text-green-500`) when the item is marked as watched.\n\n6. **Styling**: Ensure all new UI elements and states are compatible with the dark mode implementation from Task 28, using the defined CSS variables for colors.",
+        "testStrategy": "1. **UI Verification**: Navigate to a watchlist page. Confirm each movie card displays an action bar at the bottom with three distinct icons. Hover over each icon to verify that the correct tooltip appears and that the text is translated correctly (if i18n is complete).\n2. **Delete Action**: Click the delete icon on a movie card. Verify the card is immediately removed from the UI. Refresh the page and confirm the movie is permanently gone from the list.\n3. **Favorite Action**: Click the heart icon. Verify the icon's appearance changes to a 'favorited' state (e.g., filled/colored). Refresh the page and confirm the favorited state persists. Click the icon again to test un-favoriting and confirm the state reverts and persists.\n4. **Watched Action**: Click the 'mark as watched' icon. Verify its appearance changes to an 'active' state and that the card's overall style updates (e.g., opacity change as per Task 20). Refresh the page to confirm the watched state persists. Test un-marking as well.\n5. **Dark Mode Compatibility**: Toggle the application theme to dark mode. Verify the action bar, icons, and their active states are correctly styled and clearly visible against the dark background.",
+        "status": "done",
+        "dependencies": [
+          20,
+          26,
+          28
+        ],
+        "priority": "high",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-06T16:58:56.137Z",
+      "updated": "2025-09-19T02:56:40.806Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
