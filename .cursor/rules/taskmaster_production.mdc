@@ -1,0 +1,227 @@
+---
+description: Reglas para manejo seguro de tareas en aplicaciones en producción
+globs: .taskmaster/**/*, tasks/**/*
+alwaysApply: true
+---
+
+# 📋 **REGLAS DE TASKMASTER EN PRODUCCIÓN**
+
+## **⚠️ CONTEXTO CRÍTICO**
+
+- **Aplicación en PRODUCCIÓN con usuarios reales**
+- **Tareas que afectan funcionalidad de usuarios reales**
+- **NUNCA implementar cambios que rompan funcionalidad existente**
+
+---
+
+## **🔒 PRINCIPIOS DE GESTIÓN DE TAREAS**
+
+### **✅ PRINCIPIOS SEGUROS:**
+
+- **Agregar nuevas funcionalidades** sin modificar existentes
+- **Mantener retrocompatibilidad** con funcionalidad actual
+- **Preservar experiencia** de usuarios existentes
+- **Crear nuevas características** en lugar de modificar existentes
+
+### **❌ PRINCIPIOS PELIGROSOS:**
+
+- **Modificar funcionalidad existente** sin verificar impacto
+- **Eliminar características** que usan usuarios reales
+- **Cambiar comportamiento** de funcionalidad en uso
+- **Romper interfaces** de usuarios existentes
+
+---
+
+## **🛡️ VALIDACIÓN DE TAREAS**
+
+### **Checklist obligatorio antes de implementar:**
+
+- [ ] **¿La tarea agrega nueva funcionalidad?** → ✅ Seguro
+- [ ] **¿La tarea modifica funcionalidad existente?** → ⚠️ Verificar impacto
+- [ ] **¿La tarea elimina funcionalidad existente?** → ❌ PELIGROSO
+- [ ] **¿La tarea afecta datos de usuarios reales?** → ⚠️ Verificar impacto
+- [ ] **¿La tarea rompe funcionalidad existente?** → ❌ PELIGROSO
+
+### **Tipos de tareas identificadas:**
+
+```markdown
+# ✅ TAREAS SEGURAS (Agregar funcionalidad)
+
+- Implementar botones de favoritos
+- Agregar funcionalidad de "visto"
+- Crear nuevos componentes
+- Agregar nuevas páginas
+- Implementar nuevas características
+
+# ⚠️ TAREAS DE RIESGO (Modificar existente)
+
+- Cambiar diseño de componentes existentes
+- Modificar comportamiento de funcionalidad
+- Actualizar interfaces de usuario
+- Cambiar flujos de trabajo existentes
+
+# ❌ TAREAS PELIGROSAS (Eliminar/modificar crítico)
+
+- Eliminar funcionalidad existente
+- Cambiar autenticación
+- Modificar base de datos existente
+- Romper funcionalidad de usuarios
+```
+
+---
+
+## **🔍 ANÁLISIS DE IMPACTO**
+
+### **Antes de implementar cualquier tarea:**
+
+1. **Identificar funcionalidad afectada:**
+
+   - ¿Qué componentes se modifican?
+   - ¿Qué páginas se afectan?
+   - ¿Qué datos se tocan?
+   - ¿Qué usuarios se impactan?
+
+2. **Verificar que NO se rompa:**
+
+   - ❌ Funcionalidad de autenticación
+   - ❌ Creación de watchlists
+   - ❌ Agregar películas a watchlists
+   - ❌ Compartir watchlists
+   - ❌ Búsqueda de películas
+   - ❌ Navegación entre páginas
+
+3. **Confirmar que solo se agregue:**
+   - ✅ Nueva funcionalidad opcional
+   - ✅ Nuevos componentes
+   - ✅ Nuevas características
+   - ✅ Mejoras de UI/UX
+
+---
+
+## **📋 TAREAS ACTUALES Y SU IMPACTO**
+
+### **Tareas completadas (VERIFICAR QUE SIGAN FUNCIONANDO):**
+
+```markdown
+✅ Tarea 27: Implementar eliminación con confirmación
+
+- Componente: WatchlistMovieCard.tsx
+- Funcionalidad: Eliminar películas de watchlists
+- Impacto: Usuarios pueden eliminar películas
+- Estado: COMPLETADA
+
+✅ Tarea 42: Implementar barra de acciones
+
+- Componente: WatchlistMovieCard.tsx
+- Funcionalidad: Botones de favoritos, visto, eliminar
+- Impacto: Usuarios pueden marcar favoritos y visto
+- Estado: COMPLETADA
+```
+
+### **Tareas pendientes (EVALUAR IMPACTO):**
+
+```markdown
+⚠️ Tarea 26: Sistema de internacionalización (i18n)
+
+- Impacto: Cambiar textos de la aplicación
+- Riesgo: MEDIO - Puede afectar experiencia de usuarios
+- Recomendación: Implementar gradualmente
+
+⚠️ Tarea 28: Modo oscuro/noche
+
+- Impacto: Cambiar tema de la aplicación
+- Riesgo: BAJO - Solo cambio visual
+- Recomendación: Implementar como opción
+
+⚠️ Tarea 32: Actualizar rutas de watchlist detail
+
+- Impacto: Cambiar URLs de watchlists
+- Riesgo: ALTO - Puede romper enlaces existentes
+- Recomendación: Implementar redirecciones
+
+⚠️ Tarea 35: Evitar duplicados al agregar películas
+
+- Impacto: Cambiar comportamiento de agregar películas
+- Riesgo: MEDIO - Puede confundir a usuarios
+- Recomendación: Implementar con notificación clara
+```
+
+---
+
+## **🚨 ALERTAS CRÍTICAS**
+
+### **Si detectas estas tareas, EVALUAR CUIDADOSAMENTE:**
+
+- Tareas que modifican autenticación
+- Tareas que cambian base de datos existente
+- Tareas que eliminan funcionalidad
+- Tareas que cambian URLs/rutas
+- Tareas que modifican comportamiento crítico
+
+### **Comandos de emergencia:**
+
+- **Pausar implementación** si hay riesgo de romper funcionalidad
+- **Informar al usuario** sobre cualquier cambio que pueda afectar usuarios
+- **Sugerir testing** antes de implementar cambios
+- **Validar impacto** antes de proceder
+
+---
+
+## **💡 MEJORES PRÁCTICAS**
+
+### **Para implementar tareas:**
+
+1. **Leer descripción completa** de la tarea
+2. **Identificar componentes afectados** antes de empezar
+3. **Verificar que no se rompa funcionalidad existente**
+4. **Probar en entorno de desarrollo** antes de producción
+5. **Validar que usuarios actuales mantengan funcionalidad**
+
+### **Para tareas de riesgo:**
+
+1. **Crear backup** antes de implementar
+2. **Implementar gradualmente** si es posible
+3. **Probar exhaustivamente** antes de implementar
+4. **Documentar cambios** para otros desarrolladores
+5. **Monitorear** después de implementar
+
+### **Para tareas peligrosas:**
+
+1. **Evaluar alternativas** menos riesgosas
+2. **Implementar en etapas** si es posible
+3. **Crear rollback plan** antes de implementar
+4. **Comunicar cambios** a usuarios si es necesario
+5. **Monitorear de cerca** después de implementar
+
+---
+
+## **🔧 HERRAMIENTAS DE VALIDACIÓN**
+
+### **Antes de implementar tareas:**
+
+```bash
+# Verificar que la aplicación compile
+npm run build
+
+# Verificar que no haya errores de TypeScript
+npm run type-check
+
+# Verificar que no haya errores de linting
+npm run lint
+```
+
+### **Después de implementar tareas:**
+
+```bash
+# Verificar que la aplicación funcione
+npm run dev
+
+# Verificar que no haya errores en consola
+# Revisar funcionalidad existente
+# Probar nuevas funcionalidades
+# Validar que usuarios actuales mantengan funcionalidad
+```
+
+---
+
+**🎯 OBJETIVO: Implementar nuevas funcionalidades de manera segura sin comprometer la experiencia de usuarios reales que ya usan la aplicación.**

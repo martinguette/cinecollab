@@ -1,0 +1,142 @@
+---
+description: Reglas de seguridad para aplicaciones en producción con usuarios reales
+globs: **/*
+alwaysApply: true
+---
+
+# 🚨 **REGLAS DE SEGURIDAD PARA PRODUCCIÓN**
+
+## **⚠️ ESTADO CRÍTICO: APLICACIÓN EN PRODUCCIÓN**
+
+- **Esta aplicación está en PRODUCCIÓN con usuarios reales**
+- **La base de datos contiene información real de usuarios**
+- **NUNCA eliminar, modificar o corromper datos existentes**
+- **Siempre verificar impacto antes de cualquier cambio**
+
+---
+
+## **🔒 PROTECCIÓN DE DATOS**
+
+### **Base de Datos - NUNCA HACER:**
+
+- ❌ **NUNCA usar `DROP TABLE`** sin confirmación explícita del usuario
+- ❌ **NUNCA usar `DELETE FROM`** en tablas con datos de usuarios
+- ❌ **NUNCA usar `TRUNCATE`** en tablas de producción
+- ❌ **NUNCA modificar esquemas** sin backup previo
+- ❌ **NUNCA ejecutar scripts SQL** sin revisar impacto
+
+### **Base de Datos - SIEMPRE HACER:**
+
+- ✅ **Usar `CREATE TABLE IF NOT EXISTS`** para nuevas tablas
+- ✅ **Usar `ALTER TABLE ADD COLUMN`** para agregar columnas
+- ✅ **Usar `DROP POLICY IF EXISTS`** antes de crear políticas RLS
+- ✅ **Verificar que no se eliminen datos** antes de ejecutar
+- ✅ **Crear backups** antes de cambios importantes
+
+---
+
+## **🛡️ VALIDACIÓN DE CAMBIOS**
+
+### **Antes de cualquier cambio en base de datos:**
+
+1. **Verificar que NO se eliminen datos existentes**
+2. **Confirmar que solo se agreguen nuevas funcionalidades**
+3. **Revisar que las políticas RLS no bloqueen acceso existente**
+4. **Asegurar que los usuarios actuales mantengan sus datos**
+
+### **Scripts SQL seguros:**
+
+```sql
+-- ✅ SEGURO: Crear nuevas tablas
+CREATE TABLE IF NOT EXISTS new_table (...);
+
+-- ✅ SEGURO: Agregar columnas
+ALTER TABLE existing_table ADD COLUMN new_column type;
+
+-- ✅ SEGURO: Crear políticas RLS
+DROP POLICY IF EXISTS "policy_name" ON table_name;
+CREATE POLICY "policy_name" ON table_name ...;
+
+-- ❌ PELIGROSO: Eliminar datos
+DROP TABLE existing_table;
+DELETE FROM existing_table;
+TRUNCATE existing_table;
+```
+
+---
+
+## **🔍 VERIFICACIÓN DE IMPACTO**
+
+### **Preguntas obligatorias antes de cambios:**
+
+1. **¿Se eliminarán datos existentes?** → Si es SÍ, NO proceder
+2. **¿Se modificarán datos existentes?** → Si es SÍ, confirmar con usuario
+3. **¿Se afectará el acceso de usuarios actuales?** → Si es SÍ, revisar políticas
+4. **¿Se creará nueva funcionalidad sin afectar existente?** → Si es SÍ, proceder
+
+### **Patrones seguros:**
+
+- **Agregar funcionalidad** sin modificar existente
+- **Crear nuevas tablas** para nuevas características
+- **Mantener compatibilidad** con datos existentes
+- **Preservar acceso** de usuarios actuales
+
+---
+
+## **📋 CHECKLIST DE SEGURIDAD**
+
+### **Antes de ejecutar cualquier script:**
+
+- [ ] **Verificado que NO se eliminen datos**
+- [ ] **Confirmado que solo se agreguen funcionalidades**
+- [ ] **Revisado que usuarios actuales mantengan acceso**
+- [ ] **Validado que no se corrompan datos existentes**
+- [ ] **Asegurado que la aplicación siga funcionando**
+
+### **Después de ejecutar scripts:**
+
+- [ ] **Verificado que la aplicación funcione correctamente**
+- [ ] **Confirmado que usuarios pueden acceder a sus datos**
+- [ ] **Validado que nuevas funcionalidades trabajen**
+- [ ] **Revisado que no haya errores en consola**
+
+---
+
+## **🚨 ALERTAS CRÍTICAS**
+
+### **Si detectas cualquiera de estos patrones, DETENER inmediatamente:**
+
+- `DROP TABLE` sin confirmación explícita
+- `DELETE FROM` en tablas de usuarios
+- `TRUNCATE` en cualquier tabla
+- Modificaciones a esquemas existentes sin backup
+- Cambios que puedan afectar datos de usuarios reales
+
+### **Comandos de emergencia:**
+
+- **Detener ejecución** si hay riesgo de pérdida de datos
+- **Informar al usuario** sobre cualquier riesgo potencial
+- **Sugerir backup** antes de cambios importantes
+- **Validar impacto** antes de proceder
+
+---
+
+## **💡 MEJORES PRÁCTICAS**
+
+### **Para nuevas funcionalidades:**
+
+1. **Crear nuevas tablas** en lugar de modificar existentes
+2. **Agregar columnas opcionales** con valores por defecto
+3. **Mantener retrocompatibilidad** con datos existentes
+4. **Probar en entorno de desarrollo** antes de producción
+
+### **Para políticas RLS:**
+
+1. **Usar `DROP POLICY IF EXISTS`** antes de crear nuevas
+2. **Verificar que no bloqueen acceso existente**
+3. **Mantener políticas existentes** que funcionan
+4. **Agregar nuevas políticas** sin modificar las actuales
+
+---
+
+**🎯 OBJETIVO PRINCIPAL: Preservar la integridad de los datos de usuarios reales mientras se agregan nuevas funcionalidades de manera segura.**

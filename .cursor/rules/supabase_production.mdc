@@ -1,0 +1,207 @@
+---
+description: Reglas específicas para manejo seguro de Supabase en producción
+globs: supabase/**/*, src/integrations/supabase/**/*
+alwaysApply: true
+---
+
+# 🗄️ **REGLAS DE SUPABASE EN PRODUCCIÓN**
+
+## **⚠️ CONTEXTO CRÍTICO**
+
+- **Base de datos Supabase en PRODUCCIÓN con usuarios reales**
+- **Datos de watchlists, películas y usuarios reales**
+- **NUNCA comprometer la integridad de los datos existentes**
+
+---
+
+## **🔒 OPERACIONES SEGURAS EN SUPABASE**
+
+### **✅ OPERACIONES PERMITIDAS:**
+
+```sql
+-- Crear nuevas tablas (seguro)
+CREATE TABLE IF NOT EXISTS public.new_table (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  -- otros campos...
+);
+
+-- Agregar columnas (seguro)
+ALTER TABLE public.existing_table
+ADD COLUMN IF NOT EXISTS new_column text DEFAULT 'default_value';
+
+-- Crear políticas RLS (seguro)
+DROP POLICY IF EXISTS "policy_name" ON public.table_name;
+CREATE POLICY "policy_name" ON public.table_name
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Habilitar RLS (seguro)
+ALTER TABLE public.table_name ENABLE ROW LEVEL SECURITY;
+```
+
+### **❌ OPERACIONES PROHIBIDAS:**
+
+```sql
+-- NUNCA hacer esto en producción:
+DROP TABLE public.existing_table;
+DELETE FROM public.existing_table;
+TRUNCATE public.existing_table;
+ALTER TABLE public.existing_table DROP COLUMN existing_column;
+ALTER TABLE public.existing_table ALTER COLUMN existing_column TYPE new_type;
+```
+
+---
+
+## **🛡️ VALIDACIÓN DE SCRIPTS SQL**
+
+### **Checklist obligatorio antes de ejecutar:**
+
+- [ ] **¿El script solo crea nuevas tablas?** → ✅ Seguro
+- [ ] **¿El script solo agrega columnas?** → ✅ Seguro
+- [ ] **¿El script solo crea políticas RLS?** → ✅ Seguro
+- [ ] **¿El script elimina datos existentes?** → ❌ PELIGROSO
+- [ ] **¿El script modifica datos existentes?** → ❌ PELIGROSO
+
+### **Patrones seguros identificados:**
+
+```sql
+-- ✅ Patrón seguro: Crear tablas para nuevas funcionalidades
+CREATE TABLE IF NOT EXISTS public.user_favorites (...);
+CREATE TABLE IF NOT EXISTS public.user_watched (...);
+
+-- ✅ Patrón seguro: Políticas RLS con DROP IF EXISTS
+DROP POLICY IF EXISTS "old_policy" ON public.table_name;
+CREATE POLICY "new_policy" ON public.table_name ...;
+
+-- ✅ Patrón seguro: Habilitar RLS
+ALTER TABLE public.new_table ENABLE ROW LEVEL SECURITY;
+```
+
+---
+
+## **🔍 VERIFICACIÓN DE IMPACTO EN DATOS**
+
+### **Antes de ejecutar cualquier script:**
+
+1. **Identificar tablas afectadas:**
+
+   - `public.watchlists` → Contiene watchlists de usuarios reales
+   - `public.watchlist_movies` → Contiene películas de usuarios reales
+   - `public.watchlist_members` → Contiene miembros de watchlists reales
+   - `auth.users` → Contiene usuarios reales
+
+2. **Verificar que NO se toquen estas tablas:**
+
+   - ❌ No modificar estructura de tablas existentes
+   - ❌ No eliminar datos de estas tablas
+   - ❌ No cambiar tipos de datos existentes
+
+3. **Confirmar que solo se agreguen:**
+   - ✅ Nuevas tablas para nuevas funcionalidades
+   - ✅ Nuevas políticas RLS
+   - ✅ Nuevas columnas opcionales
+
+---
+
+## **📋 ESTRUCTURA DE DATOS ACTUAL**
+
+### **Tablas existentes (NO TOCAR):**
+
+```sql
+-- Tabla de watchlists (usuarios reales)
+public.watchlists
+├── id (uuid)
+├── name (text)
+├── description (text)
+├── owner_id (uuid) → auth.users(id)
+├── created_at (timestamp)
+└── updated_at (timestamp)
+
+-- Tabla de películas en watchlists (datos reales)
+public.watchlist_movies
+├── id (uuid)
+├── watchlist_id (uuid) → watchlists(id)
+├── movie_id (integer)
+├── movie_type (text)
+├── added_by (uuid) → auth.users(id)
+└── added_at (timestamp)
+
+-- Tabla de miembros de watchlists (usuarios reales)
+public.watchlist_members
+├── id (uuid)
+├── watchlist_id (uuid) → watchlists(id)
+├── user_id (uuid) → auth.users(id)
+├── role (text)
+└── joined_at (timestamp)
+```
+
+### **Nuevas tablas (SEGURO AGREGAR):**
+
+```sql
+-- Tabla de favoritos (nueva funcionalidad)
+public.user_favorites
+├── id (uuid)
+├── user_id (uuid) → auth.users(id)
+├── media_id (integer)
+├── media_type (text)
+└── added_at (timestamp)
+
+-- Tabla de visto (nueva funcionalidad)
+public.user_watched
+├── id (uuid)
+├── user_id (uuid) → auth.users(id)
+├── media_id (integer)
+├── media_type (text)
+└── watched_at (timestamp)
+```
+
+---
+
+## **🚨 ALERTAS CRÍTICAS**
+
+### **Si detectas estos patrones, DETENER inmediatamente:**
+
+- `DROP TABLE public.watchlists`
+- `DROP TABLE public.watchlist_movies`
+- `DROP TABLE public.watchlist_members`
+- `DELETE FROM public.watchlists`
+- `DELETE FROM public.watchlist_movies`
+- `DELETE FROM public.watchlist_members`
+- `TRUNCATE` en cualquier tabla existente
+- `ALTER TABLE` que modifique columnas existentes
+
+### **Comandos de emergencia:**
+
+- **Detener ejecución** si hay riesgo de pérdida de datos
+- **Informar al usuario** sobre cualquier riesgo potencial
+- **Sugerir backup** antes de cambios importantes
+- **Validar impacto** antes de proceder
+
+---
+
+## **💡 MEJORES PRÁCTICAS**
+
+### **Para nuevas funcionalidades:**
+
+1. **Crear nuevas tablas** en lugar de modificar existentes
+2. **Usar `CREATE TABLE IF NOT EXISTS`** para evitar errores
+3. **Mantener referencias a `auth.users(id)`** para consistencia
+4. **Agregar políticas RLS** apropiadas para nuevas tablas
+
+### **Para políticas RLS:**
+
+1. **Usar `DROP POLICY IF EXISTS`** antes de crear nuevas
+2. **Mantener políticas existentes** que funcionan
+3. **Verificar que no bloqueen acceso existente**
+4. **Probar políticas** en entorno de desarrollo
+
+### **Para migraciones:**
+
+1. **Solo agregar, nunca eliminar**
+2. **Mantener retrocompatibilidad**
+3. **Usar valores por defecto** para nuevas columnas
+4. **Probar en entorno de desarrollo** antes de producción
+
+---
+
+**🎯 OBJETIVO: Mantener la integridad de los datos de usuarios reales mientras se agregan nuevas funcionalidades de manera segura y sin interrupciones.**

@@ -1,0 +1,231 @@
+---
+description: Reglas para desarrollo seguro de componentes React en producción
+globs: src/**/*.tsx, src/**/*.ts
+alwaysApply: true
+---
+
+# ⚛️ **REGLAS DE REACT EN PRODUCCIÓN**
+
+## **⚠️ CONTEXTO CRÍTICO**
+
+- **Aplicación React en PRODUCCIÓN con usuarios reales**
+- **Componentes que manejan datos de usuarios reales**
+- **NUNCA romper funcionalidad existente**
+
+---
+
+## **🔒 PRINCIPIOS DE DESARROLLO SEGURO**
+
+### **✅ PRINCIPIOS SEGUROS:**
+
+- **Agregar funcionalidad** sin modificar existente
+- **Mantener retrocompatibilidad** con componentes existentes
+- **Preservar comportamiento** de usuarios actuales
+- **Crear nuevos componentes** en lugar de modificar existentes
+
+### **❌ PRINCIPIOS PELIGROSOS:**
+
+- **Modificar componentes existentes** sin verificar impacto
+- **Cambiar props** de componentes en uso
+- **Eliminar funcionalidad** existente
+- **Romper interfaces** de componentes
+
+---
+
+## **🛡️ PATRONES DE COMPONENTES SEGUROS**
+
+### **✅ Crear nuevos componentes (SEGURO):**
+
+```tsx
+// ✅ SEGURO: Crear nuevo componente para nueva funcionalidad
+export const WatchlistMovieCard = ({ item, config, watchlistId, onRemove }) => {
+  // Nueva funcionalidad sin afectar existente
+  return <Card>{/* Contenido del nuevo componente */}</Card>;
+};
+```
+
+### **✅ Extender componentes existentes (SEGURO):**
+
+```tsx
+// ✅ SEGURO: Agregar nuevas props opcionales
+export const MediaCard = ({
+  item,
+  config,
+  showActions = false, // Nueva prop opcional
+  onAction = () => {}, // Nueva prop opcional
+}) => {
+  return (
+    <Card>
+      {/* Contenido existente */}
+      {showActions && (
+        <CardFooter>{/* Nueva funcionalidad opcional */}</CardFooter>
+      )}
+    </Card>
+  );
+};
+```
+
+### **❌ Modificar componentes existentes (PELIGROSO):**
+
+```tsx
+// ❌ PELIGROSO: Cambiar props existentes
+export const MediaCard = ({
+  item,
+  config,
+  // ❌ Cambiar nombre de prop existente
+  onRemoveItem, // Era onRemove antes
+}) => {
+  // Esto rompería componentes que usan onRemove
+};
+```
+
+---
+
+## **🔍 VALIDACIÓN DE CAMBIOS EN COMPONENTES**
+
+### **Checklist obligatorio antes de modificar:**
+
+- [ ] **¿El componente se usa en producción?** → Verificar impacto
+- [ ] **¿Se cambian props existentes?** → ❌ PELIGROSO
+- [ ] **¿Se elimina funcionalidad existente?** → ❌ PELIGROSO
+- [ ] **¿Se agrega nueva funcionalidad opcional?** → ✅ Seguro
+- [ ] **¿Se crea nuevo componente?** → ✅ Seguro
+
+### **Componentes críticos identificados:**
+
+```tsx
+// Componentes que manejan datos de usuarios reales:
+- MediaCard.tsx → Muestra películas de usuarios
+- WatchlistList.tsx → Lista watchlists de usuarios
+- WatchlistItem.tsx → Items de watchlists de usuarios
+- WatchlistDetail.tsx → Detalle de watchlist de usuarios
+- AuthForm.tsx → Autenticación de usuarios
+- ProtectedRoute.tsx → Protección de rutas
+```
+
+---
+
+## **📋 ESTRUCTURA DE COMPONENTES ACTUAL**
+
+### **Componentes existentes (VERIFICAR IMPACTO):**
+
+```tsx
+// src/components/movies/
+MediaCard.tsx
+├── Props: item, config
+├── Funcionalidad: Mostrar película/serie
+└── Uso: En búsquedas y watchlists
+
+// src/components/watchlists/
+WatchlistList.tsx
+├── Props: watchlists, onSelect
+├── Funcionalidad: Listar watchlists
+└── Uso: Página principal
+
+WatchlistItem.tsx
+├── Props: watchlist, onSelect, onDelete
+├── Funcionalidad: Item individual de watchlist
+└── Uso: En WatchlistList
+
+WatchlistDetail.tsx
+├── Props: watchlistId
+├── Funcionalidad: Detalle de watchlist
+└── Uso: Página de detalle
+
+// src/components/auth/
+AuthForm.tsx
+├── Props: type, onSuccess
+├── Funcionalidad: Login/Registro
+└── Uso: Páginas de autenticación
+```
+
+### **Nuevos componentes (SEGURO AGREGAR):**
+
+```tsx
+// src/components/watchlists/
+WatchlistMovieCard.tsx
+├── Props: item, config, watchlistId, onRemove
+├── Funcionalidad: Tarjeta de película en watchlist
+└── Uso: En WatchlistDetail
+
+// Nuevos componentes para nuevas funcionalidades
+FavoriteButton.tsx
+WatchedButton.tsx
+RemoveButton.tsx
+```
+
+---
+
+## **🚨 ALERTAS CRÍTICAS**
+
+### **Si detectas estos patrones, DETENER inmediatamente:**
+
+- Cambiar nombres de props existentes
+- Eliminar props existentes
+- Modificar comportamiento de componentes en uso
+- Cambiar interfaces de componentes existentes
+- Eliminar funcionalidad existente
+
+### **Comandos de emergencia:**
+
+- **Detener desarrollo** si hay riesgo de romper funcionalidad
+- **Informar al usuario** sobre cualquier cambio que pueda afectar usuarios
+- **Sugerir testing** antes de implementar cambios
+- **Validar impacto** antes de proceder
+
+---
+
+## **💡 MEJORES PRÁCTICAS**
+
+### **Para nuevas funcionalidades:**
+
+1. **Crear nuevos componentes** en lugar de modificar existentes
+2. **Usar props opcionales** para nueva funcionalidad
+3. **Mantener retrocompatibilidad** con componentes existentes
+4. **Probar en entorno de desarrollo** antes de producción
+
+### **Para modificar componentes existentes:**
+
+1. **Verificar impacto** en componentes que los usan
+2. **Mantener interfaces existentes** intactas
+3. **Agregar funcionalidad opcional** sin romper existente
+4. **Documentar cambios** para otros desarrolladores
+
+### **Para testing:**
+
+1. **Probar componentes existentes** después de cambios
+2. **Verificar que usuarios actuales** mantengan funcionalidad
+3. **Validar nuevas funcionalidades** antes de implementar
+4. **Revisar consola** para errores después de cambios
+
+---
+
+## **🔧 HERRAMIENTAS DE VALIDACIÓN**
+
+### **Antes de hacer cambios:**
+
+```bash
+# Verificar que la aplicación compile
+npm run build
+
+# Verificar que no haya errores de TypeScript
+npm run type-check
+
+# Verificar que no haya errores de linting
+npm run lint
+```
+
+### **Después de hacer cambios:**
+
+```bash
+# Verificar que la aplicación funcione
+npm run dev
+
+# Verificar que no haya errores en consola
+# Revisar funcionalidad existente
+# Probar nuevas funcionalidades
+```
+
+---
+
+**🎯 OBJETIVO: Mantener la funcionalidad existente de usuarios reales mientras se agregan nuevas características de manera segura y sin interrupciones.**

@@ -14,7 +14,7 @@ import {
 import { useTMDbConfig } from '@/hooks/use-tmdb-config';
 import { supabase } from '@/integrations/supabase/client';
 import { getMovieDetails, getTVDetails } from '@/lib/tmdb-api';
-import { MediaCard } from '@/components/movies/MediaCard';
+import { WatchlistMovieCard } from '@/components/watchlists/WatchlistMovieCard';
 import { TMDbMediaItem } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { ArrowLeft, Globe, Lock, Share2, Users, X, Check } from 'lucide-react';
@@ -195,10 +195,15 @@ const WatchlistDetail = () => {
         {!loading && !configLoading && config && items.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             {items.map((item, idx) => (
-              <MediaCard
+              <WatchlistMovieCard
                 key={item.id + '-' + idx}
                 item={item}
                 config={config}
+                watchlistId={id!}
+                onRemove={() => {
+                  // Remove the item from the local state
+                  setItems((prev) => prev.filter((_, index) => index !== idx));
+                }}
               />
             ))}
           </div>
