@@ -23,6 +23,8 @@
 #### **COLABORADORES (Members):**
 
 - **Ver** todas las películas de la lista
+- **Ver** la información de la lista (nombre, descripción, etc.)
+- **Acceder** a las listas compartidas desde su dashboard
 - **Agregar películas** a la lista
 - **Eliminar solo las películas que ellos agregaron**
 - **NO pueden** eliminar películas de otros colaboradores
@@ -36,9 +38,28 @@
 ### **✅ Watchlists:**
 
 ```sql
--- Solo propietarios pueden ver/editar/eliminar sus propias watchlists
-CREATE POLICY "watchlists_owner_full_access" ON public.watchlists
-    FOR ALL USING (auth.uid() = owner_id);
+-- Propietarios y colaboradores pueden ver las listas
+CREATE POLICY "watchlists_owner_and_collaborators" ON public.watchlists
+    FOR SELECT USING (
+        -- Propietarios pueden ver sus propias listas
+        auth.uid() = owner_id OR
+        -- Colaboradores pueden ver listas donde son miembros
+        EXISTS (
+            SELECT 1 FROM public.watchlist_members
+            WHERE watchlist_id = watchlists.id
+            AND user_id = auth.uid()
+        )
+    );
+
+-- Solo propietarios pueden crear, editar y eliminar
+CREATE POLICY "watchlists_owner_manage" ON public.watchlists
+    FOR INSERT WITH CHECK (auth.uid() = owner_id);
+
+CREATE POLICY "watchlists_owner_update" ON public.watchlists
+    FOR UPDATE USING (auth.uid() = owner_id);
+
+CREATE POLICY "watchlists_owner_delete" ON public.watchlists
+    FOR DELETE USING (auth.uid() = owner_id);
 ```
 
 ### **✅ Watchlist_movies:**
@@ -88,9 +109,40 @@ CREATE POLICY "watchlist_movies_collaborator_delete" ON public.watchlist_movies
 ### **✅ Watchlist_members:**
 
 ```sql
+-- Propietarios y colaboradores pueden ver membresías
+CREATE POLICY "watchlist_members_owner_and_collaborators" ON public.watchlist_members
+    FOR SELECT USING (
+        -- Propietarios pueden ver todos los miembros de sus listas
+        EXISTS (
+            SELECT 1 FROM public.watchlists
+            WHERE id = watchlist_members.watchlist_id
+            AND owner_id = auth.uid()
+        ) OR
+        -- Colaboradores pueden ver sus propias membresías
+        user_id = auth.uid()
+    );
+
 -- Solo propietarios pueden gestionar miembros
-CREATE POLICY "watchlist_members_owner_only" ON public.watchlist_members
-    FOR ALL USING (
+CREATE POLICY "watchlist_members_owner_manage" ON public.watchlist_members
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM public.watchlists
+            WHERE id = watchlist_members.watchlist_id
+            AND owner_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "watchlist_members_owner_update" ON public.watchlist_members
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM public.watchlists
+            WHERE id = watchlist_members.watchlist_id
+            AND owner_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "watchlist_members_owner_delete" ON public.watchlist_members
+    FOR DELETE USING (
         EXISTS (
             SELECT 1 FROM public.watchlists
             WHERE id = watchlist_members.watchlist_id
@@ -123,12 +175,15 @@ CREATE POLICY "watchlist_members_owner_only" ON public.watchlist_members
 - Agregar colaboradores
 - Eliminar colaboradores
 - Cambiar roles de colaboradores
+- Ver todas las listas que ha creado
 
 // Funcionalidades de COLABORADORES:
 - Ver todas las películas de la lista
+- Ver información de la lista (nombre, descripción)
+- Acceder a las listas compartidas desde su dashboard
 - Agregar películas a la lista
 - Eliminar solo las películas que ellos agregaron
-- Ver información de la lista (nombre, descripción)
+- Ver todas las listas donde es colaborador
 ```
 
 ---
