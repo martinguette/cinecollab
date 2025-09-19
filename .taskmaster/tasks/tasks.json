@@ -127,7 +127,7 @@
         "dependencies": [
           19
         ],
-        "status": "To Do",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -458,7 +458,7 @@
         "description": "Redesign movie cards to include action buttons for liking, marking as watched, and deleting from a list. This involves creating the backend functionality for 'likes' and connecting all UI actions to their respective APIs.",
         "details": "1. **Database Schema for 'Likes'**: Create a new table in Supabase named `user_favorites` with columns: `id` (PK), `user_id` (FK to `profiles.id`), `tmdb_id` (integer), and `created_at` (timestamp). Add a composite `UNIQUE` constraint on `(user_id, tmdb_id)`. Configure Row Level Security (RLS) policies to allow users to only `INSERT`, `SELECT`, and `DELETE` their own favorite entries.\n\n2. **API Endpoint for 'Likes'**: Create a new Next.js API route at `src/app/api/movies/favorites/route.ts`. This route should handle:\n   - `POST`: To add a movie to the user's favorites. It will insert a row into the `user_favorites` table.\n   - `DELETE`: To remove a movie from favorites. It will delete the corresponding row.\n   - Use the Supabase server-side client to interact with the database, ensuring all operations are protected by user authentication and RLS.\n\n3. **Movie Card Component Redesign**: Locate the primary movie card component (e.g., `src/components/movies/MovieCard.tsx`). Add a new container at the bottom of the card. Inside this container, add three `Button` components from `shadcn/ui` with `variant=\"ghost\"` and `size=\"icon\"` for a minimal footprint. Use icons from `lucide-react`: `Heart` for like, `Eye` for watched, and `Trash2` for delete.\n\n4. **Frontend State Management (React Query)**:\n   - **Like**: Implement a `useLikeMutation` hook that calls the new `/api/movies/favorites` endpoint. Use optimistic updates to immediately toggle the `Heart` icon's fill state.\n   - **Watched**: Connect the 'Watched' button to the mutation defined in Task #20. This will update the `watched_at` column in the `list_items` table. The button's visual state (e.g., `Eye` vs `EyeOff` icon) should reflect the `watched_at` status of the movie within the current list.\n   - **Delete**: Connect the 'Delete' button to the existing item deletion mutation from Task #18. Before calling the mutation, trigger a `shadcn/ui` `AlertDialog` to confirm the user's intent to remove the movie from the list. Implement an optimistic update to immediately remove the card from the UI upon confirmation.\n\n5. **Accessibility and UX**: Wrap each action `Button` in a `shadcn/ui` `Tooltip` component. Use i18n keys (from Task #26) for the tooltip content (e.g., `movieActions.like`, `movieActions.markWatched`, `movieActions.deleteFromList`). The `aria-label` for each button should also be set using these same translation keys for screen reader support.",
         "testStrategy": "1. **UI and Accessibility Verification**: Navigate to a watchlist page. Confirm the three action buttons are visible on each movie card. Hover over each button to verify its corresponding translated tooltip appears. Use a screen reader to confirm the `aria-label` for each button is read correctly.\n\n2. **'Like' Functionality Test**: Click the 'Like' (Heart) button on a movie. Verify the icon immediately fills. Refresh the page and confirm the 'liked' state persists. Check the `user_favorites` table in the Supabase dashboard to confirm the row was created. Click the button again to 'unlike', verify the icon becomes unfilled, and confirm the row is deleted from the database.\n\n3. **'Watched' Functionality Test**: On a movie within a list, click the 'Watched' (Eye) button. Verify the UI changes to reflect the watched state. Check the `list_items` table in Supabase to confirm the `watched_at` timestamp is correctly set for that specific item. Click the button again to 'unwatch' and verify the timestamp is set to `NULL`.\n\n4. **'Delete' Functionality Test**: Click the 'Delete' (Trash) button. Verify that a confirmation `AlertDialog` appears. Click 'Cancel' and confirm the movie card remains. Click 'Delete' again and then 'Confirm' in the dialog. Verify the movie card is optimistically removed from the UI. Refresh the page and confirm the movie is no longer in the list. Check the `list_items` table to ensure the corresponding row was deleted.",
-        "status": "pending",
+        "status": "done",
         "dependencies": [
           18,
           20,
@@ -496,7 +496,7 @@
     ],
     "metadata": {
       "created": "2025-09-06T16:58:56.137Z",
-      "updated": "2025-09-19T02:56:40.806Z",
+      "updated": "2025-09-19T04:10:36.766Z",
       "description": "Tasks for master context"
     }
   }
