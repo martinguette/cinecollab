@@ -44,16 +44,27 @@ const JoinWatchlist = () => {
       .from('watchlists')
       .select('id, name, owner_id, created_at, invite_code, description')
       .eq('id', id)
-      .single()
+      .maybeSingle() // Usar maybeSingle() en lugar de single() para evitar errores si no hay resultados
       .then(({ data, error }) => {
         if (error) {
           console.error('Error fetching watchlist:', error);
-          setError(
-            `Error al buscar la watchlist.\nID: ${id}\nError: ${error.message}\nCódigo: ${error.code}`
-          );
+
+          // Si es un error de permisos RLS, mostrar mensaje específico
+          if (
+            error.code === 'PGRST116' ||
+            error.message.includes('Cannot coerce')
+          ) {
+            setError(
+              `⚠️ Acceso restringido\n\nEsta watchlist requiere permisos especiales para ser vista como invitado.\n\nPor favor:\n1. Regístrate o inicia sesión\n2. O contacta al propietario de la lista\n\nID: ${id}`
+            );
+          } else {
+            setError(
+              `Error al buscar la watchlist.\nID: ${id}\nError: ${error.message}\nCódigo: ${error.code}`
+            );
+          }
         } else if (!data) {
           setError(
-            `No se encontró la watchlist con ID: ${id}\nPosibles causas:\n- El enlace es incorrecto\n- La lista fue eliminada\n- No tienes permisos para verla`
+            `No se encontró la watchlist con ID: ${id}\n\nPosibles causas:\n- El enlace es incorrecto\n- La lista fue eliminada\n- No tienes permisos para verla como invitado`
           );
         } else {
           console.log('Watchlist encontrada:', data);
