@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,12 +14,14 @@ interface SearchBarProps {
   filters: SearchFilters;
   onFiltersChange: (filters: SearchFilters) => void;
   className?: string;
+  autoFocus?: boolean;
 }
 
 export function SearchBar({
   filters,
   onFiltersChange,
   className = '',
+  autoFocus = false,
 }: SearchBarProps) {
   const [showFilters, setShowFilters] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -32,6 +34,13 @@ export function SearchBar({
     onFiltersChange({ ...filters, query: '' });
     inputRef.current?.focus();
   };
+
+  // Auto focus when autoFocus prop is true
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
 
   const hasActiveFilters =
     filters.genres.length > 0 || !!filters.year || !!filters.region;

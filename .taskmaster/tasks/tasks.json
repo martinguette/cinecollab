@@ -434,7 +434,7 @@
         "description": "Configure the main search button to navigate to the search page and automatically focus the search input field upon arrival, optionally pre-filling it based on URL parameters.",
         "details": "1. **Update Header Component**: In the shared header component (e.g., `src/components/layout/Header.tsx`), locate the search button or icon. Ensure it uses Next.js's `<Link>` component to navigate to the `/search` page. Example: `<Link href=\"/search\" aria-label=\"Go to search page\">...Search Icon...</Link>`.\n\n2. **Modify Search Page (`src/app/search/page.tsx`)**: This page will contain the core logic for auto-focus and pre-filling.\n    *   Import necessary React and Next.js hooks: `import { useRef, useEffect } from 'react';` and `import { useSearchParams } from 'next/navigation';`.\n    *   Within the `SearchPage` component, create a ref for the input element: `const inputRef = useRef<HTMLInputElement>(null);`.\n    *   Use the `useSearchParams` hook to read any initial query from the URL: `const searchParams = useSearchParams(); const initialQuery = searchParams.get('q');`.\n    *   Implement a `useEffect` hook that runs on component mount to focus the input: `useEffect(() => { inputRef.current?.focus(); }, []);`.\n    *   Find the `Input` component (from `shadcn/ui`) and attach the ref and set its default value. This allows the input to be pre-filled from a URL parameter:\n        ```jsx\n        <Input \n          ref={inputRef}\n          defaultValue={initialQuery || ''}\n          placeholder=\"Search for movies, lists, or users...\"\n          // ... other props\n        />\n        ```",
         "testStrategy": "1. **Navigation and Focus Test**: From the homepage or any other page, click the main search button/icon in the header. Verify that the browser navigates to the `/search` URL. Confirm that the search input field is immediately focused (e.g., the cursor is blinking inside it) without requiring a user click.\n2. **Pre-fill from URL Test**: Manually navigate your browser to `/search?q=matrix`. Verify that the page loads, the search input is focused, and the text \"matrix\" is pre-filled in the input field.\n3. **Empty State Test**: Manually navigate your browser directly to `/search` (with no query parameters). Verify that the search input is focused but remains empty.\n4. **Keyboard Accessibility**: Use the 'Tab' key to navigate through the interactive elements in the header. When the search button/icon is focused, press 'Enter'. Verify this triggers the navigation to `/search` and the input field on the new page receives focus as expected.",
-        "status": "pending",
+        "status": "in-progress",
         "dependencies": [],
         "priority": "low",
         "subtasks": []
@@ -709,7 +709,7 @@
     ],
     "metadata": {
       "created": "2025-09-06T16:58:56.137Z",
-      "updated": "2025-10-02T00:30:17.265Z",
+      "updated": "2025-10-02T00:33:05.611Z",
       "description": "Tasks for master context"
     }
   }
