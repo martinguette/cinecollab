@@ -77,7 +77,26 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
   const handleAddToWatchlist = async (listId: string, listName: string) => {
     if (!user) return;
     setAddLoading(listId);
-    // @ts-expect-error: watchlist_movies is not in the generated Supabase types yet. Add it for full type safety.
+
+    // 1. Verificar si la película ya está en la lista (validación previa)
+    const { data: existingMovies } = await supabase
+      .from('watchlist_movies')
+      .select('id')
+      .eq('watchlist_id', listId)
+      .eq('media_id', mediaId)
+      .eq('media_type', mediaType);
+
+    if (existingMovies && existingMovies.length > 0) {
+      setAddLoading(null);
+      toast({
+        title: t('errors.alreadyExists'),
+        description: t('errors.alreadyExistsDescription'),
+        variant: 'default',
+      });
+      return;
+    }
+
+    // 2. Intentar agregar la película
     const { error } = await supabase.from('watchlist_movies').insert({
       watchlist_id: listId,
       media_id: mediaId,
@@ -85,13 +104,24 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
       added_by: user.id,
       added_at: new Date().toISOString(),
     });
+
     setAddLoading(null);
+
     if (error) {
-      toast({
-        title: tCommon('common.error'),
-        description: error.message,
-        variant: 'destructive',
-      });
+      // 3. Manejar error de constraint único (código 23505) como fallback
+      if (error.code === '23505') {
+        toast({
+          title: t('errors.alreadyExists'),
+          description: t('errors.alreadyExistsDescription'),
+          variant: 'default',
+        });
+      } else {
+        toast({
+          title: tCommon('common.error'),
+          description: error.message,
+          variant: 'destructive',
+        });
+      }
     } else {
       toast({
         title: t('messages.movieAdded'),

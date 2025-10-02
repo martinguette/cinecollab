@@ -62,7 +62,9 @@
     "addMovieError": "The list was created but couldn't add the movie/show.",
     "updateFavorites": "Could not update favorites",
     "updateWatched": "Could not update watched status",
-    "removeMovie": "Could not remove the movie"
+    "removeMovie": "Could not remove the movie",
+    "alreadyExists": "Already in list",
+    "alreadyExistsDescription": "This movie/show is already in the watchlist"
   },
   "delete": {
     "title": "Delete watchlist",

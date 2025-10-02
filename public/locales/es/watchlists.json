@@ -62,7 +62,9 @@
     "addMovieError": "La lista fue creada pero no se pudo agregar la película/serie.",
     "updateFavorites": "No se pudo actualizar favoritos",
     "updateWatched": "No se pudo actualizar el estado de visto",
-    "removeMovie": "No se pudo eliminar la película"
+    "removeMovie": "No se pudo eliminar la película",
+    "alreadyExists": "Ya está en la lista",
+    "alreadyExistsDescription": "Esta película/serie ya está en la watchlist"
   },
   "delete": {
     "title": "Eliminar lista",
