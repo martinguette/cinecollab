@@ -106,14 +106,14 @@ const WatchlistDetail = () => {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       toast({
-        title: '¡Enlace copiado!',
-        description: 'El enlace ha sido copiado al portapapeles.',
+        title: t('detail.copied'),
+        description: t('detail.linkCopied'),
       });
       setTimeout(() => setCopied(false), 2000);
     } catch (e) {
       toast({
-        title: 'Error',
-        description: 'No se pudo copiar el enlace.',
+        title: t('common.error'),
+        description: t('detail.copyError'),
         variant: 'destructive',
       });
     }

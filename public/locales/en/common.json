@@ -50,5 +50,12 @@
   "notFound": {
     "message": "Oops! Page not found",
     "returnHome": "Return to Home"
+  },
+  "media": {
+    "noOverview": "No overview available.",
+    "watchTrailer": "Watch Trailer",
+    "director": "Director",
+    "cast": "Cast",
+    "notAvailable": "N/A"
   }
 }

@@ -150,8 +150,8 @@ export function WatchlistMovieCard({
       }
 
       toast({
-        title: 'Película eliminada',
-        description: `${title} fue eliminada de la lista`,
+        title: t('messages.movieRemoved'),
+        description: t('messages.movieRemovedDescription', { title }),
       });
 
       // Call the onRemove callback to update the parent component
@@ -160,8 +160,8 @@ export function WatchlistMovieCard({
       }
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'No se pudo eliminar la película',
+        title: t('common.error'),
+        description: error.message || t('errors.removeMovie'),
         variant: 'destructive',
       });
     } finally {
@@ -378,20 +378,19 @@ export function WatchlistMovieCard({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                  <AlertDialogTitle>{t('remove.title')}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Esta acción eliminará permanentemente "{title}" de la lista.
-                    Esta acción no se puede deshacer.
+                    {t('remove.confirmation', { title })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleRemove}
                     disabled={removing}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    {removing ? 'Eliminando...' : 'Eliminar'}
+                    {removing ? t('remove.removing') : t('buttons.remove')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

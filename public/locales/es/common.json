@@ -50,5 +50,12 @@
   "notFound": {
     "message": "¡Ups! Página no encontrada",
     "returnHome": "Volver al Inicio"
+  },
+  "media": {
+    "noOverview": "No hay descripción disponible.",
+    "watchTrailer": "Ver Tráiler",
+    "director": "Director",
+    "cast": "Reparto",
+    "notAvailable": "N/D"
   }
 }

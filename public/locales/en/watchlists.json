@@ -27,7 +27,9 @@
     "shareTitle": "Share this watchlist",
     "shareLink": "Share link",
     "copyLink": "Copy link",
-    "copied": "Copied!"
+    "copied": "Link copied!",
+    "linkCopied": "The link has been copied to the clipboard.",
+    "copyError": "Could not copy the link."
   },
   "actions": {
     "addToWatchlist": "Add to Watchlist",
@@ -46,7 +48,8 @@
     "updatedDescription": "The watchlist was updated.",
     "movieAdded": "Movie added",
     "movieAddedDescription": "The movie/show was added to \"{{name}}\".",
-    "movieRemoved": "Movie removed from watchlist",
+    "movieRemoved": "Movie removed",
+    "movieRemovedDescription": "{{title}} was removed from the list",
     "inviteSent": "Invitation sent successfully",
     "addedToFavorites": "{{title}} was added to your favorites",
     "removedFromFavorites": "{{title}} was removed from your favorites",
@@ -58,7 +61,8 @@
     "memberError": "The list was created but couldn't add as member.",
     "addMovieError": "The list was created but couldn't add the movie/show.",
     "updateFavorites": "Could not update favorites",
-    "updateWatched": "Could not update watched status"
+    "updateWatched": "Could not update watched status",
+    "removeMovie": "Could not remove the movie"
   },
   "delete": {
     "title": "Delete watchlist",
@@ -67,6 +71,12 @@
   },
   "buttons": {
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "remove": "Remove"
+  },
+  "remove": {
+    "title": "Are you sure?",
+    "confirmation": "This action will permanently remove \"{{title}}\" from the list. This action cannot be undone.",
+    "removing": "Removing..."
   }
 }

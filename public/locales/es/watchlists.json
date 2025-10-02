@@ -27,7 +27,9 @@
     "shareTitle": "Compartir esta lista",
     "shareLink": "Enlace para compartir",
     "copyLink": "Copiar enlace",
-    "copied": "¡Copiado!"
+    "copied": "¡Enlace copiado!",
+    "linkCopied": "El enlace ha sido copiado al portapapeles.",
+    "copyError": "No se pudo copiar el enlace."
   },
   "actions": {
     "addToWatchlist": "Agregar a Lista",
@@ -46,7 +48,8 @@
     "updatedDescription": "La lista fue actualizada.",
     "movieAdded": "Película agregada",
     "movieAddedDescription": "La película/serie fue agregada a \"{{name}}\".",
-    "movieRemoved": "Película quitada de la lista",
+    "movieRemoved": "Película eliminada",
+    "movieRemovedDescription": "{{title}} fue eliminada de la lista",
     "inviteSent": "Invitación enviada exitosamente",
     "addedToFavorites": "{{title}} fue agregada a tus favoritos",
     "removedFromFavorites": "{{title}} fue quitada de tus favoritos",
@@ -58,7 +61,8 @@
     "memberError": "La lista fue creada pero no se pudo agregar como miembro.",
     "addMovieError": "La lista fue creada pero no se pudo agregar la película/serie.",
     "updateFavorites": "No se pudo actualizar favoritos",
-    "updateWatched": "No se pudo actualizar el estado de visto"
+    "updateWatched": "No se pudo actualizar el estado de visto",
+    "removeMovie": "No se pudo eliminar la película"
   },
   "delete": {
     "title": "Eliminar lista",
@@ -67,6 +71,12 @@
   },
   "buttons": {
     "cancel": "Cancelar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "remove": "Quitar"
+  },
+  "remove": {
+    "title": "¿Estás seguro?",
+    "confirmation": "Esta acción eliminará permanentemente \"{{title}}\" de la lista. Esta acción no se puede deshacer.",
+    "removing": "Quitando..."
   }
 }
