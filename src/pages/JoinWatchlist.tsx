@@ -23,20 +23,40 @@ const JoinWatchlist = () => {
 
   useEffect(() => {
     if (!id) return;
-    // Obtener info de la watchlist
+
+    console.log('Buscando watchlist con ID:', id);
+
+    // Primero, vamos a listar todas las watchlists para debug
+    supabase
+      .from('watchlists')
+      .select('id, name, owner_id')
+      .limit(5)
+      .then(({ data: allLists, error: listError }) => {
+        if (listError) {
+          console.error('Error listing watchlists:', listError);
+        } else {
+          console.log('Watchlists disponibles:', allLists);
+        }
+      });
+
+    // Obtener info de la watchlist específica
     supabase
       .from('watchlists')
       .select('id, name, owner_id, created_at, invite_code, description')
       .eq('id', id)
       .single()
       .then(({ data, error }) => {
-        if (error || !data) {
+        if (error) {
+          console.error('Error fetching watchlist:', error);
           setError(
-            `No se encontró la watchlist.\nID recibido: ${id}\nError: ${
-              error ? error.message : 'No data'
-            }`
+            `Error al buscar la watchlist.\nID: ${id}\nError: ${error.message}\nCódigo: ${error.code}`
+          );
+        } else if (!data) {
+          setError(
+            `No se encontró la watchlist con ID: ${id}\nPosibles causas:\n- El enlace es incorrecto\n- La lista fue eliminada\n- No tienes permisos para verla`
           );
         } else {
+          console.log('Watchlist encontrada:', data);
           setWatchlist(data);
         }
       });
