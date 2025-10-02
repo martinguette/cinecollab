@@ -57,7 +57,24 @@ const { i18n } = useTranslation();
 
 ## **🔧 IMPLEMENTACIÓN**
 
-### **1. Estructura del Contexto:**
+### **1. Detección Automática de Idioma:**
+
+```tsx
+// src/lib/i18n.ts
+detection: {
+  order: ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+  caches: ['localStorage'],
+  lookupLocalStorage: 'i18nextLng',
+  // Convierte códigos de idioma del navegador a nuestros idiomas soportados
+  convertDetectedLanguage: (lng) => {
+    const supportedLanguages = ['en', 'es'];
+    const detectedLang = lng.split('-')[0].toLowerCase();
+    return supportedLanguages.includes(detectedLang) ? detectedLang : 'en';
+  },
+}
+```
+
+### **2. Estructura del Contexto:**
 
 ```tsx
 // src/context/LanguageContext.tsx
@@ -74,7 +91,7 @@ export function useLanguage(): LanguageContextType {
 }
 ```
 
-### **2. Provider en App:**
+### **3. Provider en App:**
 
 ```tsx
 // src/main.tsx
@@ -89,7 +106,7 @@ export function useLanguage(): LanguageContextType {
 </BrowserRouter>
 ```
 
-### **3. Componentes que cambian idioma:**
+### **4. Componentes que cambian idioma:**
 
 ```tsx
 // LanguageSwitcher, Settings, etc.
@@ -111,6 +128,13 @@ export function LanguageSwitcher() {
 ---
 
 ## **📋 BENEFICIOS DEL PATRÓN**
+
+### **✅ Detección Inteligente:**
+
+- **Detección automática**: Usa idioma del navegador/dispositivo del usuario
+- **Prioridad correcta**: localStorage > navegador > HTML > fallback
+- **Conversión inteligente**: 'es-ES', 'es-MX' → 'es' | 'en-US', 'en-GB' → 'en'
+- **Persistencia manual**: Recuerda selección del usuario permanentemente
 
 ### **✅ Rendimiento Excelente:**
 

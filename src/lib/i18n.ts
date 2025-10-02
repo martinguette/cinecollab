@@ -10,7 +10,7 @@ i18n
   .init({
     fallbackLng: 'en',
     debug: process.env.NODE_ENV === 'development',
-    lng: 'en', // Set default language explicitly
+    // Remove explicit lng to allow automatic detection
 
     interpolation: {
       escapeValue: false, // React already does escaping
@@ -24,9 +24,19 @@ i18n
     },
 
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',
+      lookupFromPathIndex: 0,
+      lookupFromSubdomainIndex: 0,
+      // Convert browser language codes to our supported languages
+      convertDetectedLanguage: (lng) => {
+        // Handle language codes like 'es-ES', 'es-MX' -> 'es'
+        // Handle language codes like 'en-US', 'en-GB' -> 'en'
+        const supportedLanguages = ['en', 'es'];
+        const detectedLang = lng.split('-')[0].toLowerCase();
+        return supportedLanguages.includes(detectedLang) ? detectedLang : 'en';
+      },
     },
 
     supportedLngs: ['en', 'es'],
