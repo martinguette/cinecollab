@@ -525,15 +525,43 @@
       {
         "id": 45,
         "title": "Corregir bug de sincronización de películas en watchlists colaborativas",
-        "description": "Solucionar un bug crítico donde las películas añadidas por un usuario a una watchlist colaborativa no son visibles para los otros miembros de la lista. El problema parece estar relacionado con las políticas de Row Level Security (RLS) en la tabla `watchlist_movies`.",
-        "status": "pending",
+        "description": "Solucionar un bug crítico donde las películas añadidas por un usuario a una watchlist colaborativa no son visibles para los otros miembros. La causa raíz ha sido identificada como una inconsistencia en las políticas de Row Level Security (RLS), que usaban una tabla incorrecta (`watchlist_collaborators`) en lugar de `watchlist_members`.",
+        "status": "done",
         "dependencies": [
           26
         ],
         "priority": "high",
-        "details": "El análisis inicial sugiere que el problema no es la creación de listas por nuevos usuarios, sino la visibilidad de los datos dentro de una lista compartida. Cuando un usuario (especialmente uno nuevo) añade una película, los demás colaboradores no pueden verla. La causa más probable es una política RLS demasiado restrictiva.\n\n1.  **Corregir Política RLS en `watchlist_movies` (Backend - Supabase)**:\n    *   Navegue al editor de políticas de Supabase para la tabla `watchlist_movies`.\n    *   La política de `SELECT` actual es probablemente demasiado restrictiva, posiblemente algo como `(auth.uid() = added_by)`, lo que solo permitiría a los usuarios ver las películas que ellos mismos han añadido.\n    *   Reemplace o actualice la política de `SELECT` para permitir que cualquier miembro de la watchlist pueda ver todas las películas de esa lista. La lógica correcta es: \"Un usuario puede leer una entrada en `watchlist_movies` si existe una entrada correspondiente en `watchlist_members` que vincule su `user_id` con el `list_id` de la película\".\n    *   Implemente la siguiente política SQL para la operación `SELECT`:\n        ```sql\n        (EXISTS (\n          SELECT 1\n          FROM watchlist_members\n          WHERE (watchlist_members.list_id = watchlist_movies.list_id) AND (watchlist_members.user_id = auth.uid())\n        ))\n        ```\n\n2.  **Verificar Lógica de Fetching de Datos (Frontend/Backend)**:\n    *   Revise la función que obtiene los datos de la watchlist, probablemente `getWatchlistWithMovies` en `src/lib/supabase/queries.ts`.\n    *   Asegúrese de que la consulta de Supabase no contenga filtros del lado del cliente o del servidor que restrinjan incorrectamente las películas por `added_by`. La consulta debe seleccionar todas las películas asociadas al `listId` y dejar que la RLS se encargue de la seguridad.\n    *   La consulta debería parecerse a esto, obteniendo todas las películas que la RLS permita:\n        ```typescript\n        // en src/lib/supabase/queries.ts\n        const { data, error } = await supabase\n          .from('lists')\n          .select(`\n            *,\n            watchlist_movies (*, movies(*), profiles(id, username, avatar_url))\n          `)\n          .eq('id', listId)\n          .single();\n        ```\n\n3.  **Confirmar Sincronización de Perfiles de Nuevos Usuarios**:\n    *   Como medida de seguridad, verifique que el trigger de Supabase `handle_new_user` esté funcionando correctamente y creando una entrada en la tabla `profiles` inmediatamente después de que un nuevo usuario se registra en `auth.users`. Un perfil faltante podría causar problemas secundarios al mostrar quién añadió la película, aunque no sea la causa raíz de la invisibilidad.",
+        "details": "El análisis ha concluido que las políticas de RLS en la tabla `watchlist_movies` estaban incorrectamente configuradas para verificar la membresía en la tabla `watchlist_collaborators`, mientras que el frontend y la lógica de invitaciones utilizan `watchlist_members`. Esta discrepancia es la causa del bug de sincronización.\n\nSe ha creado un script SQL, `fix_collaborative_movies_sync.sql`, que corrige las políticas de seguridad para que consulten la tabla correcta (`watchlist_members`). El siguiente paso es ejecutar este script y verificar la solución.",
         "testStrategy": "1.  **Flujo de Prueba Colaborativo End-to-End**:\n    *   Use dos cuentas de usuario distintas: `Usuario A` (puede ser antiguo) y `Usuario B` (registre una cuenta nueva para esta prueba).\n    *   `Usuario A` crea una nueva watchlist y la comparte con `Usuario B`.\n    *   `Usuario B` acepta la invitación, navega a la lista y añade una película (`Película X`).\n    *   **Verificación**: `Usuario A` debe recargar la página de la watchlist y ver `Película X` en la lista, junto con la información de que fue añadida por `Usuario B`.\n    *   `Usuario A` añade otra película (`Película Y`).\n    *   **Verificación**: `Usuario B` debe recargar la página y ver `Película Y` en la lista.\n\n2.  **Prueba de Aislamiento de RLS (SQL Editor)**:\n    *   En el editor SQL de Supabase, ejecute una consulta como `Usuario A` para seleccionar películas de la lista compartida que fueron añadidas por `Usuario B`. Verifique que la consulta devuelva la `Película X`.\n        ```sql\n        -- SET ROLE a 'authenticated'; -- (Simulando ser Usuario A)\n        SELECT * FROM watchlist_movies WHERE list_id = '...' AND added_by = '...'; -- (ID de la lista y ID de Usuario B)\n        ```\n    *   Use una tercera cuenta, `Usuario C`, que no sea miembro de la lista. Ejecute la misma consulta. Verifique que no devuelva ningún resultado, confirmando que la política de seguridad sigue siendo efectiva.\n\n3.  **Prueba de Regresión de Listas Privadas**:\n    *   `Usuario A` crea una lista privada (no compartida).\n    *   Verifique que `Usuario A` puede añadir y ver películas en su lista.\n    *   Verifique que `Usuario B` no puede acceder a la URL de la lista privada de `Usuario A` ni ver su contenido a través de ninguna consulta.",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "",
+            "description": "Ejecutar el script `fix_collaborative_movies_sync.sql` en el entorno de Supabase para corregir las políticas RLS en la tabla `watchlist_movies`.",
+            "status": "done",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "",
+            "description": "Verificar que la lógica de fetching de datos en el frontend (`getWatchlistWithMovies`) no contiene filtros redundantes y depende únicamente de la RLS para la seguridad.",
+            "status": "done",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "",
+            "description": "Realizar pruebas End-to-End según la estrategia de prueba para confirmar la resolución completa del bug.",
+            "status": "done",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 46,
@@ -709,7 +737,7 @@
     ],
     "metadata": {
       "created": "2025-09-06T16:58:56.137Z",
-      "updated": "2025-10-02T06:21:16.254Z",
+      "updated": "2025-10-02T06:47:20.322Z",
       "description": "Tasks for master context"
     }
   }
