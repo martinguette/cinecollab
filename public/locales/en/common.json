@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "CineCollab",
+    "tagline": "Find your next favorite show",
+    "description": "Search for movies and TV shows, create watchlists, and collaborate with friends"
+  },
+  "navigation": {
+    "search": "Search",
+    "watchlists": "Watchlists",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "search": {
+    "placeholder": "Search for movies, TV shows...",
+    "noResults": "No results found. Try adjusting your search or filters.",
+    "enterSearch": "Enter a search term to find movies and TV shows.",
+    "loadMore": "Load More"
+  },
+  "buttons": {
+    "search": "Search",
+    "clear": "Clear",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "join": "Join",
+    "leave": "Leave",
+    "share": "Share",
+    "copy": "Copy",
+    "close": "Close"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  }
+}

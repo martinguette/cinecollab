@@ -1,0 +1,41 @@
+{
+  "title": "Watchlists",
+  "create": {
+    "title": "Create Watchlist",
+    "name": "Name",
+    "description": "Description",
+    "create": "Create Watchlist",
+    "namePlaceholder": "Enter watchlist name",
+    "descriptionPlaceholder": "Enter description (optional)"
+  },
+  "list": {
+    "empty": "No watchlists yet",
+    "createFirst": "Create your first watchlist",
+    "myWatchlists": "My Watchlists",
+    "sharedWatchlists": "Shared Watchlists"
+  },
+  "detail": {
+    "addMovie": "Add Movie",
+    "empty": "No movies in this watchlist",
+    "addFirst": "Add your first movie",
+    "collaborators": "Collaborators",
+    "invite": "Invite",
+    "settings": "Settings"
+  },
+  "actions": {
+    "addToWatchlist": "Add to Watchlist",
+    "removeFromWatchlist": "Remove from Watchlist",
+    "markAsWatched": "Mark as Watched",
+    "markAsUnwatched": "Mark as Unwatched",
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites"
+  },
+  "messages": {
+    "created": "Watchlist created successfully",
+    "deleted": "Watchlist deleted successfully",
+    "updated": "Watchlist updated successfully",
+    "movieAdded": "Movie added to watchlist",
+    "movieRemoved": "Movie removed from watchlist",
+    "inviteSent": "Invitation sent successfully"
+  }
+}

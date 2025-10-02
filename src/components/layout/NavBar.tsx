@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { Bell, Film, List, Search, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from 'react-i18next';
 /* import { NotificationPopover } from '../notifications/NotificationPopover'; */
 import { useContext } from 'react';
 import { useAuth } from '@/context/useAuth';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +19,7 @@ import {
 export function NavBar() {
   const isMobile = useIsMobile();
   const { user, logout } = useAuth();
+  const { t } = useTranslation('common');
 
   const handleSignOut = async () => {
     await logout();
@@ -41,8 +44,8 @@ export function NavBar() {
           <Button variant="ghost" size="sm" asChild>
             <Link to="/search" className="flex items-center gap-1">
               <Search className="h-4 w-4" />
-              <span className="hidden sm:inline">Search</span>
-              <span className="sm:hidden">Search</span>
+              <span className="hidden sm:inline">{t('navigation.search')}</span>
+              <span className="sm:hidden">{t('navigation.search')}</span>
             </Link>
           </Button>
 
@@ -51,13 +54,17 @@ export function NavBar() {
               {!isMobile ? (
                 <>
                   <List className="h-4 w-4" />
-                  <span className="hidden sm:inline">Watchlists</span>
+                  <span className="hidden sm:inline">
+                    {t('navigation.watchlists')}
+                  </span>
                 </>
               ) : (
-                <span>Watchlists</span>
+                <span>{t('navigation.watchlists')}</span>
               )}
             </Link>
           </Button>
+
+          <LanguageSwitcher />
 
           {/*   <NotificationPopover /> */}
 
@@ -83,7 +90,7 @@ export function NavBar() {
                 onClick={handleSignOut}
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Cerrar sesión</span>
+                <span>{t('navigation.logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

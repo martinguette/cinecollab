@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "CineCollab",
+    "tagline": "Encuentra tu próxima serie favorita",
+    "description": "Busca películas y series, crea listas de seguimiento y colabora con amigos"
+  },
+  "navigation": {
+    "search": "Buscar",
+    "watchlists": "Listas",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión"
+  },
+  "search": {
+    "placeholder": "Buscar películas, series...",
+    "noResults": "No se encontraron resultados. Intenta ajustar tu búsqueda o filtros.",
+    "enterSearch": "Ingresa un término de búsqueda para encontrar películas y series.",
+    "loadMore": "Cargar más"
+  },
+  "buttons": {
+    "search": "Buscar",
+    "clear": "Limpiar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "join": "Unirse",
+    "leave": "Salir",
+    "share": "Compartir",
+    "copy": "Copiar",
+    "close": "Cerrar"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "Éxito",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No"
+  }
+}

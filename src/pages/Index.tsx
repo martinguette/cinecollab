@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout/Layout';
 import { SearchBar } from '@/components/search/SearchBar';
 import { SearchFilters, TMDbMediaItem } from '@/types';
@@ -12,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { getTrendingMedia } from '@/lib/tmdb-api';
 
 const Index = () => {
+  const { t } = useTranslation('common');
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
     genres: [],
@@ -48,12 +50,9 @@ const Index = () => {
       <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
         <div className="text-center space-y-3 py-4">
           <h1 className="text-3xl md:text-4xl font-semibold">
-            Find your next favorite show
+            {t('app.tagline')}
           </h1>
-          <p className="text-muted-foreground">
-            Search for movies and TV shows, create watchlists, and collaborate
-            with friends
-          </p>
+          <p className="text-muted-foreground">{t('app.description')}</p>
         </div>
 
         <SearchBar

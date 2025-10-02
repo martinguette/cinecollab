@@ -1,0 +1,41 @@
+{
+  "title": "Listas",
+  "create": {
+    "title": "Crear Lista",
+    "name": "Nombre",
+    "description": "Descripción",
+    "create": "Crear Lista",
+    "namePlaceholder": "Ingresa el nombre de la lista",
+    "descriptionPlaceholder": "Ingresa descripción (opcional)"
+  },
+  "list": {
+    "empty": "Aún no tienes listas",
+    "createFirst": "Crea tu primera lista",
+    "myWatchlists": "Mis Listas",
+    "sharedWatchlists": "Listas Compartidas"
+  },
+  "detail": {
+    "addMovie": "Agregar Película",
+    "empty": "No hay películas en esta lista",
+    "addFirst": "Agrega tu primera película",
+    "collaborators": "Colaboradores",
+    "invite": "Invitar",
+    "settings": "Configuración"
+  },
+  "actions": {
+    "addToWatchlist": "Agregar a Lista",
+    "removeFromWatchlist": "Quitar de Lista",
+    "markAsWatched": "Marcar como Visto",
+    "markAsUnwatched": "Marcar como No Visto",
+    "addToFavorites": "Agregar a Favoritos",
+    "removeFromFavorites": "Quitar de Favoritos"
+  },
+  "messages": {
+    "created": "Lista creada exitosamente",
+    "deleted": "Lista eliminada exitosamente",
+    "updated": "Lista actualizada exitosamente",
+    "movieAdded": "Película agregada a la lista",
+    "movieRemoved": "Película quitada de la lista",
+    "inviteSent": "Invitación enviada exitosamente"
+  }
+}
