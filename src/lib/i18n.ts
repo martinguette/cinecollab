@@ -10,6 +10,7 @@ i18n
   .init({
     fallbackLng: 'en',
     debug: process.env.NODE_ENV === 'development',
+    lng: 'en', // Set default language explicitly
 
     interpolation: {
       escapeValue: false, // React already does escaping
@@ -17,17 +18,26 @@ i18n
 
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
+      requestOptions: {
+        cache: 'no-cache', // Prevent caching issues
+      },
     },
 
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
     },
 
     supportedLngs: ['en', 'es'],
+    cleanCode: true,
 
-    ns: ['common', 'auth', 'watchlists', 'search'],
+    ns: ['common', 'auth', 'watchlists'],
     defaultNS: 'common',
+
+    react: {
+      useSuspense: false, // Prevent suspense issues
+    },
   });
 
 export default i18n;

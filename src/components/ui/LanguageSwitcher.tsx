@@ -17,8 +17,16 @@ const languages = [
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
-  const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
+  const handleLanguageChange = async (languageCode: string) => {
+    try {
+      await i18n.changeLanguage(languageCode);
+      // Force reload of all namespaces to ensure fresh translations
+      await i18n.reloadResources();
+      // Force a page reload to ensure all components re-render with new language
+      window.location.reload();
+    } catch (error) {
+      console.error('Error changing language:', error);
+    }
   };
 
   const currentLanguage =
