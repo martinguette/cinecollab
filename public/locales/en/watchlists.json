@@ -39,10 +39,19 @@
   },
   "messages": {
     "created": "Watchlist created successfully",
+    "createdDescription": "The list \"{{name}}\" was created successfully.",
     "deleted": "Watchlist deleted successfully",
+    "deletedDescription": "The watchlist was deleted.",
     "updated": "Watchlist updated successfully",
-    "movieAdded": "Movie added to watchlist",
+    "updatedDescription": "The watchlist was updated.",
+    "movieAdded": "Movie added",
+    "movieAddedDescription": "The movie/show was added to \"{{name}}\".",
     "movieRemoved": "Movie removed from watchlist",
     "inviteSent": "Invitation sent successfully"
+  },
+  "errors": {
+    "createError": "Error creating the list",
+    "memberError": "The list was created but couldn't add as member.",
+    "addMovieError": "The list was created but couldn't add the movie/show."
   }
 }

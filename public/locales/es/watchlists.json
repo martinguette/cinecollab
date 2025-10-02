@@ -39,10 +39,19 @@
   },
   "messages": {
     "created": "Lista creada exitosamente",
+    "createdDescription": "La lista \"{{name}}\" fue creada correctamente.",
     "deleted": "Lista eliminada exitosamente",
+    "deletedDescription": "La lista fue eliminada.",
     "updated": "Lista actualizada exitosamente",
-    "movieAdded": "Película agregada a la lista",
+    "updatedDescription": "La lista fue actualizada.",
+    "movieAdded": "Película agregada",
+    "movieAddedDescription": "La película/serie fue agregada a \"{{name}}\".",
     "movieRemoved": "Película quitada de la lista",
     "inviteSent": "Invitación enviada exitosamente"
+  },
+  "errors": {
+    "createError": "Error creando la lista",
+    "memberError": "La lista fue creada pero no se pudo agregar como miembro.",
+    "addMovieError": "La lista fue creada pero no se pudo agregar la película/serie."
   }
 }

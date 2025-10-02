@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Watchlist } from './WatchlistList';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
   onUpdated,
   onDeleted,
 }) => {
+  const { t } = useTranslation('watchlists');
   const date = new Date(watchlist.created_at);
   const formattedDate = date.toLocaleString('es-ES', {
     day: '2-digit',
@@ -64,8 +66,8 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
       setError(error.message);
     } else {
       toast({
-        title: 'Lista actualizada',
-        description: 'La watchlist fue actualizada.',
+        title: t('messages.updated'),
+        description: t('messages.updatedDescription'),
       });
       setEditOpen(false);
       if (onUpdated) onUpdated({ ...watchlist, name, description });
@@ -85,8 +87,8 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
       setError(error.message);
     } else {
       toast({
-        title: 'Lista eliminada',
-        description: 'La watchlist fue eliminada.',
+        title: t('messages.deleted'),
+        description: t('messages.deletedDescription'),
       });
       setDeleteOpen(false);
       if (onDeleted) onDeleted(watchlist.id);

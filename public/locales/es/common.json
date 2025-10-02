@@ -37,7 +37,8 @@
     "success": "Éxito",
     "confirm": "Confirmar",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "close": "Cerrar"
   },
   "footer": {
     "home": "Inicio"

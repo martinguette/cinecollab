@@ -37,7 +37,8 @@
     "success": "Success",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "close": "Close"
   },
   "footer": {
     "home": "Home"

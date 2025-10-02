@@ -55,7 +55,7 @@ export function CreateWatchlistDialog({
       .select();
     if (error || !data || data.length === 0) {
       setLoading(false);
-      setError(error ? error.message : 'Error creando la lista');
+      setError(error ? error.message : t('errors.createError'));
       return;
     }
     const newWatchlist = data[0];
@@ -69,8 +69,8 @@ export function CreateWatchlistDialog({
 
     // Notificación de lista creada
     toast({
-      title: 'Watchlist creada',
-      description: `La lista "${name}" fue creada correctamente.`,
+      title: t('messages.created'),
+      description: t('messages.createdDescription', { name }),
     });
 
     // Si mediaId y mediaType están presentes, agregar el ítem a la nueva lista
@@ -88,8 +88,8 @@ export function CreateWatchlistDialog({
       addMovieError = addError;
       if (!addError) {
         toast({
-          title: 'Película agregada',
-          description: `La película/serie fue agregada a "${name}".`,
+          title: t('messages.movieAdded'),
+          description: t('messages.movieAddedDescription', { name }),
         });
       }
     }
@@ -99,11 +99,9 @@ export function CreateWatchlistDialog({
     setName('');
     setDescription('');
     if (memberError) {
-      setError('La lista fue creada pero no se pudo agregar como miembro.');
+      setError(t('errors.memberError'));
     } else if (addMovieError) {
-      setError(
-        'La lista fue creada pero no se pudo agregar la película/serie.'
-      );
+      setError(t('errors.addMovieError'));
     } else if (onCreated) {
       onCreated(newWatchlist);
     }

@@ -182,7 +182,7 @@ const WatchlistDetail = () => {
                   onClick={() => setModalOpen(false)}
                   type="button"
                 >
-                  {t('buttons.close')}
+                  {t('common.close')}
                 </Button>
               </DialogFooter>
             </DialogContent>
