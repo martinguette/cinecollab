@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,6 +26,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ mode, onModeChange }: AuthFormProps) {
+  const { t } = useTranslation('auth');
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const { loginWithGoogle } = useContext(AuthContext);
@@ -32,18 +34,18 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
   // Zod schemas
   const registerSchema = z
     .object({
-      name: z.string().min(2, 'El nombre es requerido'),
-      email: z.string().email('Email inválido'),
-      password: z.string().min(6, 'Mínimo 6 caracteres'),
+      name: z.string().min(2, t('validation.nameRequired')),
+      email: z.string().email(t('validation.emailInvalid')),
+      password: z.string().min(6, t('validation.passwordMin')),
       confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
-      message: 'Las contraseñas no coinciden',
+      message: t('validation.passwordMismatch'),
       path: ['confirmPassword'],
     });
   const loginSchema = z.object({
-    email: z.string().email('Email inválido'),
-    password: z.string().min(6, 'Mínimo 6 caracteres'),
+    email: z.string().email(t('validation.emailInvalid')),
+    password: z.string().min(6, t('validation.passwordMin')),
   });
 
   const form = useForm({
@@ -66,7 +68,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
     try {
       await loginWithGoogle();
     } catch (e) {
-      alert('Error al iniciar sesión con Google');
+      alert(t('errors.googleLogin'));
     } finally {
       setLoadingGoogle(false);
     }
@@ -99,12 +101,12 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
             <span className="text-2xl font-bold">Cinecollab</span>
           </div>
           <CardTitle className="text-2xl">
-            {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+            {mode === 'login' ? t('login.title') : t('register.title')}
           </CardTitle>
           <CardDescription>
             {mode === 'login'
-              ? 'Ingresa tus credenciales para acceder'
-              : 'Crea una cuenta para comenzar'}
+              ? t('login.description')
+              : t('register.description')}
           </CardDescription>
         </CardHeader>
 
@@ -118,7 +120,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
             {loadingGoogle ? (
               <span className="flex items-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                Iniciando con Google...
+                {t('google.loading')}
               </span>
             ) : (
               <>
@@ -140,7 +142,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Continuar con Google
+                {t('google.continue')}
               </>
             )}
           </Button>
@@ -157,11 +159,11 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {mode === 'register' && (
               <div className="space-y-2">
-                <Label htmlFor="name">Nombre</Label>
+                <Label htmlFor="name">{t('fields.name')}</Label>
                 <Input
                   id="name"
                   type="text"
-                  placeholder="Tu nombre"
+                  placeholder={t('placeholders.name')}
                   {...register('name')}
                   className="pl-3"
                   disabled={loading}
@@ -174,13 +176,13 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('fields.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="tu@email.com"
+                  placeholder={t('placeholders.email')}
                   {...register('email')}
                   className="pl-10"
                   disabled={loading}
@@ -193,13 +195,13 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password">{t('fields.password')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder={t('placeholders.password')}
                   {...register('password')}
                   className="pl-10"
                   disabled={loading}
@@ -213,11 +215,13 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
             </div>
             {mode === 'register' && (
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                <Label htmlFor="confirmPassword">
+                  {t('fields.confirmPassword')}
+                </Label>
                 <Input
                   id="confirmPassword"
                   type="password"
-                  placeholder="Repite tu contraseña"
+                  placeholder={t('placeholders.confirmPassword')}
                   {...register('confirmPassword')}
                   className="pl-3"
                   disabled={loading}
@@ -233,7 +237,9 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
               {loading ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                  {mode === 'login' ? 'Ingresando...' : 'Creando cuenta...'}
+                  {mode === 'login'
+                    ? t('login.loading')
+                    : t('register.loading')}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
@@ -242,7 +248,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
                   ) : (
                     <User className="h-4 w-4" />
                   )}
-                  {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+                  {mode === 'login' ? t('login.button') : t('register.button')}
                 </div>
               )}
             </Button>
@@ -251,12 +257,14 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
 
         <CardFooter className="flex flex-col items-center gap-2">
           <p className="text-sm text-muted-foreground">
-            {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}{' '}
+            {mode === 'login' ? t('login.noAccount') : t('register.hasAccount')}{' '}
             <Link
               to={mode === 'login' ? '/auth/register' : '/auth/login'}
               className="underline font-semibold hover:text-primary"
             >
-              {mode === 'login' ? 'Regístrate' : 'Inicia sesión'}
+              {mode === 'login'
+                ? t('login.registerLink')
+                : t('register.loginLink')}
             </Link>
           </p>
           <div className="flex gap-2 text-xs text-muted-foreground">
@@ -266,7 +274,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
               rel="noopener noreferrer"
               className="underline hover:text-foreground"
             >
-              Terms
+              {t('links.terms')}
             </a>
             <span>|</span>
             <a
@@ -275,7 +283,7 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
               rel="noopener noreferrer"
               className="underline hover:text-foreground"
             >
-              Privacy
+              {t('links.privacy')}
             </a>
           </div>
         </CardFooter>

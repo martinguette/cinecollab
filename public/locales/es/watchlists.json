@@ -1,0 +1,99 @@
+{
+  "title": "Listas",
+  "create": {
+    "title": "Crear Lista",
+    "name": "Nombre",
+    "description": "Descripción",
+    "create": "Crear Lista",
+    "namePlaceholder": "Ingresa el nombre de la lista",
+    "descriptionPlaceholder": "Ingresa descripción (opcional)"
+  },
+  "list": {
+    "empty": "Aún no tienes listas",
+    "createFirst": "Crea tu primera lista",
+    "myWatchlists": "Mis Listas",
+    "sharedWatchlists": "Listas Compartidas"
+  },
+  "detail": {
+    "addMovie": "Agregar Película",
+    "empty": "No hay películas en esta lista",
+    "addFirst": "Agrega tu primera película",
+    "collaborators": "Colaboradores",
+    "invite": "Invitar",
+    "settings": "Configuración",
+    "backToLists": "Volver a mis listas",
+    "defaultTitle": "Películas/Series guardadas",
+    "share": "Compartir",
+    "shareTitle": "Compartir esta lista",
+    "shareLink": "Enlace para compartir",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Enlace copiado!",
+    "linkCopied": "El enlace ha sido copiado al portapapeles.",
+    "copyError": "No se pudo copiar el enlace."
+  },
+  "actions": {
+    "addToWatchlist": "Agregar a Lista",
+    "removeFromWatchlist": "Quitar de Lista",
+    "markAsWatched": "Marcar como Visto",
+    "markAsUnwatched": "Marcar como No Visto",
+    "addToFavorites": "Agregar a Favoritos",
+    "removeFromFavorites": "Quitar de Favoritos"
+  },
+  "messages": {
+    "created": "Lista creada exitosamente",
+    "createdDescription": "La lista \"{{name}}\" fue creada correctamente.",
+    "deleted": "Lista eliminada exitosamente",
+    "deletedDescription": "La lista fue eliminada.",
+    "updated": "Lista actualizada exitosamente",
+    "updatedDescription": "La lista fue actualizada.",
+    "movieAdded": "Película agregada",
+    "movieAddedDescription": "La película/serie fue agregada a \"{{name}}\".",
+    "movieRemoved": "Película eliminada",
+    "movieRemovedDescription": "{{title}} fue eliminada de la lista",
+    "inviteSent": "Invitación enviada exitosamente",
+    "addedToFavorites": "{{title}} fue agregada a tus favoritos",
+    "removedFromFavorites": "{{title}} fue quitada de tus favoritos",
+    "markedAsWatched": "{{title}} fue marcada como vista",
+    "markedAsUnwatched": "{{title}} fue marcada como no vista"
+  },
+  "errors": {
+    "createError": "Error creando la lista",
+    "memberError": "La lista fue creada pero no se pudo agregar como miembro.",
+    "addMovieError": "La lista fue creada pero no se pudo agregar la película/serie.",
+    "updateFavorites": "No se pudo actualizar favoritos",
+    "updateWatched": "No se pudo actualizar el estado de visto",
+    "removeMovie": "No se pudo eliminar la película"
+  },
+  "delete": {
+    "title": "Eliminar lista",
+    "confirmation": "¿Estás seguro de que deseas eliminar esta lista? Esta acción no se puede deshacer.",
+    "deleting": "Eliminando..."
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "remove": "Quitar",
+    "edit": "Editar",
+    "save": "Guardar",
+    "options": "Opciones",
+    "close": "Cerrar"
+  },
+  "remove": {
+    "title": "¿Estás seguro?",
+    "confirmation": "Esta acción eliminará permanentemente \"{{title}}\" de la lista. Esta acción no se puede deshacer.",
+    "removing": "Quitando..."
+  },
+  "edit": {
+    "title": "Editar lista",
+    "description": "Edita el nombre o la descripción de la lista.",
+    "saving": "Guardando..."
+  },
+  "list": {
+    "created": "Creada",
+    "title": "Mis Listas"
+  },
+  "fields": {
+    "name": "Nombre",
+    "description": "Descripción (opcional)"
+  }
+}

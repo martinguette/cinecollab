@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { WatchlistList } from '@/components/watchlists/WatchlistList';
@@ -8,6 +9,7 @@ import type { Database } from '@/integrations/supabase/types';
 import { CreateWatchlistDialog } from '@/components/watchlists/CreateWatchlistDialog';
 
 const Watchlists = () => {
+  const { t } = useTranslation('watchlists');
   const { user } = useAuth();
   const [watchlists, setWatchlists] = useState<
     Database['public']['Tables']['watchlists']['Row'][]
@@ -55,12 +57,16 @@ const Watchlists = () => {
     <Layout>
       <div className="space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">My lists</h1>
-          <Button onClick={() => setIsCreateOpen(true)}>Create List</Button>
+          <h1 className="text-2xl font-semibold">{t('list.title')}</h1>
+          <Button onClick={() => setIsCreateOpen(true)}>
+            {t('create.create')}
+          </Button>
         </div>
         <div className="mt-6">
           {loading ? (
-            <div className="text-center text-muted-foreground">Cargando...</div>
+            <div className="text-center text-muted-foreground">
+              {t('common.loading')}
+            </div>
           ) : error ? (
             <div className="text-center text-red-500">{error}</div>
           ) : (

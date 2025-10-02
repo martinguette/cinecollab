@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout/Layout';
 import { SearchBar } from '@/components/search/SearchBar';
 import { SearchFilters } from '@/types';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 
 const Search = () => {
+  const { t } = useTranslation('common');
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
 
@@ -35,7 +37,7 @@ const Search = () => {
   return (
     <Layout>
       <div className="space-y-6 animate-fade-in">
-        <h1 className="text-2xl font-semibold">Search</h1>
+        <h1 className="text-2xl font-semibold">{t('navigation.search')}</h1>
 
         <SearchBar
           filters={filters}
@@ -63,7 +65,7 @@ const Search = () => {
               <div className="flex justify-center pt-4">
                 <Button onClick={loadMore} variant="outline" disabled={loading}>
                   {loading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-                  Load More
+                  {t('search.loadMore')}
                 </Button>
               </div>
             )}
@@ -71,13 +73,9 @@ const Search = () => {
         ) : (
           <div className="text-center py-12">
             {filters.query ? (
-              <p className="text-muted-foreground">
-                No results found. Try adjusting your search or filters.
-              </p>
+              <p className="text-muted-foreground">{t('search.noResults')}</p>
             ) : (
-              <p className="text-muted-foreground">
-                Enter a search term to find movies and TV shows.
-              </p>
+              <p className="text-muted-foreground">{t('search.enterSearch')}</p>
             )}
           </div>
         )}

@@ -1,9 +1,12 @@
 import { useAuth } from '@/hooks/use-auth';
 import { Navigate } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export default function Login() {
   const { user, loading } = useAuth();
+  const { t } = useTranslation('common');
 
   if (!loading && user) {
     const redirect = localStorage.getItem('join_watchlist_redirect');
@@ -19,11 +22,21 @@ export default function Login() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <span className="text-lg">Cargando...</span>
+          <span className="text-lg">{t('common.loading')}</span>
         </div>
       </div>
     );
   }
 
-  return <AuthForm mode="login" onModeChange={() => {}} />;
+  return (
+    <div className="min-h-screen relative">
+      {/* Language Switcher in top right */}
+      <div className="absolute top-4 right-4 z-10">
+        <LanguageSwitcher />
+      </div>
+
+      {/* Auth Form */}
+      <AuthForm mode="login" onModeChange={() => {}} />
+    </div>
+  );
 }

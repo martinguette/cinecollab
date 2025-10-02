@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Watchlist } from './WatchlistList';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
   onUpdated,
   onDeleted,
 }) => {
+  const { t } = useTranslation('watchlists');
   const date = new Date(watchlist.created_at);
   const formattedDate = date.toLocaleString('es-ES', {
     day: '2-digit',
@@ -64,8 +66,8 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
       setError(error.message);
     } else {
       toast({
-        title: 'Lista actualizada',
-        description: 'La watchlist fue actualizada.',
+        title: t('messages.updated'),
+        description: t('messages.updatedDescription'),
       });
       setEditOpen(false);
       if (onUpdated) onUpdated({ ...watchlist, name, description });
@@ -85,8 +87,8 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
       setError(error.message);
     } else {
       toast({
-        title: 'Lista eliminada',
-        description: 'La watchlist fue eliminada.',
+        title: t('messages.deleted'),
+        description: t('messages.deletedDescription'),
       });
       setDeleteOpen(false);
       if (onDeleted) onDeleted(watchlist.id);
@@ -97,7 +99,9 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
     <div className="border rounded p-4 flex items-center justify-between hover:bg-accent transition cursor-pointer">
       <Link to={`/watchlists/${watchlist.id}`} className="flex-1 min-w-0">
         <div className="font-semibold truncate">{name}</div>
-        <div className="text-xs text-gray-500">Creada: {formattedDate}</div>
+        <div className="text-xs text-gray-500">
+          {t('list.created')}: {formattedDate}
+        </div>
         {description && (
           <div className="text-xs text-muted-foreground mt-1 truncate">
             {description}
@@ -108,18 +112,18 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
         <DropdownMenuTrigger asChild>
           <Button size="icon" variant="ghost" className="ml-2">
             <MoreVertical className="w-5 h-5" />
-            <span className="sr-only">Opciones</span>
+            <span className="sr-only">{t('buttons.options')}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={() => setEditOpen(true)}>
-            Editar
+            {t('buttons.edit')}
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => setDeleteOpen(true)}
             className="text-destructive focus:text-destructive"
           >
-            Eliminar
+            {t('buttons.delete')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -128,17 +132,15 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Editar watchlist</DialogTitle>
-            <DialogDescription>
-              Edita el nombre o la descripción de la lista.
-            </DialogDescription>
+            <DialogTitle>{t('edit.title')}</DialogTitle>
+            <DialogDescription>{t('edit.description')}</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleEdit} className="space-y-4">
             <div>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Nombre"
+                placeholder={t('fields.name')}
                 required
                 disabled={loading}
               />
@@ -147,7 +149,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Descripción (opcional)"
+                placeholder={t('fields.description')}
                 disabled={loading}
               />
             </div>
@@ -159,10 +161,10 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
                 onClick={() => setEditOpen(false)}
                 disabled={loading}
               >
-                Cancelar
+                {t('buttons.cancel')}
               </Button>
               <Button type="submit" disabled={loading || !name.trim()}>
-                {loading ? 'Guardando...' : 'Guardar'}
+                {loading ? t('edit.saving') : t('buttons.save')}
               </Button>
             </DialogFooter>
           </form>
@@ -173,11 +175,8 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Eliminar watchlist</DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que deseas eliminar esta lista? Esta acción no se
-              puede deshacer.
-            </DialogDescription>
+            <DialogTitle>{t('delete.title')}</DialogTitle>
+            <DialogDescription>{t('delete.confirmation')}</DialogDescription>
           </DialogHeader>
           {error && <div className="text-red-500 text-sm">{error}</div>}
           <DialogFooter>
@@ -187,7 +186,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
               onClick={() => setDeleteOpen(false)}
               disabled={loading}
             >
-              Cancelar
+              {t('buttons.cancel')}
             </Button>
             <Button
               type="button"
@@ -195,7 +194,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
               onClick={handleDelete}
               disabled={loading}
             >
-              {loading ? 'Eliminando...' : 'Eliminar'}
+              {loading ? t('delete.deleting') : t('buttons.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

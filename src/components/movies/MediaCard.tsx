@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   formatPosterPath,
   getTitle,
@@ -30,6 +31,7 @@ import { Check, Plus, Play } from 'lucide-react';
 import { WatchlistMenu } from '../watchlists/WatchlistMenu';
 
 function MediaCard({ item, config }: MediaCardProps) {
+  const { t } = useTranslation('common');
   const [showDialog, setShowDialog] = useState(false);
   const [showTrailer, setShowTrailer] = useState(false);
   const [details, setDetails] = useState<any>(null);
@@ -174,7 +176,7 @@ function MediaCard({ item, config }: MediaCardProps) {
               </div>
               <div className="flex-1 mt-2 md:mt-0">
                 <p className="text-xs sm:text-sm mb-2 sm:mb-4">
-                  {item.overview || 'No overview available.'}
+                  {item.overview || t('media.noOverview')}
                 </p>
                 {trailer && (
                   <Button
@@ -182,23 +184,23 @@ function MediaCard({ item, config }: MediaCardProps) {
                     className="mb-2 sm:mb-4 w-full sm:w-auto"
                     variant="outline"
                   >
-                    <Play className="h-4 w-4 mr-2" /> Watch Trailer
+                    <Play className="h-4 w-4 mr-2" /> {t('media.watchTrailer')}
                   </Button>
                 )}
                 {/* Director */}
                 {details?.credits?.crew && (
                   <div className="mb-1 sm:mb-2 text-xs">
-                    <strong>Director:</strong>{' '}
+                    <strong>{t('media.director')}:</strong>{' '}
                     {details.credits.crew
                       .filter((c: any) => c.job === 'Director')
                       .map((d: any) => d.name)
-                      .join(', ') || 'N/A'}
+                      .join(', ') || t('media.notAvailable')}
                   </div>
                 )}
                 {/* Reparto */}
                 {details?.credits?.cast && (
                   <div className="mb-1 sm:mb-2 text-xs">
-                    <strong>Cast:</strong>{' '}
+                    <strong>{t('media.cast')}:</strong>{' '}
                     {details.credits.cast
                       .slice(0, 5)
                       .map((a: any) => a.name)

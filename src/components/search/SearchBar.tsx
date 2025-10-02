@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ export function SearchBar({
   className = '',
   autoFocus = false,
 }: SearchBarProps) {
+  const { t } = useTranslation('common');
   const [showFilters, setShowFilters] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,11 +57,11 @@ export function SearchBar({
         <Input
           ref={inputRef}
           type="text"
-          placeholder="Search for movies, TV shows..."
+          placeholder={t('search.placeholder')}
           className="pl-10 pr-20 py-6 rounded-lg search-input"
           value={filters.query}
           onChange={handleQueryChange}
-          aria-label="Search for movies or TV shows"
+          aria-label={t('search.placeholder')}
         />
 
         <div className="absolute right-3 flex items-center gap-2">

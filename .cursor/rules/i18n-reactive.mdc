@@ -1,0 +1,225 @@
+---
+description: Sistema de internacionalización reactivo sin recargas de página
+globs: src/**/*.tsx, src/**/*.ts
+alwaysApply: true
+---
+
+# 🌐 **SISTEMA I18N REACTIVO**
+
+## **⚡ PRINCIPIO FUNDAMENTAL**
+
+- **NUNCA recargar la página** para cambio de idioma
+- **Siempre usar contexto reactivo** para sincronización
+- **Persiste en localStorage** automáticamente
+- **Cambios instantáneos** en toda la aplicación
+
+---
+
+## **🎯 PATRÓN REQUERIDO**
+
+### **✅ USAR: LanguageContext + useLanguage**
+
+```tsx
+// ✅ CORRECTO: Usar el contexto reactivo
+import { useLanguage } from '@/context/LanguageContext';
+
+export function MyComponent() {
+  const { currentLanguage, changeLanguage, isChanging } = useLanguage();
+
+  const handleLanguageChange = async (lang: string) => {
+    await changeLanguage(lang); // Sin reload, cambio instantáneo
+  };
+
+  return (
+    <Button disabled={isChanging}>
+      {isChanging ? <Loader2 /> : <Globe />}
+      Current: {currentLanguage}
+    </Button>
+  );
+}
+```
+
+### **❌ PROHIBIDO: window.location.reload()**
+
+```tsx
+// ❌ INCORRECTO: Recargar página
+const handleLanguageChange = async (lang: string) => {
+  await i18n.changeLanguage(lang);
+  window.location.reload(); // ❌ NUNCA HACER ESTO
+};
+
+// ❌ INCORRECTO: Usar i18n directamente
+const { i18n } = useTranslation();
+// Usar useLanguage() en su lugar
+```
+
+---
+
+## **🔧 IMPLEMENTACIÓN**
+
+### **1. Detección Automática de Idioma:**
+
+```tsx
+// src/lib/i18n.ts
+detection: {
+  order: ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+  caches: ['localStorage'],
+  lookupLocalStorage: 'i18nextLng',
+  // Convierte códigos de idioma del navegador a nuestros idiomas soportados
+  convertDetectedLanguage: (lng) => {
+    const supportedLanguages = ['en', 'es'];
+    const detectedLang = lng.split('-')[0].toLowerCase();
+    return supportedLanguages.includes(detectedLang) ? detectedLang : 'en';
+  },
+}
+```
+
+### **2. Estructura del Contexto:**
+
+```tsx
+// src/context/LanguageContext.tsx
+export interface LanguageContextType {
+  currentLanguage: string; // Estado actual del idioma
+  changeLanguage: (lang: string) => Promise<void>; // Cambio reactivo
+  isChanging: boolean; // Estado de carga
+}
+
+// Hook personalizado
+export function useLanguage(): LanguageContextType {
+  // Validación de contexto
+  // Retorna interfaz limpia
+}
+```
+
+### **3. Provider en App:**
+
+```tsx
+// src/main.tsx
+<BrowserRouter>
+  <AuthProvider>
+    <LanguageProvider>
+      {' '}
+      {/* ✅ Wrappear toda la app */}
+      <App />
+    </LanguageProvider>
+  </AuthProvider>
+</BrowserRouter>
+```
+
+### **4. Componentes que cambian idioma:**
+
+```tsx
+// LanguageSwitcher, Settings, etc.
+export function LanguageSwitcher() {
+  const { currentLanguage, changeLanguage, isChanging } = useLanguage();
+
+  // ✅ Cambio sin reload
+  const handleChange = (lang: string) => changeLanguage(lang);
+
+  // ✅ UI reactiva con estados de carga
+  return (
+    <Button disabled={isChanging}>
+      {isChanging ? <Loader2 className="animate-spin" /> : <Globe />}
+    </Button>
+  );
+}
+```
+
+---
+
+## **📋 BENEFICIOS DEL PATRÓN**
+
+### **✅ Detección Inteligente:**
+
+- **Detección automática**: Usa idioma del navegador/dispositivo del usuario
+- **Prioridad correcta**: localStorage > navegador > HTML > fallback
+- **Conversión inteligente**: 'es-ES', 'es-MX' → 'es' | 'en-US', 'en-GB' → 'en'
+- **Persistencia manual**: Recuerda selección del usuario permanentemente
+
+### **✅ Rendimiento Excelente:**
+
+- **Sin recargas**: Cambio instantáneo (< 100ms)
+- **Re-render mínimo**: Solo componentes con `useTranslation()`
+- **Memoria insignificante**: Solo un string en contexto
+- **Persistencia automática**: localStorage manejado internamente
+
+### **✅ UX Superior:**
+
+- **Cambio fluido**: Sin parpadeos ni interrupciones
+- **Estados visuales**: Indicadores de carga
+- **Feedback inmediato**: Usuario ve cambio al instante
+- **Consistencia**: Toda la app cambia simultáneamente
+
+### **✅ Mantenimiento:**
+
+- **Patrón único**: Todos los componentes usan `useLanguage()`
+- **Centralizado**: Lógica de idioma en un solo lugar
+- **Testeable**: Fácil de mockear para pruebas
+- **Escalable**: Agregar idiomas es trivial
+
+---
+
+## **🚨 VALIDACIONES CRÍTICAS**
+
+### **Antes de implementar cambio de idioma:**
+
+- [ ] **¿Usa `useLanguage()` hook?** → ✅ Requerido
+- [ ] **¿Evita `window.location.reload()`?** → ✅ Prohibido
+- [ ] **¿Maneja estado `isChanging`?** → ✅ Para UX
+- [ ] **¿Persiste en localStorage?** → ✅ Automático en contexto
+
+### **Componentes afectados:**
+
+```tsx
+// ✅ Estos componentes deben usar useLanguage():
+- LanguageSwitcher
+- Settings/Preferences
+- User Profile
+- Navigation menus
+- Cualquier componente que cambie idioma
+
+// ✅ Estos siguen usando useTranslation():
+- Todos los demás componentes (para mostrar texto)
+- No necesitan cambiar, solo consumir traducciones
+```
+
+---
+
+## **🔍 DEBUGGING**
+
+### **Problemas comunes:**
+
+```tsx
+// ❌ Error: "useLanguage must be used within LanguageProvider"
+// ✅ Solución: Verificar que LanguageProvider wrappee el componente
+
+// ❌ Error: Traducciones no se actualizan
+// ✅ Solución: Verificar que useTranslation() esté en componente
+
+// ❌ Error: Idioma no persiste
+// ✅ Solución: Verificar localStorage en changeLanguage()
+```
+
+### **Herramientas de debug:**
+
+```tsx
+// En desarrollo, agregar logs:
+const { currentLanguage } = useLanguage();
+console.log('Current language:', currentLanguage);
+
+// Verificar localStorage:
+console.log('Stored language:', localStorage.getItem('i18nextLng'));
+```
+
+---
+
+## **📈 MÉTRICAS DE ÉXITO**
+
+- **Tiempo de cambio**: < 100ms (vs 2-5s con reload)
+- **Re-renders**: Solo componentes con texto (vs toda la app)
+- **Memoria**: < 1KB adicional (vs recarga completa)
+- **UX Score**: Cambio fluido sin interrupciones
+
+---
+
+**🎯 OBJETIVO: Cambio de idioma instantáneo, fluido y sin interrupciones para una experiencia de usuario superior.**

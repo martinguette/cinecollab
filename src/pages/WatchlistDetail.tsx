@@ -1,5 +1,5 @@
-// (removed broken import fragment)
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ import { ArrowLeft, Globe, Lock, Share2, Users, X, Check } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 const WatchlistDetail = () => {
+  const { t } = useTranslation('watchlists');
   const { id } = useParams<{ id: string }>();
   const [items, setItems] = useState<TMDbMediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,14 +106,14 @@ const WatchlistDetail = () => {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       toast({
-        title: '¡Enlace copiado!',
-        description: 'El enlace ha sido copiado al portapapeles.',
+        title: t('detail.copied'),
+        description: t('detail.linkCopied'),
       });
       setTimeout(() => setCopied(false), 2000);
     } catch (e) {
       toast({
-        title: 'Error',
-        description: 'No se pudo copiar el enlace.',
+        title: t('common.error'),
+        description: t('detail.copyError'),
         variant: 'destructive',
       });
     }
@@ -125,12 +126,12 @@ const WatchlistDetail = () => {
           to="/watchlists"
           className="text-sm text-blue-500 hover:underline"
         >
-          ← Volver a mis listas
+          ← {t('detail.backToLists')}
         </Link>
         <div className="flex items-center justify-between mt-2 mb-4">
           <div>
             <h1 className="text-2xl font-bold ">
-              {watchlistName || 'Películas/Series guardadas'}
+              {watchlistName || t('detail.defaultTitle')}
             </h1>
             {watchlistDescription && (
               <p className="text-muted-foreground text-base mt-1 whitespace-pre-line">
@@ -146,16 +147,16 @@ const WatchlistDetail = () => {
                 type="button"
               >
                 <Share2 className="inline-block" />
-                Compartir
+                {t('detail.share')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Compartir esta watchlist</DialogTitle>
+                <DialogTitle>{t('detail.shareTitle')}</DialogTitle>
               </DialogHeader>
               <div className="flex flex-col gap-2">
                 <label htmlFor="share-link" className="text-sm font-medium">
-                  Enlace para compartir:
+                  {t('detail.shareLink')}:
                 </label>
                 <input
                   id="share-link"
@@ -172,7 +173,7 @@ const WatchlistDetail = () => {
                   onClick={handleCopy}
                   disabled={copied}
                 >
-                  {copied ? '¡Copiado!' : 'Copiar enlace'}
+                  {copied ? t('detail.copied') : t('detail.copyLink')}
                 </Button>
               </div>
               <DialogFooter>
@@ -181,16 +182,16 @@ const WatchlistDetail = () => {
                   onClick={() => setModalOpen(false)}
                   type="button"
                 >
-                  Cerrar
+                  {t('buttons.close')}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
-        {(loading || configLoading) && <div>Cargando...</div>}
+        {(loading || configLoading) && <div>{t('common.loading')}</div>}
         {error && <div className="text-red-500">{error}</div>}
         {!loading && !configLoading && config && items.length === 0 && (
-          <div>No hay películas o series guardadas en esta lista.</div>
+          <div>{t('detail.empty')}</div>
         )}
         {!loading && !configLoading && config && items.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
