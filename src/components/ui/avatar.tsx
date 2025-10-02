@@ -1,48 +1,91 @@
-import * as React from "react"
-import * as AvatarPrimitive from "@radix-ui/react-avatar"
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { User } from 'lucide-react';
 
-import { cn } from "@/lib/utils"
+interface AvatarProps {
+  src?: string | null;
+  alt?: string;
+  fallback?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+}
 
-const Avatar = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Root
-    ref={ref}
-    className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className
-    )}
-    {...props}
-  />
-))
-Avatar.displayName = AvatarPrimitive.Root.displayName
+const sizeClasses = {
+  sm: 'h-6 w-6',
+  md: 'h-8 w-8',
+  lg: 'h-10 w-10',
+  xl: 'h-12 w-12',
+};
 
-const AvatarImage = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Image>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Image
-    ref={ref}
-    className={cn("aspect-square h-full w-full", className)}
-    {...props}
-  />
-))
-AvatarImage.displayName = AvatarPrimitive.Image.displayName
+export function Avatar({
+  src,
+  alt = 'Avatar',
+  fallback,
+  size = 'md',
+  className,
+}: AvatarProps) {
+  const [imageError, setImageError] = React.useState(false);
+  const [imageLoading, setImageLoading] = React.useState(true);
 
-const AvatarFallback = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Fallback>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Fallback
-    ref={ref}
-    className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-muted",
-      className
-    )}
-    {...props}
-  />
-))
-AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoading(false);
+  };
 
-export { Avatar, AvatarImage, AvatarFallback }
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
+
+  const showFallback = !src || imageError || imageLoading;
+
+  return (
+    <div
+      className={cn(
+        'relative inline-flex items-center justify-center overflow-hidden rounded-full bg-muted',
+        sizeClasses[size],
+        className
+      )}
+    >
+      {src && !imageError && (
+        <img
+          src={src}
+          alt={alt}
+          className={cn(
+            'h-full w-full object-cover transition-opacity',
+            imageLoading ? 'opacity-0' : 'opacity-100'
+          )}
+          onError={handleImageError}
+          onLoad={handleImageLoad}
+        />
+      )}
+
+      {showFallback && (
+        <div className="flex h-full w-full items-center justify-center bg-muted">
+          {fallback ? (
+            <span
+              className={cn(
+                'font-medium text-muted-foreground',
+                size === 'sm' && 'text-xs',
+                size === 'md' && 'text-sm',
+                size === 'lg' && 'text-base',
+                size === 'xl' && 'text-lg'
+              )}
+            >
+              {fallback}
+            </span>
+          ) : (
+            <User
+              className={cn(
+                'text-muted-foreground',
+                size === 'sm' && 'h-3 w-3',
+                size === 'md' && 'h-4 w-4',
+                size === 'lg' && 'h-5 w-5',
+                size === 'xl' && 'h-6 w-6'
+              )}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

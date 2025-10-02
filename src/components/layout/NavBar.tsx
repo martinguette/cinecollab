@@ -10,6 +10,8 @@ import {
   Globe,
   Loader2,
 } from 'lucide-react';
+import { Avatar } from '@/components/ui/avatar';
+import { getAvatarUrl, getUserInitials, getDisplayName } from '@/lib/avatar';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
@@ -88,16 +90,27 @@ export function NavBar() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="rounded-full p-2 ml-1 sm:ml-0"
+                className="rounded-full p-1 ml-1 sm:ml-0"
               >
-                <User className="h-5 w-5" />
+                <Avatar
+                  src={getAvatarUrl(user)}
+                  alt={getDisplayName(user)}
+                  fallback={getUserInitials(user)}
+                  size="md"
+                />
                 <span className="sr-only">Menú de usuario</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem className="cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
-                <span>{user?.name}</span>
+                <Avatar
+                  src={getAvatarUrl(user)}
+                  alt={getDisplayName(user)}
+                  fallback={getUserInitials(user)}
+                  size="sm"
+                  className="mr-2"
+                />
+                <span>{getDisplayName(user)}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 
