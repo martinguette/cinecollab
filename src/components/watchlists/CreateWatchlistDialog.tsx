@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/components/ui/use-toast';
@@ -146,7 +147,10 @@ export function CreateWatchlistDialog({
               {t('buttons.cancel')}
             </Button>
             <Button type="submit" disabled={loading || !name.trim()}>
-              {loading ? t('common.loading') : t('create.create')}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              {loading ? t('create.creating') : t('create.create')}
             </Button>
           </DialogFooter>
         </form>

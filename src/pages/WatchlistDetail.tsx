@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogTrigger,
@@ -188,7 +189,11 @@ const WatchlistDetail = () => {
             </DialogContent>
           </Dialog>
         </div>
-        {(loading || configLoading) && <div>{t('common.loading')}</div>}
+        {(loading || configLoading) && (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
+        )}
         {error && <div className="text-red-500">{error}</div>}
         {!loading && !configLoading && config && items.length === 0 && (
           <div>{t('detail.empty')}</div>

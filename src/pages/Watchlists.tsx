@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import { WatchlistList } from '@/components/watchlists/WatchlistList';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
@@ -64,8 +65,8 @@ const Watchlists = () => {
         </div>
         <div className="mt-6">
           {loading ? (
-            <div className="text-center text-muted-foreground">
-              {t('common.loading')}
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : error ? (
             <div className="text-center text-red-500">{error}</div>

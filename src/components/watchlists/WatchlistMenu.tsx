@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Plus, Check, List, Share2, Globe, Lock, Users } from 'lucide-react';
+import {
+  Plus,
+  Check,
+  List,
+  Share2,
+  Globe,
+  Lock,
+  Users,
+  Loader2,
+} from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -157,8 +166,8 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
         <PopoverContent className="w-56 p-2" align="end" side="right">
           <div className="space-y-1">
             {loading ? (
-              <div className="text-center text-xs text-muted-foreground py-2">
-                {t('common.loading')}
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
               </div>
             ) : watchlists.length === 0 ? (
               <div className="text-center text-xs text-muted-foreground py-2">
@@ -182,7 +191,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
                     {list.name}
                   </span>
                   {addLoading === list.id && (
-                    <span className="ml-2 text-xs">{t('common.loading')}</span>
+                    <Loader2 className="ml-2 h-3 w-3 animate-spin" />
                   )}
                 </Button>
               ))
