@@ -20,7 +20,14 @@
     "addFirst": "Agrega tu primera película",
     "collaborators": "Colaboradores",
     "invite": "Invitar",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "backToLists": "Volver a mis listas",
+    "defaultTitle": "Películas/Series guardadas",
+    "share": "Compartir",
+    "shareTitle": "Compartir esta lista",
+    "shareLink": "Enlace para compartir",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Copiado!"
   },
   "actions": {
     "addToWatchlist": "Agregar a Lista",

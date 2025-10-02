@@ -20,7 +20,14 @@
     "addFirst": "Add your first movie",
     "collaborators": "Collaborators",
     "invite": "Invite",
-    "settings": "Settings"
+    "settings": "Settings",
+    "backToLists": "Back to my lists",
+    "defaultTitle": "Saved Movies/Shows",
+    "share": "Share",
+    "shareTitle": "Share this watchlist",
+    "shareLink": "Share link",
+    "copyLink": "Copy link",
+    "copied": "Copied!"
   },
   "actions": {
     "addToWatchlist": "Add to Watchlist",

@@ -38,5 +38,12 @@
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No"
+  },
+  "footer": {
+    "home": "Home"
+  },
+  "links": {
+    "terms": "Terms",
+    "privacy": "Privacy"
   }
 }

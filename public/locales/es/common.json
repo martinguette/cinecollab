@@ -38,5 +38,12 @@
     "confirm": "Confirmar",
     "yes": "Sí",
     "no": "No"
+  },
+  "footer": {
+    "home": "Inicio"
+  },
+  "links": {
+    "terms": "Términos",
+    "privacy": "Privacidad"
   }
 }
