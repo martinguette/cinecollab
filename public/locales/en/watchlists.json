@@ -47,11 +47,26 @@
     "movieAdded": "Movie added",
     "movieAddedDescription": "The movie/show was added to \"{{name}}\".",
     "movieRemoved": "Movie removed from watchlist",
-    "inviteSent": "Invitation sent successfully"
+    "inviteSent": "Invitation sent successfully",
+    "addedToFavorites": "{{title}} was added to your favorites",
+    "removedFromFavorites": "{{title}} was removed from your favorites",
+    "markedAsWatched": "{{title}} was marked as watched",
+    "markedAsUnwatched": "{{title}} was marked as unwatched"
   },
   "errors": {
     "createError": "Error creating the list",
     "memberError": "The list was created but couldn't add as member.",
-    "addMovieError": "The list was created but couldn't add the movie/show."
+    "addMovieError": "The list was created but couldn't add the movie/show.",
+    "updateFavorites": "Could not update favorites",
+    "updateWatched": "Could not update watched status"
+  },
+  "delete": {
+    "title": "Delete watchlist",
+    "confirmation": "Are you sure you want to delete this list? This action cannot be undone.",
+    "deleting": "Deleting..."
+  },
+  "buttons": {
+    "cancel": "Cancel",
+    "delete": "Delete"
   }
 }

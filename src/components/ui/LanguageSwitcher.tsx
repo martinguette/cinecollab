@@ -19,11 +19,19 @@ export function LanguageSwitcher() {
 
   const handleLanguageChange = async (languageCode: string) => {
     try {
+      // Change language and wait for it to be saved
       await i18n.changeLanguage(languageCode);
+
+      // Ensure the language is saved to localStorage
+      localStorage.setItem('i18nextLng', languageCode);
+
       // Force reload of all namespaces to ensure fresh translations
       await i18n.reloadResources();
-      // Force a page reload to ensure all components re-render with new language
-      window.location.reload();
+
+      // Small delay to ensure everything is saved before reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } catch (error) {
       console.error('Error changing language:', error);
     }

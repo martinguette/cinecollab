@@ -47,11 +47,26 @@
     "movieAdded": "Película agregada",
     "movieAddedDescription": "La película/serie fue agregada a \"{{name}}\".",
     "movieRemoved": "Película quitada de la lista",
-    "inviteSent": "Invitación enviada exitosamente"
+    "inviteSent": "Invitación enviada exitosamente",
+    "addedToFavorites": "{{title}} fue agregada a tus favoritos",
+    "removedFromFavorites": "{{title}} fue quitada de tus favoritos",
+    "markedAsWatched": "{{title}} fue marcada como vista",
+    "markedAsUnwatched": "{{title}} fue marcada como no vista"
   },
   "errors": {
     "createError": "Error creando la lista",
     "memberError": "La lista fue creada pero no se pudo agregar como miembro.",
-    "addMovieError": "La lista fue creada pero no se pudo agregar la película/serie."
+    "addMovieError": "La lista fue creada pero no se pudo agregar la película/serie.",
+    "updateFavorites": "No se pudo actualizar favoritos",
+    "updateWatched": "No se pudo actualizar el estado de visto"
+  },
+  "delete": {
+    "title": "Eliminar lista",
+    "confirmation": "¿Estás seguro de que deseas eliminar esta lista? Esta acción no se puede deshacer.",
+    "deleting": "Eliminando..."
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "delete": "Eliminar"
   }
 }

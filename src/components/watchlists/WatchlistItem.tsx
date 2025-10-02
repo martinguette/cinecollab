@@ -175,11 +175,8 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Eliminar watchlist</DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que deseas eliminar esta lista? Esta acción no se
-              puede deshacer.
-            </DialogDescription>
+            <DialogTitle>{t('delete.title')}</DialogTitle>
+            <DialogDescription>{t('delete.confirmation')}</DialogDescription>
           </DialogHeader>
           {error && <div className="text-red-500 text-sm">{error}</div>}
           <DialogFooter>
@@ -189,7 +186,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
               onClick={() => setDeleteOpen(false)}
               disabled={loading}
             >
-              Cancelar
+              {t('buttons.cancel')}
             </Button>
             <Button
               type="button"
@@ -197,7 +194,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({
               onClick={handleDelete}
               disabled={loading}
             >
-              {loading ? 'Eliminando...' : 'Eliminar'}
+              {loading ? t('delete.deleting') : t('buttons.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

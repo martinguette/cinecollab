@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TMDbMediaItem, TMDbConfig } from '@/types';
 import { getTitle, getReleaseDate, formatPosterPath } from '@/lib/tmdb-api';
 import {
@@ -58,6 +59,7 @@ export function WatchlistMovieCard({
   watchlistId,
   onRemove,
 }: WatchlistMovieCardProps) {
+  const { t } = useTranslation('watchlists');
   const [showDialog, setShowDialog] = useState(false);
   const [showTrailer, setShowTrailer] = useState(false);
   const [details, setDetails] = useState<any>(null);
@@ -185,8 +187,8 @@ export function WatchlistMovieCard({
 
         setIsFavorite(false);
         toast({
-          title: 'Eliminado de favoritos',
-          description: `${title} fue eliminada de tus favoritos`,
+          title: t('actions.removeFromFavorites'),
+          description: t('messages.removedFromFavorites', { title }),
         });
       } else {
         // Add to favorites
@@ -203,14 +205,14 @@ export function WatchlistMovieCard({
 
         setIsFavorite(true);
         toast({
-          title: 'Agregado a favoritos',
-          description: `${title} fue agregada a tus favoritos`,
+          title: t('actions.addToFavorites'),
+          description: t('messages.addedToFavorites', { title }),
         });
       }
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'No se pudo actualizar favoritos',
+        title: t('common.error'),
+        description: error.message || t('errors.updateFavorites'),
         variant: 'destructive',
       });
     } finally {
@@ -236,8 +238,8 @@ export function WatchlistMovieCard({
 
         setIsWatched(false);
         toast({
-          title: 'Marcado como no visto',
-          description: `${title} fue marcada como no vista`,
+          title: t('actions.markAsUnwatched'),
+          description: t('messages.markedAsUnwatched', { title }),
         });
       } else {
         // Mark as watched
@@ -252,15 +254,14 @@ export function WatchlistMovieCard({
 
         setIsWatched(true);
         toast({
-          title: 'Marcado como visto',
-          description: `${title} fue marcada como vista`,
+          title: t('actions.markAsWatched'),
+          description: t('messages.markedAsWatched', { title }),
         });
       }
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description:
-          error.message || 'No se pudo actualizar el estado de visto',
+        title: t('common.error'),
+        description: error.message || t('errors.updateWatched'),
         variant: 'destructive',
       });
     } finally {
