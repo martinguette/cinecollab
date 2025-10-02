@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Plus, Check, List, Share2, Globe, Lock, Users } from 'lucide-react';
 import {
@@ -28,6 +29,7 @@ interface WatchlistMenuProps {
 
 // This component is a simplified version since we don't have actual backend integration
 export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
+  const { t } = useTranslation('watchlists');
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [newListDialogOpen, setNewListDialogOpen] = useState(false);
@@ -118,18 +120,18 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
         <PopoverTrigger asChild>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Add to Watchlist
+            {t('actions.addToWatchlist')}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-56 p-2" align="end" side="right">
           <div className="space-y-1">
             {loading ? (
               <div className="text-center text-xs text-muted-foreground py-2">
-                Loading...
+                {t('common.loading')}
               </div>
             ) : watchlists.length === 0 ? (
               <div className="text-center text-xs text-muted-foreground py-2">
-                No watchlists found
+                {t('list.empty')}
               </div>
             ) : (
               watchlists.map((list) => (
@@ -149,7 +151,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
                     {list.name}
                   </span>
                   {addLoading === list.id && (
-                    <span className="ml-2 text-xs">Adding...</span>
+                    <span className="ml-2 text-xs">{t('common.loading')}</span>
                   )}
                 </Button>
               ))
@@ -161,7 +163,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
               onClick={() => setNewListDialogOpen(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Create new list
+              {t('create.create')}
             </Button>
           </div>
         </PopoverContent>

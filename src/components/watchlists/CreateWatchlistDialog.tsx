@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,7 @@ export function CreateWatchlistDialog({
   mediaId,
   mediaType,
 }: CreateWatchlistDialogProps) {
+  const { t } = useTranslation('watchlists');
   const { user } = useAuth();
   const { toast } = useToast();
   const [name, setName] = useState('');
@@ -111,14 +113,14 @@ export function CreateWatchlistDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="px-2 sm:px-6">
         <DialogHeader>
-          <DialogTitle>Crear nueva watchlist</DialogTitle>
+          <DialogTitle>{t('create.title')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleCreate} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nombre</Label>
+            <Label htmlFor="name">{t('create.name')}</Label>
             <Input
               id="name"
-              placeholder="Nombre de la watchlist"
+              placeholder={t('create.namePlaceholder')}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -126,10 +128,10 @@ export function CreateWatchlistDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="description">Descripción (opcional)</Label>
+            <Label htmlFor="description">{t('create.description')}</Label>
             <Textarea
               id="description"
-              placeholder="¿De qué trata esta watchlist?"
+              placeholder={t('create.descriptionPlaceholder')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={loading}
@@ -143,10 +145,10 @@ export function CreateWatchlistDialog({
               onClick={() => setOpen(false)}
               disabled={loading}
             >
-              Cancelar
+              {t('buttons.cancel')}
             </Button>
             <Button type="submit" disabled={loading || !name.trim()}>
-              {loading ? 'Creando...' : 'Crear'}
+              {loading ? t('common.loading') : t('create.create')}
             </Button>
           </DialogFooter>
         </form>
