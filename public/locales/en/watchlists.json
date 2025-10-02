@@ -72,11 +72,26 @@
   "buttons": {
     "cancel": "Cancel",
     "delete": "Delete",
-    "remove": "Remove"
+    "remove": "Remove",
+    "edit": "Edit",
+    "save": "Save",
+    "options": "Options"
   },
   "remove": {
     "title": "Are you sure?",
     "confirmation": "This action will permanently remove \"{{title}}\" from the list. This action cannot be undone.",
     "removing": "Removing..."
+  },
+  "edit": {
+    "title": "Edit watchlist",
+    "description": "Edit the name or description of the list.",
+    "saving": "Saving..."
+  },
+  "list": {
+    "created": "Created"
+  },
+  "fields": {
+    "name": "Name",
+    "description": "Description (optional)"
   }
 }

@@ -72,11 +72,26 @@
   "buttons": {
     "cancel": "Cancelar",
     "delete": "Eliminar",
-    "remove": "Quitar"
+    "remove": "Quitar",
+    "edit": "Editar",
+    "save": "Guardar",
+    "options": "Opciones"
   },
   "remove": {
     "title": "¿Estás seguro?",
     "confirmation": "Esta acción eliminará permanentemente \"{{title}}\" de la lista. Esta acción no se puede deshacer.",
     "removing": "Quitando..."
+  },
+  "edit": {
+    "title": "Editar lista",
+    "description": "Edita el nombre o la descripción de la lista.",
+    "saving": "Guardando..."
+  },
+  "list": {
+    "created": "Creada"
+  },
+  "fields": {
+    "name": "Nombre",
+    "description": "Descripción (opcional)"
   }
 }
