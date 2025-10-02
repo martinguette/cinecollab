@@ -20,6 +20,7 @@ const JoinWatchlist = () => {
   const [joined, setJoined] = useState(false);
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -73,6 +74,8 @@ const JoinWatchlist = () => {
           // Si es invitado, redirigir automáticamente a la watchlist
           if (isGuest) {
             console.log('Invitado detectado, redirigiendo a watchlist...');
+            setRedirecting(true);
+            // Redirigir inmediatamente
             navigate(`/watchlists/${data.id}`, { replace: true });
           }
         }
@@ -132,6 +135,22 @@ const JoinWatchlist = () => {
     return (
       <Layout>
         <div className="p-4 text-red-500">{error}</div>
+      </Layout>
+    );
+  }
+
+  // Si es invitado y está redirigiendo, mostrar spinner
+  if (isGuest && (redirecting || watchlist)) {
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              Accediendo a la watchlist...
+            </p>
+          </div>
+        </div>
       </Layout>
     );
   }
