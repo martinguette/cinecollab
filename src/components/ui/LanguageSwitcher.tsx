@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/hooks/use-language';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -7,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Globe } from 'lucide-react';
+import { Globe, Loader2 } from 'lucide-react';
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -15,36 +16,33 @@ const languages = [
 ];
 
 export function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+  const {
+    currentLanguage: langCode,
+    changeLanguage,
+    isChanging,
+  } = useLanguage();
 
   const handleLanguageChange = async (languageCode: string) => {
-    try {
-      // Change language and wait for it to be saved
-      await i18n.changeLanguage(languageCode);
-
-      // Ensure the language is saved to localStorage
-      localStorage.setItem('i18nextLng', languageCode);
-
-      // Force reload of all namespaces to ensure fresh translations
-      await i18n.reloadResources();
-
-      // Small delay to ensure everything is saved before reload
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-    } catch (error) {
-      console.error('Error changing language:', error);
-    }
+    await changeLanguage(languageCode);
   };
 
   const currentLanguage =
-    languages.find((lang) => lang.code === i18n.language) || languages[0];
+    languages.find((lang) => lang.code === langCode) || languages[0];
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="flex items-center gap-2">
-          <Globe className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center gap-2"
+          disabled={isChanging}
+        >
+          {isChanging ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Globe className="h-4 w-4" />
+          )}
           <span className="hidden sm:inline">
             {currentLanguage.flag} {currentLanguage.name}
           </span>
@@ -57,10 +55,11 @@ export function LanguageSwitcher() {
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
             className="flex items-center gap-2"
+            disabled={isChanging}
           >
             <span>{language.flag}</span>
             <span>{language.name}</span>
-            {i18n.language === language.code && (
+            {langCode === language.code && (
               <span className="ml-auto text-xs">✓</span>
             )}
           </DropdownMenuItem>
