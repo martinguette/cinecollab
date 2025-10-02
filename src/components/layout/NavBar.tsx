@@ -102,15 +102,17 @@ export function NavBar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem className="cursor-pointer">
-                <Avatar
-                  src={getAvatarUrl(user)}
-                  alt={getDisplayName(user)}
-                  fallback={getUserInitials(user)}
-                  size="sm"
-                  className="mr-2"
-                />
-                <span>{getDisplayName(user)}</span>
+              <DropdownMenuItem className="cursor-pointer" asChild>
+                <Link to="/profile" className="flex items-center">
+                  <Avatar
+                    src={getAvatarUrl(user)}
+                    alt={getDisplayName(user)}
+                    fallback={getUserInitials(user)}
+                    size="sm"
+                    className="mr-2"
+                  />
+                  <span>{getDisplayName(user)}</span>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 

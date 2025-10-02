@@ -6,6 +6,7 @@ import Index from './pages/Index';
 import Search from './pages/Search';
 import Watchlists from './pages/Watchlists';
 import WatchlistDetail from './pages/WatchlistDetail';
+import { Profile } from './pages/Profile';
 import NotFound from './pages/NotFound';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -55,6 +56,14 @@ const App = () => (
           element={
             <ProtectedRoute>
               <WatchlistDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
