@@ -1,13 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, Film, List, Search, User, LogOut } from 'lucide-react';
+import {
+  Bell,
+  Film,
+  List,
+  Search,
+  User,
+  LogOut,
+  Globe,
+  Loader2,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 /* import { NotificationPopover } from '../notifications/NotificationPopover'; */
 import { useContext } from 'react';
 import { useAuth } from '@/context/useAuth';
-import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useLanguage } from '@/hooks/use-language';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +29,17 @@ export function NavBar() {
   const isMobile = useIsMobile();
   const { user, logout } = useAuth();
   const { t } = useTranslation('common');
-
+  const {
+    currentLanguage: langCode,
+    changeLanguage,
+    isChanging,
+  } = useLanguage();
   const handleSignOut = async () => {
     await logout();
+  };
+
+  const handleLanguageChange = async (languageCode: string) => {
+    await changeLanguage(languageCode);
   };
 
   return (
@@ -64,8 +81,6 @@ export function NavBar() {
             </Link>
           </Button>
 
-          <LanguageSwitcher />
-
           {/*   <NotificationPopover /> */}
 
           <DropdownMenu>
@@ -84,6 +99,46 @@ export function NavBar() {
                 <User className="mr-2 h-4 w-4" />
                 <span>{user?.name}</span>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+
+              {/* Language Switch Toggle */}
+              <div className="px-2 py-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-4 w-4" />
+                    <span className="text-sm">Idioma</span>
+                  </div>
+                  <button
+                    onClick={() =>
+                      handleLanguageChange(langCode === 'en' ? 'es' : 'en')
+                    }
+                    disabled={isChanging}
+                    className={`
+                      relative inline-flex h-6 w-12 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50
+                      ${langCode === 'en' ? 'bg-blue-500' : 'bg-green-500'}
+                    `}
+                  >
+                    <span
+                      className={`
+                        inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out
+                        ${langCode === 'en' ? 'translate-x-1' : 'translate-x-7'}
+                      `}
+                    />
+                    <span className="absolute left-1 text-xs font-medium text-white">
+                      EN
+                    </span>
+                    <span className="absolute right-1 text-xs font-medium text-white">
+                      ES
+                    </span>
+                    {isChanging && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Loader2 className="h-3 w-3 animate-spin text-white" />
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </div>
+
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="cursor-pointer text-destructive focus:text-destructive"
