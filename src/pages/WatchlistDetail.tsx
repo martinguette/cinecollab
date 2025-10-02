@@ -18,6 +18,7 @@ import { getMovieDetails, getTVDetails } from '@/lib/tmdb-api';
 import { WatchlistMovieCard } from '@/components/watchlists/WatchlistMovieCard';
 import { TMDbMediaItem } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
+import { useGuest } from '@/hooks/use-guest';
 import { ArrowLeft, Globe, Lock, Share2, Users, X, Check } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -32,6 +33,7 @@ const WatchlistDetail = () => {
     string | null
   >(null);
   const { config, loading: configLoading } = useTMDbConfig();
+  const { isGuest, requireAuth } = useGuest();
   // Obtener el nombre de la watchlist
   useEffect(() => {
     if (!id) return;
@@ -146,6 +148,12 @@ const WatchlistDetail = () => {
                 variant="default"
                 className="gap-1 bg-black text-white hover:bg-neutral-800"
                 type="button"
+                onClick={(e) => {
+                  if (isGuest) {
+                    e.preventDefault();
+                    requireAuth(() => {}, true);
+                  }
+                }}
               >
                 <Share2 className="inline-block" />
                 {t('detail.share')}

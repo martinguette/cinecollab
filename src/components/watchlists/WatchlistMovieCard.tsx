@@ -45,6 +45,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
+import { useGuest } from '@/hooks/use-guest';
 
 interface WatchlistMovieCardProps {
   item: TMDbMediaItem;
@@ -72,6 +73,7 @@ export function WatchlistMovieCard({
   const [togglingWatched, setTogglingWatched] = useState(false);
 
   const { user } = useAuth();
+  const { isGuest, requireAuth } = useGuest();
   const { toast } = useToast();
 
   const title = getTitle(item);
@@ -135,6 +137,10 @@ export function WatchlistMovieCard({
   };
 
   const handleRemove = async () => {
+    if (isGuest) {
+      requireAuth(() => {}, true);
+      return;
+    }
     if (!user) return;
 
     setRemoving(true);
@@ -171,6 +177,10 @@ export function WatchlistMovieCard({
   };
 
   const handleToggleFavorite = async () => {
+    if (isGuest) {
+      requireAuth(() => {}, true);
+      return;
+    }
     if (!user) return;
 
     setTogglingFavorite(true);
@@ -222,6 +232,10 @@ export function WatchlistMovieCard({
   };
 
   const handleToggleWatched = async () => {
+    if (isGuest) {
+      requireAuth(() => {}, true);
+      return;
+    }
     if (!user) return;
 
     setTogglingWatched(true);

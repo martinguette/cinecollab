@@ -69,9 +69,15 @@ const JoinWatchlist = () => {
         } else {
           console.log('Watchlist encontrada:', data);
           setWatchlist(data);
+
+          // Si es invitado, redirigir automáticamente a la watchlist
+          if (isGuest) {
+            console.log('Invitado detectado, redirigiendo a watchlist...');
+            navigate(`/watchlists/${data.id}`, { replace: true });
+          }
         }
       });
-  }, [id]);
+  }, [id, isGuest, navigate]);
 
   // Eliminamos la redirección automática para permitir acceso de invitados
 
