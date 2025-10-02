@@ -60,6 +60,7 @@ export function WatchlistMovieCard({
   onRemove,
 }: WatchlistMovieCardProps) {
   const { t } = useTranslation('watchlists');
+  const { t: tCommon } = useTranslation('common');
   const [showDialog, setShowDialog] = useState(false);
   const [showTrailer, setShowTrailer] = useState(false);
   const [details, setDetails] = useState<any>(null);
@@ -436,7 +437,7 @@ export function WatchlistMovieCard({
                               video.type === 'Teaser')
                         )?.key
                       }`}
-                      title="Trailer"
+                      title={tCommon('media.watchTrailer')}
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
@@ -454,7 +455,8 @@ export function WatchlistMovieCard({
                     className="mb-2 sm:mb-4 w-full sm:w-auto"
                     variant="outline"
                   >
-                    <Play className="h-4 w-4 mr-2" /> Watch Trailer
+                    <Play className="h-4 w-4 mr-2" />{' '}
+                    {tCommon('media.watchTrailer')}
                   </Button>
                 )}
                 {/* Director */}

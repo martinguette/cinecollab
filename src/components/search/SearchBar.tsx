@@ -71,7 +71,7 @@ export function SearchBar({
               size="icon"
               onClick={handleClearSearch}
               className="h-8 w-8"
-              aria-label="Clear search"
+              aria-label={t('search.clearSearch')}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -84,9 +84,9 @@ export function SearchBar({
                 variant={hasActiveFilters ? "default" : "outline"}
                 size="sm"
                 className="px-3"
-                aria-label="Search filters"
+                aria-label={t('search.searchFilters')}
               >
-                Filters {hasActiveFilters && <span className="ml-1 w-4 h-4 bg-background text-primary rounded-full text-xs flex items-center justify-center">{filters.genres.length + (filters.year ? 1 : 0) + (filters.region ? 1 : 0)}</span>}
+{t('search.filters')} {hasActiveFilters && <span className="ml-1 w-4 h-4 bg-background text-primary rounded-full text-xs flex items-center justify-center">{filters.genres.length + (filters.year ? 1 : 0) + (filters.region ? 1 : 0)}</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 p-4" align="end">

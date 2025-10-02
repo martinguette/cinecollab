@@ -15,7 +15,11 @@
     "placeholder": "Buscar películas, series...",
     "noResults": "No se encontraron resultados. Intenta ajustar tu búsqueda o filtros.",
     "enterSearch": "Ingresa un término de búsqueda para encontrar películas y series.",
-    "loadMore": "Cargar más"
+    "loadMore": "Cargar más",
+    "results": "Resultados de búsqueda",
+    "clearSearch": "Limpiar búsqueda",
+    "searchFilters": "Filtros de búsqueda",
+    "filters": "Filtros"
   },
   "buttons": {
     "search": "Buscar",
@@ -33,12 +37,16 @@
   },
   "common": {
     "loading": "Cargando...",
+    "loadMore": "Cargar más",
     "error": "Ocurrió un error",
     "success": "Éxito",
     "confirm": "Confirmar",
     "yes": "Sí",
     "no": "No",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "configurationError": "Error de configuración",
+    "configurationErrorDescription": "Error al cargar la configuración de TMDb. Algunas imágenes pueden no mostrarse correctamente.",
+    "unknownError": "Error desconocido"
   },
   "footer": {
     "home": "Inicio"
@@ -57,5 +65,8 @@
     "director": "Director",
     "cast": "Reparto",
     "notAvailable": "N/D"
+  },
+  "trending": {
+    "title": "Tendencias ahora"
   }
 }

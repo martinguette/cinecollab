@@ -15,7 +15,11 @@
     "placeholder": "Search for movies, TV shows...",
     "noResults": "No results found. Try adjusting your search or filters.",
     "enterSearch": "Enter a search term to find movies and TV shows.",
-    "loadMore": "Load More"
+    "loadMore": "Load More",
+    "results": "Search Results",
+    "clearSearch": "Clear search",
+    "searchFilters": "Search filters",
+    "filters": "Filters"
   },
   "buttons": {
     "search": "Search",
@@ -33,12 +37,16 @@
   },
   "common": {
     "loading": "Loading...",
+    "loadMore": "Load More",
     "error": "An error occurred",
     "success": "Success",
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
-    "close": "Close"
+    "close": "Close",
+    "configurationError": "Configuration Error",
+    "configurationErrorDescription": "Failed to load TMDb configuration. Some images may not display correctly.",
+    "unknownError": "Unknown error"
   },
   "footer": {
     "home": "Home"
@@ -57,5 +65,8 @@
     "director": "Director",
     "cast": "Cast",
     "notAvailable": "N/A"
+  },
+  "trending": {
+    "title": "Trending Now"
   }
 }

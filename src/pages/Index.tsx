@@ -63,7 +63,7 @@ const Index = () => {
 
         {isSearchActive ? (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold">Search Results</h2>
+            <h2 className="text-xl font-semibold">{t('search.results')}</h2>
             {loading && results.length === 0 ? (
               <div className="flex justify-center py-12">
                 <Loader className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -90,21 +90,21 @@ const Index = () => {
                       {loading && (
                         <Loader className="mr-2 h-4 w-4 animate-spin" />
                       )}
-                      Load More
+                      {t('common.loadMore')}
                     </Button>
                   </div>
                 )}
               </>
             ) : (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">No results found</p>
+                <p className="text-muted-foreground">{t('search.noResults')}</p>
               </div>
             )}
           </div>
         ) : (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Trending Now</h2>
+              <h2 className="text-xl font-semibold">{t('trending.title')}</h2>
               <Button asChild variant="link" size="sm">
                 {/*  <Link to="/search">See all</Link> */}
               </Button>
