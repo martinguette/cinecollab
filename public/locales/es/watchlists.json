@@ -75,7 +75,8 @@
     "remove": "Quitar",
     "edit": "Editar",
     "save": "Guardar",
-    "options": "Opciones"
+    "options": "Opciones",
+    "close": "Cerrar"
   },
   "remove": {
     "title": "¿Estás seguro?",
@@ -88,7 +89,8 @@
     "saving": "Guardando..."
   },
   "list": {
-    "created": "Creada"
+    "created": "Creada",
+    "title": "Mis Listas"
   },
   "fields": {
     "name": "Nombre",

@@ -75,7 +75,8 @@
     "remove": "Remove",
     "edit": "Edit",
     "save": "Save",
-    "options": "Options"
+    "options": "Options",
+    "close": "Close"
   },
   "remove": {
     "title": "Are you sure?",
@@ -88,7 +89,8 @@
     "saving": "Saving..."
   },
   "list": {
-    "created": "Created"
+    "created": "Created",
+    "title": "My Watchlists"
   },
   "fields": {
     "name": "Name",

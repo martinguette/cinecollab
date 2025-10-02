@@ -57,7 +57,7 @@ const Watchlists = () => {
     <Layout>
       <div className="space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">{t('list.myWatchlists')}</h1>
+          <h1 className="text-2xl font-semibold">{t('list.title')}</h1>
           <Button onClick={() => setIsCreateOpen(true)}>
             {t('create.create')}
           </Button>
