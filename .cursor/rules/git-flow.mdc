@@ -1,0 +1,217 @@
+# 🌿 **REGLAS DE GIT FLOW EN PRODUCCIÓN**
+
+## **⚠️ CONTEXTO CRÍTICO**
+
+- **Aplicación en PRODUCCIÓN con usuarios reales**
+- **Cada funcionalidad debe desarrollarse en rama separada**
+- **Un commit por cambio para facilitar rollbacks**
+- **Aprobación del usuario antes de merge a main**
+
+---
+
+## **🔒 ESTRUCTURA DE RAMAS**
+
+### **Ramas Principales:**
+
+- **`main`**: Código de producción estable y desplegado
+- **`develop`**: Rama de desarrollo principal donde se integran features
+- **`feature/nombre-funcionalidad`**: Ramas para nuevas funcionalidades
+- **`hotfix/nombre-fix`**: Ramas para correcciones urgentes en producción
+
+### **Convención de Nombres:**
+
+```bash
+# Para nuevas funcionalidades
+feature/agregar-favoritos
+feature/comentarios-watchlist
+feature/busqueda-filtros
+
+# Para correcciones urgentes
+hotfix/fix-email-watchlist
+hotfix/fix-autenticacion
+```
+
+---
+
+## **🛡️ PROCESO DE DESARROLLO**
+
+### **1. Crear Rama Feature:**
+
+```bash
+# Cambiar a develop
+git checkout develop
+git pull origin develop
+
+# Crear nueva rama feature
+git checkout -b feature/nombre-funcionalidad
+```
+
+### **2. Desarrollo con Commits Frecuentes:**
+
+```bash
+# Un commit por cada cambio significativo
+git add archivo-modificado.tsx
+git commit -m "feat: agregar botón de favoritos en MediaCard"
+
+git add otro-archivo.tsx
+git commit -m "style: mejorar estilos del botón de favoritos"
+
+git add test-favoritos.test.tsx
+git commit -m "test: agregar tests para funcionalidad de favoritos"
+```
+
+### **3. Testing y Validación:**
+
+- **Probar funcionalidad** en entorno local
+- **Verificar que no se rompa funcionalidad existente**
+- **Revisar que usuarios actuales mantengan acceso**
+- **Validar que nuevas funcionalidades trabajen correctamente**
+
+### **4. Merge a Develop:**
+
+```bash
+# Cambiar a develop
+git checkout develop
+git pull origin develop
+
+# Merge de la feature
+git merge feature/nombre-funcionalidad
+
+# Push a develop
+git push origin develop
+```
+
+### **5. Aprobación para Main:**
+
+- **Usuario debe aprobar** antes de merge a main
+- **Solo después de testing completo**
+- **Verificar que no afecte usuarios actuales**
+
+---
+
+## **📋 REGLAS DE COMMITS**
+
+### **✅ PRINCIPIOS SEGUROS:**
+
+- **Un commit por cambio**: Cada modificación debe ser un commit separado
+- **Mensajes descriptivos**: Explicar claramente qué hace el commit
+- **Commits atómicos**: Cada commit debe ser funcional por sí solo
+- **No commits masivos**: Evitar commits con múltiples cambios no relacionados
+
+### **❌ PRINCIPIOS PELIGROSOS:**
+
+- **Commits masivos**: Múltiples cambios no relacionados en un solo commit
+- **Mensajes vagos**: "fix bug" o "update code"
+- **Commits sin testing**: Subir código sin probar
+- **Merge sin aprobación**: Hacer merge a main sin confirmación del usuario
+
+### **Formato de Mensajes:**
+
+```bash
+# Estructura: tipo: descripción breve
+
+# Tipos disponibles:
+feat: nueva funcionalidad
+fix: corrección de bug
+style: cambios de estilo/UI
+refactor: refactorización de código
+test: agregar o modificar tests
+docs: documentación
+chore: tareas de mantenimiento
+
+# Ejemplos:
+feat: agregar botón de favoritos en MediaCard
+fix: corregir error de autenticación en login
+style: mejorar diseño del botón de favoritos
+test: agregar tests para funcionalidad de favoritos
+```
+
+---
+
+## **🚨 ALERTAS CRÍTICAS**
+
+### **Si detectas estos patrones, DETENER inmediatamente:**
+
+- Commits masivos sin explicación clara
+- Merge a main sin aprobación del usuario
+- Cambios que puedan afectar usuarios actuales sin testing
+- Commits que rompan funcionalidad existente
+
+### **Comandos de emergencia:**
+
+- **Revertir commit**: `git revert <commit-hash>`
+- **Rollback a commit anterior**: `git reset --hard <commit-hash>`
+- **Cancelar merge**: `git merge --abort`
+- **Volver a rama anterior**: `git checkout <rama-anterior>`
+
+---
+
+## **💡 MEJORES PRÁCTICAS**
+
+### **Para desarrollo de features:**
+
+1. **Siempre crear rama feature** para nueva funcionalidad
+2. **Hacer commits frecuentes** durante el desarrollo
+3. **Probar exhaustivamente** antes de merge
+4. **Solicitar aprobación** antes de merge a main
+5. **Documentar cambios** importantes
+
+### **Para correcciones urgentes:**
+
+1. **Crear rama hotfix** desde main
+2. **Implementar corrección** con commits descriptivos
+3. **Testing inmediato** de la corrección
+4. **Merge rápido** a main y develop
+5. **Deploy inmediato** a producción
+
+### **Para colaboración:**
+
+1. **Comunicar cambios** importantes al equipo
+2. **Revisar código** antes de merge
+3. **Mantener develop estable** siempre
+4. **Documentar decisiones** importantes
+5. **Coordinar deploys** con el equipo
+
+---
+
+## **🔧 HERRAMIENTAS DE VALIDACIÓN**
+
+### **Antes de cada commit:**
+
+```bash
+# Verificar que la aplicación compile
+npm run build
+
+# Verificar que no haya errores de TypeScript
+npm run type-check
+
+# Verificar que no haya errores de linting
+npm run lint
+
+# Ejecutar tests
+npm run test
+```
+
+### **Antes de merge a develop:**
+
+```bash
+# Verificar que la aplicación funcione
+npm run dev
+
+# Probar funcionalidad nueva
+# Verificar que no se rompa funcionalidad existente
+# Validar que usuarios actuales mantengan acceso
+```
+
+### **Antes de merge a main:**
+
+```bash
+# Testing exhaustivo en develop
+# Aprobación del usuario
+# Verificación final de funcionalidad
+# Preparar para deploy
+```
+
+---
+
+**🎯 OBJETIVO: Mantener un flujo de desarrollo seguro y organizado que permita implementar nuevas funcionalidades sin comprometer la estabilidad de la aplicación en producción.**
