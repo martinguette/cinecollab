@@ -30,6 +30,7 @@ interface WatchlistMenuProps {
 // This component is a simplified version since we don't have actual backend integration
 export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
   const { t } = useTranslation('watchlists');
+  const { t: tCommon } = useTranslation('common');
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [newListDialogOpen, setNewListDialogOpen] = useState(false);
@@ -87,14 +88,14 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
     setAddLoading(null);
     if (error) {
       toast({
-        title: 'Error',
+        title: tCommon('common.error'),
         description: error.message,
         variant: 'destructive',
       });
     } else {
       toast({
-        title: 'Added to watchlist',
-        description: `Added to "${listName}"`,
+        title: t('messages.movieAdded'),
+        description: t('messages.movieAddedDescription', { name: listName }),
       });
     }
   };
@@ -106,7 +107,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
 
     // This would call an API in a real implementation
     toast({
-      title: 'Invitation sent',
+      title: t('messages.inviteSent'),
       description: `Invited ${collaboratorEmail} to collaborate with ${permission} permission`,
     });
 
