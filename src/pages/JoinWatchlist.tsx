@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
+import { useGuest } from '@/hooks/use-guest';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import type { Database } from '@/integrations/supabase/types';
@@ -10,6 +11,7 @@ import type { Database } from '@/integrations/supabase/types';
 const JoinWatchlist = () => {
   const { id } = useParams<{ id: string }>();
   const { user, loading } = useAuth();
+  const { isGuest, requireAuth } = useGuest();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [watchlist, setWatchlist] = useState<
@@ -24,7 +26,7 @@ const JoinWatchlist = () => {
     // Obtener info de la watchlist
     supabase
       .from('watchlists')
-      .select('id, name, owner_id')
+      .select('id, name, owner_id, created_at, invite_code, description')
       .eq('id', id)
       .single()
       .then(({ data, error }) => {
@@ -40,13 +42,7 @@ const JoinWatchlist = () => {
       });
   }, [id]);
 
-  useEffect(() => {
-    if (!user && !loading) {
-      // Redirigir a login, guardar la ruta para redirect post-login
-      localStorage.setItem('join_watchlist_redirect', window.location.pathname);
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
+  // Eliminamos la redirección automática para permitir acceso de invitados
 
   useEffect(() => {
     if (user && id) {
@@ -63,7 +59,17 @@ const JoinWatchlist = () => {
   }, [user, id]);
 
   const handleJoin = async () => {
-    if (!user || !watchlist) return;
+    if (!watchlist) return;
+
+    // Si es invitado, redirigir a login
+    if (isGuest) {
+      localStorage.setItem('join_watchlist_redirect', window.location.pathname);
+      requireAuth(() => {}, true);
+      return;
+    }
+
+    if (!user) return;
+
     setJoining(true);
     const { error: insertError } = await supabase
       .from('watchlist_members')
@@ -100,20 +106,50 @@ const JoinWatchlist = () => {
         {watchlist && (
           <>
             <div className="mb-4">
-              ¿Quieres unirte a la lista{' '}
-              <span className="font-semibold">{watchlist.name}</span>?
+              {isGuest ? (
+                <>
+                  <p className="mb-2">
+                    Te han invitado a la lista{' '}
+                    <span className="font-semibold">{watchlist.name}</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Para unirte a esta lista y crear tus propias watchlists,
+                    necesitas registrarte.
+                  </p>
+                </>
+              ) : (
+                <p>
+                  ¿Quieres unirte a la lista{' '}
+                  <span className="font-semibold">{watchlist.name}</span>?
+                </p>
+              )}
             </div>
-            <Button
-              onClick={handleJoin}
-              disabled={joining || joined}
-              className="w-full"
-            >
-              {joined
-                ? '¡Ya eres miembro!'
-                : joining
-                ? 'Uniendo...'
-                : 'Unirme a esta lista'}
-            </Button>
+
+            <div className="space-y-2">
+              <Button
+                onClick={handleJoin}
+                disabled={joining || joined}
+                className="w-full"
+              >
+                {joined
+                  ? '¡Ya eres miembro!'
+                  : joining
+                  ? 'Uniendo...'
+                  : isGuest
+                  ? 'Registrarse y Unirse'
+                  : 'Unirme a esta lista'}
+              </Button>
+
+              {isGuest && (
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(`/watchlists/${watchlist.id}`)}
+                  className="w-full"
+                >
+                  Ver lista como invitado
+                </Button>
+              )}
+            </div>
           </>
         )}
       </div>
