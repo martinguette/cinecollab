@@ -19,6 +19,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
+import { useGuest } from '@/hooks/use-guest';
 import {
   Dialog,
   DialogContent,
@@ -49,6 +50,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
 
   // Real watchlists from Supabase
   const { user } = useAuth();
+  const { isGuest, requireAuth } = useGuest();
   const [watchlists, setWatchlists] = useState<
     Array<{ id: string; name: string; privacy?: string }>
   >([]);
@@ -153,6 +155,16 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
     setIsShareOpen(false);
     setCollaboratorEmail('');
   };
+
+  // Si es invitado, mostrar CTA de registro
+  if (isGuest) {
+    return (
+      <Button onClick={() => requireAuth(() => {}, true)}>
+        <Plus className="h-4 w-4 mr-2" />
+        {t('actions.addToWatchlist')}
+      </Button>
+    );
+  }
 
   return (
     <>

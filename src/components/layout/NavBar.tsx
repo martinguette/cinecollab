@@ -68,102 +68,116 @@ export function NavBar() {
             </Link>
           </Button>
 
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/watchlists" className="flex items-center gap-1">
-              {!isMobile ? (
-                <>
-                  <List className="h-4 w-4" />
-                  <span className="hidden sm:inline">
-                    {t('navigation.watchlists')}
-                  </span>
-                </>
-              ) : (
-                <span>{t('navigation.watchlists')}</span>
-              )}
-            </Link>
-          </Button>
+          {user && (
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/watchlists" className="flex items-center gap-1">
+                {!isMobile ? (
+                  <>
+                    <List className="h-4 w-4" />
+                    <span className="hidden sm:inline">
+                      {t('navigation.watchlists')}
+                    </span>
+                  </>
+                ) : (
+                  <span>{t('navigation.watchlists')}</span>
+                )}
+              </Link>
+            </Button>
+          )}
 
           {/*   <NotificationPopover /> */}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full p-1 ml-1 sm:ml-0"
-              >
-                <Avatar
-                  src={getAvatarUrl(user)}
-                  alt={getDisplayName(user)}
-                  fallback={getUserInitials(user)}
-                  size="md"
-                />
-                <span className="sr-only">Menú de usuario</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem className="cursor-pointer" asChild>
-                <Link to="/profile" className="flex items-center">
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full p-1 ml-1 sm:ml-0"
+                >
                   <Avatar
                     src={getAvatarUrl(user)}
                     alt={getDisplayName(user)}
                     fallback={getUserInitials(user)}
-                    size="sm"
-                    className="mr-2"
+                    size="md"
                   />
-                  <span>{getDisplayName(user)}</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+                  <span className="sr-only">Menú de usuario</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem className="cursor-pointer" asChild>
+                  <Link to="/profile" className="flex items-center">
+                    <Avatar
+                      src={getAvatarUrl(user)}
+                      alt={getDisplayName(user)}
+                      fallback={getUserInitials(user)}
+                      size="sm"
+                      className="mr-2"
+                    />
+                    <span>{getDisplayName(user)}</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
 
-              {/* Language Switch Toggle */}
-              <div className="px-2 py-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
-                    <span className="text-sm">Idioma</span>
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleLanguageChange(langCode === 'en' ? 'es' : 'en')
-                    }
-                    disabled={isChanging}
-                    className={`
+                {/* Language Switch Toggle */}
+                <div className="px-2 py-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      <span className="text-sm">Idioma</span>
+                    </div>
+                    <button
+                      onClick={() =>
+                        handleLanguageChange(langCode === 'en' ? 'es' : 'en')
+                      }
+                      disabled={isChanging}
+                      className={`
                       relative inline-flex h-6 w-12 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50
                       ${langCode === 'en' ? 'bg-blue-500' : 'bg-green-500'}
                     `}
-                  >
-                    <span
-                      className={`
+                    >
+                      <span
+                        className={`
                         inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out
                         ${langCode === 'en' ? 'translate-x-1' : 'translate-x-7'}
                       `}
-                    />
-                    <span className="absolute left-1 text-xs font-medium text-white">
-                      EN
-                    </span>
-                    <span className="absolute right-1 text-xs font-medium text-white">
-                      ES
-                    </span>
-                    {isChanging && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Loader2 className="h-3 w-3 animate-spin text-white" />
-                      </div>
-                    )}
-                  </button>
+                      />
+                      <span className="absolute left-1 text-xs font-medium text-white">
+                        EN
+                      </span>
+                      <span className="absolute right-1 text-xs font-medium text-white">
+                        ES
+                      </span>
+                      {isChanging && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Loader2 className="h-3 w-3 animate-spin text-white" />
+                        </div>
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="cursor-pointer text-destructive focus:text-destructive"
-                onClick={handleSignOut}
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>{t('navigation.logout')}</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>{t('navigation.logout')}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            // Botones para usuarios no autenticados
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/auth/login">{t('auth.login', 'Login')}</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link to="/auth/register">{t('auth.register', 'Sign Up')}</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

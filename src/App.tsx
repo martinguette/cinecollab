@@ -15,6 +15,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { GuestRoute } from '@/components/auth/GuestRoute';
 
 const queryClient = new QueryClient();
 
@@ -30,17 +31,17 @@ const App = () => (
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+            <GuestRoute>
               <Index />
-            </ProtectedRoute>
+            </GuestRoute>
           }
         />
         <Route
           path="/search"
           element={
-            <ProtectedRoute>
+            <GuestRoute>
               <Search />
-            </ProtectedRoute>
+            </GuestRoute>
           }
         />
         <Route
@@ -54,9 +55,9 @@ const App = () => (
         <Route
           path="/watchlists/:id"
           element={
-            <ProtectedRoute>
+            <GuestRoute>
               <WatchlistDetail />
-            </ProtectedRoute>
+            </GuestRoute>
           }
         />
         <Route

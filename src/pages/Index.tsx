@@ -6,6 +6,7 @@ import { SearchFilters, TMDbMediaItem } from '@/types';
 import { useSearch } from '@/hooks/use-search';
 import { useTMDbConfig } from '@/hooks/use-tmdb-config';
 import { useAuth } from '@/hooks/use-auth';
+import { useGuest } from '@/hooks/use-guest';
 import { MediaCard } from '@/components/movies/MediaCard';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
@@ -19,6 +20,7 @@ const Index = () => {
     genres: [],
   });
   const { config } = useTMDbConfig();
+  const { isGuest } = useGuest();
   const {
     results,
     loading,
@@ -53,6 +55,35 @@ const Index = () => {
             {t('app.tagline')}
           </h1>
           <p className="text-muted-foreground">{t('app.description')}</p>
+
+          {isGuest && (
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mt-6">
+              <p className="text-sm text-primary font-medium mb-2">
+                {t(
+                  'guest.welcome',
+                  '¡Bienvenido! Estás navegando como invitado'
+                )}
+              </p>
+              <p className="text-xs text-muted-foreground mb-3">
+                {t(
+                  'guest.description',
+                  'Puedes buscar películas y ver listas públicas. Para crear tus propias listas, regístrate gratis.'
+                )}
+              </p>
+              <div className="flex justify-center gap-2">
+                <Button size="sm" asChild>
+                  <Link to="/auth/register">
+                    {t('auth.register', 'Registrarse Gratis')}
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/auth/login">
+                    {t('auth.login', 'Iniciar Sesión')}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
         <SearchBar
