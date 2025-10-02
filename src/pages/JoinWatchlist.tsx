@@ -20,64 +20,40 @@ const JoinWatchlist = () => {
   const [joined, setJoined] = useState(false);
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     if (!id) return;
 
-    console.log('Buscando watchlist con ID:', id);
+    // Si es invitado, redirigir inmediatamente sin verificar la watchlist
+    if (isGuest) {
+      console.log(
+        'Invitado detectado, redirigiendo directamente a watchlist...'
+      );
+      navigate(`/watchlists/${id}`, { replace: true });
+      return;
+    }
 
-    // Primero, vamos a listar todas las watchlists para debug
-    supabase
-      .from('watchlists')
-      .select('id, name, owner_id')
-      .limit(5)
-      .then(({ data: allLists, error: listError }) => {
-        if (listError) {
-          console.error('Error listing watchlists:', listError);
-        } else {
-          console.log('Watchlists disponibles:', allLists);
-        }
-      });
+    // Solo para usuarios autenticados: verificar la watchlist
+    console.log('Usuario autenticado, verificando watchlist con ID:', id);
 
-    // Obtener info de la watchlist específica
     supabase
       .from('watchlists')
       .select('id, name, owner_id, created_at, invite_code, description')
       .eq('id', id)
-      .maybeSingle() // Usar maybeSingle() en lugar de single() para evitar errores si no hay resultados
+      .maybeSingle()
       .then(({ data, error }) => {
         if (error) {
           console.error('Error fetching watchlist:', error);
-
-          // Si es un error de permisos RLS, mostrar mensaje específico
-          if (
-            error.code === 'PGRST116' ||
-            error.message.includes('Cannot coerce')
-          ) {
-            setError(
-              `⚠️ Acceso restringido\n\nEsta watchlist requiere permisos especiales para ser vista como invitado.\n\nPor favor:\n1. Regístrate o inicia sesión\n2. O contacta al propietario de la lista\n\nID: ${id}`
-            );
-          } else {
-            setError(
-              `Error al buscar la watchlist.\nID: ${id}\nError: ${error.message}\nCódigo: ${error.code}`
-            );
-          }
+          setError(
+            `Error al buscar la watchlist.\nID: ${id}\nError: ${error.message}\nCódigo: ${error.code}`
+          );
         } else if (!data) {
           setError(
-            `No se encontró la watchlist con ID: ${id}\n\nPosibles causas:\n- El enlace es incorrecto\n- La lista fue eliminada\n- No tienes permisos para verla como invitado`
+            `No se encontró la watchlist con ID: ${id}\n\nPosibles causas:\n- El enlace es incorrecto\n- La lista fue eliminada`
           );
         } else {
           console.log('Watchlist encontrada:', data);
           setWatchlist(data);
-
-          // Si es invitado, redirigir automáticamente a la watchlist
-          if (isGuest) {
-            console.log('Invitado detectado, redirigiendo a watchlist...');
-            setRedirecting(true);
-            // Redirigir inmediatamente
-            navigate(`/watchlists/${data.id}`, { replace: true });
-          }
         }
       });
   }, [id, isGuest, navigate]);
@@ -139,21 +115,7 @@ const JoinWatchlist = () => {
     );
   }
 
-  // Si es invitado y está redirigiendo, mostrar spinner
-  if (isGuest && (redirecting || watchlist)) {
-    return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">
-              Accediendo a la watchlist...
-            </p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  // Los invitados son redirigidos inmediatamente, no necesitan ver esta página
 
   return (
     <Layout>
