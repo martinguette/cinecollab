@@ -33,7 +33,7 @@ export function RandomizerButton({
       size="sm"
       onClick={handleRandomSelect}
       disabled={disabled || items.length === 0}
-      className="gap-2"
+      className="gap-2 flex-1 sm:flex-none sm:min-w-[120px]"
     >
       <Dice6 className="h-4 w-4" />
       {t('randomizer.random')}

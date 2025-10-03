@@ -141,18 +141,19 @@ const WatchlistDetail = () => {
         >
           ← {t('detail.backToLists')}
         </Link>
-        <div className="flex items-center justify-between mt-2 mb-4">
-          <div>
-            <h1 className="text-2xl font-bold ">
+        <div className="mt-2 mb-6">
+          <div className="mb-4">
+            <h1 className="text-2xl font-bold mb-2">
               {watchlistName || t('detail.defaultTitle')}
             </h1>
             {watchlistDescription && (
-              <p className="text-muted-foreground text-base mt-1 whitespace-pre-line">
+              <p className="text-muted-foreground text-base leading-relaxed whitespace-pre-line">
                 {watchlistDescription}
               </p>
             )}
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex flex-row items-center justify-end gap-3 w-full sm:w-auto">
             {items.length > 0 && (
               <RandomizerButton
                 items={items}
@@ -164,7 +165,7 @@ const WatchlistDetail = () => {
               <DialogTrigger asChild>
                 <Button
                   variant="default"
-                  className="gap-1 bg-black text-white hover:bg-neutral-800"
+                  className="gap-1 bg-black text-white hover:bg-neutral-800 flex-1 sm:flex-none sm:min-w-[120px]"
                   type="button"
                   onClick={(e) => {
                     if (isGuest) {
