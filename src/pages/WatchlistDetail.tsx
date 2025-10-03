@@ -16,6 +16,8 @@ import { useTMDbConfig } from '@/hooks/use-tmdb-config';
 import { supabase } from '@/integrations/supabase/client';
 import { getMovieDetails, getTVDetails } from '@/lib/tmdb-api';
 import { WatchlistMovieCard } from '@/components/watchlists/WatchlistMovieCard';
+import { RandomizerButton } from '@/components/watchlists/RandomizerButton';
+import { RandomSelectionModal } from '@/components/watchlists/RandomSelectionModal';
 import { TMDbMediaItem } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { useGuest } from '@/hooks/use-guest';
@@ -102,6 +104,9 @@ const WatchlistDetail = () => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [randomModalOpen, setRandomModalOpen] = useState(false);
+  const [selectedRandomItem, setSelectedRandomItem] =
+    useState<TMDbMediaItem | null>(null);
   const shareUrl = `${window.location.origin}/watchlist/join/${id}`;
 
   const handleCopy = async () => {
@@ -120,6 +125,11 @@ const WatchlistDetail = () => {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleRandomSelect = (item: TMDbMediaItem) => {
+    setSelectedRandomItem(item);
+    setRandomModalOpen(true);
   };
 
   return (
@@ -142,60 +152,69 @@ const WatchlistDetail = () => {
               </p>
             )}
           </div>
-          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="default"
-                className="gap-1 bg-black text-white hover:bg-neutral-800"
-                type="button"
-                onClick={(e) => {
-                  if (isGuest) {
-                    e.preventDefault();
-                    requireAuth(() => {}, true);
-                  }
-                }}
-              >
-                <Share2 className="inline-block" />
-                {t('detail.share')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('detail.shareTitle')}</DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="share-link" className="text-sm font-medium">
-                  {t('detail.shareLink')}:
-                </label>
-                <input
-                  id="share-link"
-                  type="text"
-                  value={shareUrl}
-                  readOnly
-                  className="w-full px-2 py-1 border rounded bg-gray-100 text-gray-800 text-sm"
-                  onFocus={(e) => e.target.select()}
-                />
+          <div className="flex items-center gap-2">
+            {items.length > 0 && (
+              <RandomizerButton
+                items={items}
+                onRandomSelect={handleRandomSelect}
+                disabled={loading || configLoading}
+              />
+            )}
+            <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+              <DialogTrigger asChild>
                 <Button
                   variant="default"
-                  className="mt-2 bg-black text-white hover:bg-neutral-800"
+                  className="gap-1 bg-black text-white hover:bg-neutral-800"
                   type="button"
-                  onClick={handleCopy}
-                  disabled={copied}
+                  onClick={(e) => {
+                    if (isGuest) {
+                      e.preventDefault();
+                      requireAuth(() => {}, true);
+                    }
+                  }}
                 >
-                  {copied ? t('detail.copied') : t('detail.copyLink')}
+                  <Share2 className="inline-block" />
+                  {t('detail.share')}
                 </Button>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setModalOpen(false)}
-                  type="button"
-                >
-                  {t('buttons.close')}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t('detail.shareTitle')}</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="share-link" className="text-sm font-medium">
+                    {t('detail.shareLink')}:
+                  </label>
+                  <input
+                    id="share-link"
+                    type="text"
+                    value={shareUrl}
+                    readOnly
+                    className="w-full px-2 py-1 border rounded bg-gray-100 text-gray-800 text-sm"
+                    onFocus={(e) => e.target.select()}
+                  />
+                  <Button
+                    variant="default"
+                    className="mt-2 bg-black text-white hover:bg-neutral-800"
+                    type="button"
+                    onClick={handleCopy}
+                    disabled={copied}
+                  >
+                    {copied ? t('detail.copied') : t('detail.copyLink')}
+                  </Button>
+                </div>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setModalOpen(false)}
+                    type="button"
+                  >
+                    {t('buttons.close')}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
         {(loading || configLoading) && (
           <div className="flex items-center justify-center py-8">
@@ -222,6 +241,14 @@ const WatchlistDetail = () => {
             ))}
           </div>
         )}
+
+        {/* Random Selection Modal */}
+        <RandomSelectionModal
+          isOpen={randomModalOpen}
+          onClose={() => setRandomModalOpen(false)}
+          selectedItem={selectedRandomItem}
+          config={config}
+        />
       </div>
     </Layout>
   );

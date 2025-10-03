@@ -97,5 +97,10 @@
   "fields": {
     "name": "Nombre",
     "description": "Descripción (opcional)"
+  },
+  "randomizer": {
+    "random": "Al Azar",
+    "selected": "Selección Aleatoria",
+    "selectedDescription": "Te tocó: {{title}}"
   }
 }
