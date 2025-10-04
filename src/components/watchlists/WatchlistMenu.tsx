@@ -182,8 +182,13 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
               </div>
             ) : watchlists.length === 0 ? (
-              <div className="text-center text-xs text-muted-foreground py-2">
-                {t('list.empty')}
+              <div className="text-center py-3">
+                <div className="text-sm text-muted-foreground mb-2">
+                  {t('list.createFirst')}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {t('list.empty')}
+                </div>
               </div>
             ) : (
               watchlists.map((list) => (
@@ -211,7 +216,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-pastel"
+              className="w-full justify-start text-foreground hover:text-primary"
               onClick={() => setNewListDialogOpen(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
