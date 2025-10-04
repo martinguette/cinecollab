@@ -263,12 +263,12 @@ const WatchlistDetail = () => {
     setSearchLoading(true);
     try {
       const results = await searchMedia(query);
-      
+
       const combinedResults = results.results.map((item: any) => ({
         ...item,
-        media_type: item.media_type || (item.title ? 'movie' : 'tv')
+        media_type: item.media_type || (item.title ? 'movie' : 'tv'),
       }));
-      
+
       setSearchResults(combinedResults.slice(0, 10)); // Limit to 10 results
     } catch (error) {
       console.error('Search error:', error);
@@ -304,8 +304,39 @@ const WatchlistDetail = () => {
         setSearchModalOpen(false);
         setSearchQuery('');
         setSearchResults([]);
-        // Refresh the watchlist
-        window.location.reload();
+        
+        // Refresh the watchlist by refetching data
+        if (id) {
+          const fetchWatchlistDetails = async () => {
+            const { data, error } = await supabase
+              .from('watchlists')
+              .select('*, watchlist_movies(*)')
+              .eq('id', id)
+              .single();
+
+            if (!error && data) {
+              const mediaItems = await Promise.all(
+                data.watchlist_movies.map(
+                  async (item: Database['public']['Tables']['watchlist_movies']['Row']) => {
+                    const mediaIdNum = item.media_id;
+                    try {
+                      if (item.media_type === 'movie') {
+                        return await getMovieDetails(mediaIdNum);
+                      } else {
+                        return await getTVDetails(mediaIdNum);
+                      }
+                    } catch (e: unknown) {
+                      console.error('Error fetching details for', item, e);
+                      return null;
+                    }
+                  }
+                )
+              );
+              setItems(mediaItems.filter(Boolean) as TMDbMediaItem[]);
+            }
+          };
+          fetchWatchlistDetails();
+        }
       }
     } catch (error) {
       console.error('Error adding to watchlist:', error);
@@ -527,83 +558,88 @@ const WatchlistDetail = () => {
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
-                </AlertDialog>
+        </AlertDialog>
 
-                {/* Search Modal */}
-                <Dialog open={searchModalOpen} onOpenChange={setSearchModalOpen}>
-                  <DialogContent className="max-w-2xl max-h-[80vh]">
-                    <DialogHeader>
-                      <DialogTitle>Buscar Películas y Series</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <Input
-                        placeholder="Buscar películas o series..."
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                          handleSearch(e.target.value);
-                        }}
-                        className="w-full"
+        {/* Search Modal */}
+        <Dialog open={searchModalOpen} onOpenChange={setSearchModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle>Buscar Películas y Series</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                placeholder="Buscar películas o series..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  handleSearch(e.target.value);
+                }}
+                className="w-full"
+              />
+
+              {searchLoading && (
+                <div className="flex justify-center py-4">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                </div>
+              )}
+
+              {searchResults.length > 0 && (
+                <div className="max-h-96 overflow-y-auto space-y-2">
+                  {searchResults.map((item) => (
+                    <div
+                      key={`${item.media_type}-${item.id}`}
+                      className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted cursor-pointer"
+                      onClick={() => handleAddToWatchlist(item)}
+                    >
+                      <img
+                        src={
+                          item.poster_path
+                            ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
+                            : '/placeholder.svg'
+                        }
+                        alt={getTitle(item)}
+                        className="w-12 h-16 object-cover rounded"
                       />
-                      
-                      {searchLoading && (
-                        <div className="flex justify-center py-4">
-                          <Loader2 className="h-6 w-6 animate-spin" />
-                        </div>
-                      )}
-                      
-                      {searchResults.length > 0 && (
-                        <div className="max-h-96 overflow-y-auto space-y-2">
-                          {searchResults.map((item) => (
-                            <div
-                              key={`${item.media_type}-${item.id}`}
-                              className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted cursor-pointer"
-                              onClick={() => handleAddToWatchlist(item)}
-                            >
-                              <img
-                                src={item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : '/placeholder.svg'}
-                                alt={getTitle(item)}
-                                className="w-12 h-16 object-cover rounded"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-medium truncate">
-                                  {getTitle(item)}
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                  {item.media_type === 'movie' ? 'Película' : 'Serie'} • {new Date(getReleaseDate(item)).getFullYear()}
-                                </p>
-                              </div>
-                              <Button size="sm" variant="outline">
-                                Agregar
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
-                      {searchQuery && !searchLoading && searchResults.length === 0 && (
-                        <div className="text-center py-8 text-muted-foreground">
-                          No se encontraron resultados para "{searchQuery}"
-                        </div>
-                      )}
-                    </div>
-                    <DialogFooter>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setSearchModalOpen(false);
-                          setSearchQuery('');
-                          setSearchResults([]);
-                        }}
-                      >
-                        Cerrar
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium truncate">
+                          {getTitle(item)}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {item.media_type === 'movie' ? 'Película' : 'Serie'} •{' '}
+                          {new Date(getReleaseDate(item)).getFullYear()}
+                        </p>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        Agregar
                       </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </Layout>
-          );
-        };
+                    </div>
+                  ))}
+                </div>
+              )}
 
-        export default WatchlistDetail;
+              {searchQuery && !searchLoading && searchResults.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No se encontraron resultados para "{searchQuery}"
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchModalOpen(false);
+                  setSearchQuery('');
+                  setSearchResults([]);
+                }}
+              >
+                Cerrar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </Layout>
+  );
+};
+
+export default WatchlistDetail;
