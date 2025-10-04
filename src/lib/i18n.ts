@@ -17,7 +17,7 @@ i18n
     },
 
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      loadPath: '/locales/{{lng}}/{{ns}}.json?t=' + Date.now(),
       requestOptions: {
         cache: 'no-cache', // Prevent caching issues
       },
