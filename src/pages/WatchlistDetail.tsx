@@ -397,9 +397,7 @@ const WatchlistDetail = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="edit-description">
-                  Descripción
-                </Label>
+                <Label htmlFor="edit-description">Descripción</Label>
                 <Textarea
                   id="edit-description"
                   value={editDescription}
@@ -432,21 +430,22 @@ const WatchlistDetail = () => {
         <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>{t('detail.deleteWatchlist')}</AlertDialogTitle>
+              <AlertDialogTitle>Eliminar Lista</AlertDialogTitle>
               <AlertDialogDescription>
-                {t('detail.deleteConfirmation', { name: watchlistName })}
+                ¿Estás seguro de que quieres eliminar "{watchlistName}"? Esta
+                acción no se puede deshacer.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={deleting}>
-                {t('buttons.cancel')}
+                Cancelar
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteWatchlist}
                 disabled={deleting}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                {deleting ? t('detail.deleting') : t('buttons.delete')}
+                {deleting ? 'Eliminando...' : 'Eliminar'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
