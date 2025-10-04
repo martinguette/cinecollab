@@ -383,28 +383,28 @@ const WatchlistDetail = () => {
         <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>{t('detail.editWatchlist')}</DialogTitle>
+              <DialogTitle>Editar Lista</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="edit-name">{t('detail.name')}</Label>
+                <Label htmlFor="edit-name">Nombre</Label>
                 <Input
                   id="edit-name"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  placeholder={t('detail.namePlaceholder')}
+                  placeholder="Ingresa el nombre de la lista"
                   className="mt-1"
                 />
               </div>
               <div>
                 <Label htmlFor="edit-description">
-                  {t('detail.description')}
+                  Descripción
                 </Label>
                 <Textarea
                   id="edit-description"
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  placeholder={t('detail.descriptionPlaceholder')}
+                  placeholder="Ingresa descripción (opcional)"
                   className="mt-1"
                   rows={3}
                 />
@@ -416,13 +416,13 @@ const WatchlistDetail = () => {
                 onClick={() => setEditModalOpen(false)}
                 disabled={saving}
               >
-                {t('buttons.cancel')}
+                Cancelar
               </Button>
               <Button
                 onClick={handleSaveEdit}
                 disabled={saving || !editName.trim()}
               >
-                {saving ? t('detail.saving') : t('buttons.save')}
+                {saving ? 'Guardando...' : 'Guardar'}
               </Button>
             </DialogFooter>
           </DialogContent>
