@@ -33,6 +33,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Avatar } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,21 +76,41 @@ const WatchlistDetail = () => {
   const [watchlistDescription, setWatchlistDescription] = useState<
     string | null
   >(null);
+  const [watchlistCreator, setWatchlistCreator] = useState<{
+    id: string;
+    email: string;
+    full_name?: string;
+    avatar_url?: string;
+  } | null>(null);
   const { config, loading: configLoading } = useTMDbConfig();
   const { isGuest, requireAuth } = useGuest();
   const { user } = useAuth();
-  // Obtener el nombre de la watchlist
+  // Obtener el nombre de la watchlist y información del creador
   useEffect(() => {
     if (!id) return;
     supabase
       .from('watchlists')
-      .select('name, description')
+      .select('name, description, owner_id')
       .eq('id', id)
       .single()
       .then(({ data, error }) => {
         if (!error && data) {
           setWatchlistName(data.name);
           setWatchlistDescription(data.description ?? null);
+
+          // Obtener información del usuario creador
+          if (data.owner_id) {
+            supabase.auth.getUser().then(({ data: userData }) => {
+              if (userData.user && userData.user.id === data.owner_id) {
+                setWatchlistCreator({
+                  id: userData.user.id,
+                  email: userData.user.email || '',
+                  full_name: userData.user.user_metadata?.full_name,
+                  avatar_url: userData.user.user_metadata?.avatar_url,
+                });
+              }
+            });
+          }
         }
       });
   }, [id]);
@@ -304,7 +325,7 @@ const WatchlistDetail = () => {
         setSearchModalOpen(false);
         setSearchQuery('');
         setSearchResults([]);
-        
+
         // Refresh the watchlist by refetching data
         if (id) {
           const fetchWatchlistDetails = async () => {
@@ -317,7 +338,9 @@ const WatchlistDetail = () => {
             if (!error && data) {
               const mediaItems = await Promise.all(
                 data.watchlist_movies.map(
-                  async (item: Database['public']['Tables']['watchlist_movies']['Row']) => {
+                  async (
+                    item: Database['public']['Tables']['watchlist_movies']['Row']
+                  ) => {
                     const mediaIdNum = item.media_id;
                     try {
                       if (item.media_type === 'movie') {
@@ -380,6 +403,27 @@ const WatchlistDetail = () => {
               <p className="text-muted-foreground text-base leading-relaxed whitespace-pre-line">
                 {watchlistDescription}
               </p>
+            )}
+            {watchlistCreator && (
+              <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+                <Avatar
+                  src={watchlistCreator.avatar_url || undefined}
+                  fallback={
+                    watchlistCreator.full_name
+                      ? watchlistCreator.full_name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                          .toUpperCase()
+                      : watchlistCreator.email[0].toUpperCase()
+                  }
+                  size="sm"
+                />
+                <span>
+                  Creada por{' '}
+                  {watchlistCreator.full_name || watchlistCreator.email}
+                </span>
+              </div>
             )}
           </div>
 
