@@ -434,7 +434,10 @@ export function WatchlistMovieCard({
                   variant="outline"
                 />
               </div>
-              <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-md bg-muted">
+              <AspectRatio
+                ratio={16 / 9}
+                className="overflow-hidden rounded-md bg-muted"
+              >
                 <iframe
                   src={`https://www.youtube.com/embed/${
                     details.videos.results.find(
