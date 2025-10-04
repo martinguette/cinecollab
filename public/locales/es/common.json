@@ -45,6 +45,7 @@
     "yes": "Sí",
     "no": "No",
     "close": "Cerrar",
+    "back": "Atrás",
     "configurationError": "Error de configuración",
     "configurationErrorDescription": "Error al cargar la configuración de TMDb. Algunas imágenes pueden no mostrarse correctamente.",
     "unknownError": "Error desconocido"

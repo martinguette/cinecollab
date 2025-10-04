@@ -442,7 +442,7 @@ export function WatchlistMovieCard({
                 {showTrailer && details?.videos?.results && (
                   <div className="mt-4">
                     <div className="mb-4">
-                      <BackButton 
+                      <BackButton
                         onClick={() => setShowTrailer(false)}
                         variant="outline"
                         size="sm"

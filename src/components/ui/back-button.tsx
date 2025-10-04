@@ -34,7 +34,7 @@ export function BackButton({
       className={`gap-2 ${className}`}
     >
       <ArrowLeft className="h-4 w-4" />
-      {showText && <span>{t('buttons.back')}</span>}
+      {showText && <span>{t('back')}</span>}
     </Button>
   );
 }

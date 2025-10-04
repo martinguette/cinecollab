@@ -134,7 +134,7 @@ function MediaCard({ item, config }: MediaCardProps) {
           {showTrailer && trailer ? (
             <div className="mt-2">
               <div className="mb-4">
-                <BackButton 
+                <BackButton
                   onClick={() => setShowTrailer(false)}
                   variant="outline"
                   size="sm"
