@@ -48,6 +48,8 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
   const [permission, setPermission] = useState('view');
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const touchStartY = useRef<number>(0);
+  const scrollStartTop = useRef<number>(0);
   const { toast } = useToast();
 
   // Real watchlists from Supabase
@@ -107,30 +109,36 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
             scrollContainerRef.current!.scrollTop += e.deltaY;
           };
 
+          const handleTouchStart = (e: TouchEvent) => {
+            const touch = e.touches[0];
+            touchStartY.current = touch.clientY;
+            scrollStartTop.current = scrollContainerRef.current!.scrollTop;
+          };
+
           const handleTouchMove = (e: TouchEvent) => {
             e.preventDefault();
             const touch = e.touches[0];
-            const rect = scrollContainerRef.current!.getBoundingClientRect();
-            const scrollTop = scrollContainerRef.current!.scrollTop;
-            const scrollHeight = scrollContainerRef.current!.scrollHeight;
-            const clientHeight = scrollContainerRef.current!.clientHeight;
+            const deltaY = touchStartY.current - touch.clientY;
+            const newScrollTop = scrollStartTop.current + deltaY;
 
-            if (touch.clientY < rect.top + 20) {
-              scrollContainerRef.current!.scrollTop = Math.max(
-                0,
-                scrollTop - 10
-              );
-            } else if (touch.clientY > rect.bottom - 20) {
-              scrollContainerRef.current!.scrollTop = Math.min(
-                scrollHeight - clientHeight,
-                scrollTop + 10
-              );
-            }
+            scrollContainerRef.current!.scrollTop = Math.max(
+              0,
+              Math.min(
+                scrollContainerRef.current!.scrollHeight -
+                  scrollContainerRef.current!.clientHeight,
+                newScrollTop
+              )
+            );
           };
 
           scrollContainerRef.current.addEventListener('wheel', handleWheel, {
             passive: false,
           });
+          scrollContainerRef.current.addEventListener(
+            'touchstart',
+            handleTouchStart,
+            { passive: true }
+          );
           scrollContainerRef.current.addEventListener(
             'touchmove',
             handleTouchMove,
@@ -143,6 +151,10 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
               scrollContainerRef.current.removeEventListener(
                 'wheel',
                 handleWheel
+              );
+              scrollContainerRef.current.removeEventListener(
+                'touchstart',
+                handleTouchStart
               );
               scrollContainerRef.current.removeEventListener(
                 'touchmove',
