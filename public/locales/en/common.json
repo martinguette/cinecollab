@@ -46,6 +46,7 @@
     "no": "No",
     "close": "Close",
     "back": "Back",
+    "createdBy": "Created by",
     "configurationError": "Configuration Error",
     "configurationErrorDescription": "Failed to load TMDb configuration. Some images may not display correctly.",
     "unknownError": "Unknown error"

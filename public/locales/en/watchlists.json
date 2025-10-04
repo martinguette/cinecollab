@@ -18,7 +18,6 @@
   "detail": {
     "addMovie": "Add Movie",
     "empty": "No movies in this watchlist",
-    "createdBy": "Created by",
     "addFirst": "Add your first movie",
     "emptyTitle": "Your watchlist is empty",
     "emptyDescription": "Start building your collection by adding movies and shows you want to watch.",

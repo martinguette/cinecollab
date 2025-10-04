@@ -46,6 +46,7 @@
     "no": "No",
     "close": "Cerrar",
     "back": "Atrás",
+    "createdBy": "Creada por",
     "configurationError": "Error de configuración",
     "configurationErrorDescription": "Error al cargar la configuración de TMDb. Algunas imágenes pueden no mostrarse correctamente.",
     "unknownError": "Error desconocido"
