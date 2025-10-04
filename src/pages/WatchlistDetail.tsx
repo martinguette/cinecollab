@@ -420,7 +420,7 @@ const WatchlistDetail = () => {
                   size="sm"
                 />
                 <span>
-                  {tCommon('createdBy')}{' '}
+                  {t('detail.createdBy')}{' '}
                   {watchlistCreator.full_name || watchlistCreator.email}
                 </span>
               </div>

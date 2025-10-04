@@ -18,6 +18,7 @@
   "detail": {
     "addMovie": "Agregar Película",
     "empty": "No hay películas en esta lista",
+    "createdBy": "Creado por",
     "addFirst": "Agrega tu primera película",
     "emptyTitle": "Tu lista está vacía",
     "emptyDescription": "Comienza a construir tu colección agregando películas y series que quieras ver.",
