@@ -26,7 +26,34 @@ import { BackButton } from '@/components/ui/back-button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Globe, Lock, Share2, Users, X, Check, Edit } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
+  Globe,
+  Lock,
+  Share2,
+  Users,
+  X,
+  Check,
+  Edit,
+  MoreVertical,
+  Trash2,
+} from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 const WatchlistDetail = () => {
@@ -113,6 +140,8 @@ const WatchlistDetail = () => {
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [randomModalOpen, setRandomModalOpen] = useState(false);
   const [selectedRandomItem, setSelectedRandomItem] =
     useState<TMDbMediaItem | null>(null);
@@ -187,6 +216,30 @@ const WatchlistDetail = () => {
     }
   };
 
+  const handleDeleteWatchlist = async () => {
+    if (!id) return;
+
+    setDeleting(true);
+    const { error } = await supabase.from('watchlists').delete().eq('id', id);
+
+    setDeleting(false);
+
+    if (error) {
+      toast({
+        title: t('errors.deleteFailed'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: t('messages.watchlistDeleted'),
+        description: t('messages.watchlistDeletedDescription'),
+      });
+      // Redirect to watchlists page
+      window.location.href = '/watchlists';
+    }
+  };
+
   return (
     <Layout>
       <div className="p-4">
@@ -204,15 +257,27 @@ const WatchlistDetail = () => {
               )}
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleEditClick}
-                className="shrink-0"
-              >
-                <Edit className="h-4 w-4" />
-                <span className="sr-only">{t('detail.edit')}</span>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="shrink-0">
+                    <MoreVertical className="h-4 w-4" />
+                    <span className="sr-only">{t('detail.options')}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleEditClick}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    {t('detail.edit')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setDeleteModalOpen(true)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t('detail.delete')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
@@ -362,6 +427,30 @@ const WatchlistDetail = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Delete Watchlist Dialog */}
+        <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('detail.deleteWatchlist')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('detail.deleteConfirmation', { name: watchlistName })}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleting}>
+                {t('buttons.cancel')}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteWatchlist}
+                disabled={deleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleting ? t('detail.deleting') : t('buttons.delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </Layout>
   );

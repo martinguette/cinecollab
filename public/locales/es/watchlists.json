@@ -35,6 +35,11 @@
     "namePlaceholder": "Ingresa el nombre de la lista",
     "descriptionPlaceholder": "Ingresa descripción (opcional)",
     "saving": "Guardando...",
+    "options": "Opciones",
+    "delete": "Eliminar",
+    "deleteWatchlist": "Eliminar Lista",
+    "deleteConfirmation": "¿Estás seguro de que quieres eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
+    "deleting": "Eliminando...",
     "shareTitle": "Compartir esta lista",
     "shareLink": "Enlace para compartir",
     "copyLink": "Copiar enlace",
@@ -44,13 +49,17 @@
   },
   "messages": {
     "watchlistUpdated": "Lista actualizada",
-    "watchlistUpdatedDescription": "Tu lista ha sido actualizada exitosamente."
+    "watchlistUpdatedDescription": "Tu lista ha sido actualizada exitosamente.",
+    "watchlistDeleted": "Lista eliminada",
+    "watchlistDeletedDescription": "Tu lista ha sido eliminada exitosamente."
   },
   "errors": {
     "nameRequired": "El nombre es requerido",
     "nameRequiredDescription": "Por favor ingresa un nombre para tu lista.",
     "updateFailed": "Error al actualizar",
-    "updateFailedDescription": "No se pudo actualizar la lista. Por favor intenta de nuevo."
+    "updateFailedDescription": "No se pudo actualizar la lista. Por favor intenta de nuevo.",
+    "deleteFailed": "Error al eliminar",
+    "deleteFailedDescription": "No se pudo eliminar la lista. Por favor intenta de nuevo."
   },
   "actions": {
     "addToWatchlist": "Agregar a Lista",

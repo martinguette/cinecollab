@@ -35,6 +35,11 @@
     "namePlaceholder": "Enter watchlist name",
     "descriptionPlaceholder": "Enter description (optional)",
     "saving": "Saving...",
+    "options": "Options",
+    "delete": "Delete",
+    "deleteWatchlist": "Delete Watchlist",
+    "deleteConfirmation": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleting": "Deleting...",
     "shareTitle": "Share this watchlist",
     "shareLink": "Share link",
     "copyLink": "Copy link",
@@ -44,13 +49,17 @@
   },
   "messages": {
     "watchlistUpdated": "Watchlist updated",
-    "watchlistUpdatedDescription": "Your watchlist has been updated successfully."
+    "watchlistUpdatedDescription": "Your watchlist has been updated successfully.",
+    "watchlistDeleted": "Watchlist deleted",
+    "watchlistDeletedDescription": "Your watchlist has been deleted successfully."
   },
   "errors": {
     "nameRequired": "Name is required",
     "nameRequiredDescription": "Please enter a name for your watchlist.",
     "updateFailed": "Update failed",
-    "updateFailedDescription": "Could not update the watchlist. Please try again."
+    "updateFailedDescription": "Could not update the watchlist. Please try again.",
+    "deleteFailed": "Delete failed",
+    "deleteFailedDescription": "Could not delete the watchlist. Please try again."
   },
   "actions": {
     "addToWatchlist": "Add to Watchlist",
