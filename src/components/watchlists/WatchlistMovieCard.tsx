@@ -47,18 +47,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { useGuest } from '@/hooks/use-guest';
 import { BackButton } from '@/components/ui/back-button';
-import { Avatar } from '@/components/ui/avatar';
 
 interface WatchlistMovieCardProps {
-  item: TMDbMediaItem & {
-    addedBy?: {
-      id: string;
-      email: string;
-      full_name?: string;
-      avatar_url?: string;
-    };
-    addedAt?: string;
-  };
+  item: TMDbMediaItem;
   config: TMDbConfig | null;
   watchlistId: string;
   onRemove?: () => void;
@@ -421,29 +412,6 @@ export function WatchlistMovieCard({
               </AlertDialogContent>
             </AlertDialog>
           </div>
-
-          {/* User who added this item */}
-          {item.addedBy && (
-            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border/50">
-              <Avatar size="xs" className="h-5 w-5">
-                {item.addedBy.avatar_url ? (
-                  <img
-                    src={item.addedBy.avatar_url}
-                    alt={item.addedBy.full_name || item.addedBy.email}
-                    className="h-5 w-5 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                    {(item.addedBy.full_name ||
-                      item.addedBy.email)[0].toUpperCase()}
-                  </div>
-                )}
-              </Avatar>
-              <span className="text-xs text-muted-foreground">
-                {item.addedBy.full_name || item.addedBy.email}
-              </span>
-            </div>
-          )}
         </CardFooter>
       </Card>
 

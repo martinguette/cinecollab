@@ -69,17 +69,7 @@ const WatchlistDetail = () => {
   const { t } = useTranslation('watchlists');
   const { t: tCommon } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
-  const [items, setItems] = useState<
-    (TMDbMediaItem & {
-      addedBy?: {
-        id: string;
-        email: string;
-        full_name?: string;
-        avatar_url?: string;
-      };
-      addedAt?: string;
-    })[]
-  >([]);
+  const [items, setItems] = useState<TMDbMediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [watchlistName, setWatchlistName] = useState<string>('');
@@ -133,7 +123,7 @@ const WatchlistDetail = () => {
     // 1. Obtener los items de la watchlist desde Supabase
     supabase
       .from('watchlist_movies')
-      .select('media_id, media_type, watchlist_id, added_by, added_at')
+      .select('media_id, media_type, watchlist_id')
       .eq('watchlist_id', id)
       .then(async ({ data, error }) => {
         if (error) {
@@ -148,44 +138,26 @@ const WatchlistDetail = () => {
         }
         // 2. Obtener detalles de cada media
         const details = await Promise.all(
-          data.map(async (item: any) => {
-            try {
-              const mediaIdNum = Number(item.media_id);
-              let mediaDetails;
-              if (item.media_type === 'movie') {
-                mediaDetails = await getMovieDetails(mediaIdNum);
-              } else {
-                mediaDetails = await getTVDetails(mediaIdNum);
-              }
-
-              // Obtener información del usuario que agregó el item
-              let userInfo = null;
-              if (item.added_by) {
-                try {
-                  const { data: userData } = await supabase.auth.getUser();
-                  if (userData.user && userData.user.id === item.added_by) {
-                    userInfo = {
-                      id: userData.user.id,
-                      email: userData.user.email || '',
-                      full_name: userData.user.user_metadata?.full_name,
-                      avatar_url: userData.user.user_metadata?.avatar_url
-                    };
-                  }
-                } catch (userError) {
-                  console.error('Error fetching user info:', userError);
+          data.map(
+            async (
+              item: Pick<
+                Database['public']['Tables']['watchlist_movies']['Row'],
+                'media_id' | 'media_type' | 'watchlist_id'
+              >
+            ) => {
+              try {
+                const mediaIdNum = Number(item.media_id);
+                if (item.media_type === 'movie') {
+                  return await getMovieDetails(mediaIdNum);
+                } else {
+                  return await getTVDetails(mediaIdNum);
                 }
+              } catch (e: unknown) {
+                console.error('Error fetching details for', item, e);
+                return null;
               }
-
-              return {
-                ...mediaDetails,
-                addedBy: userInfo,
-                addedAt: item.added_at,
-              };
-            } catch (e: unknown) {
-              console.error('Error fetching details for', item, e);
-              return null;
             }
-          })
+          )
         );
         setItems(details.filter(Boolean));
         setLoading(false);
