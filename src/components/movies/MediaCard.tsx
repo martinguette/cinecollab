@@ -29,6 +29,7 @@ import {
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Check, Plus, Play } from 'lucide-react';
 import { WatchlistMenu } from '../watchlists/WatchlistMenu';
+import { BackButton } from '@/components/ui/back-button';
 
 function MediaCard({ item, config }: MediaCardProps) {
   const { t } = useTranslation('common');
@@ -132,6 +133,13 @@ function MediaCard({ item, config }: MediaCardProps) {
           </DialogHeader>
           {showTrailer && trailer ? (
             <div className="mt-2">
+              <div className="mb-4">
+                <BackButton 
+                  onClick={() => setShowTrailer(false)}
+                  variant="outline"
+                  size="sm"
+                />
+              </div>
               <AspectRatio
                 ratio={16 / 9}
                 className="overflow-hidden rounded-md bg-muted"
@@ -159,9 +167,9 @@ function MediaCard({ item, config }: MediaCardProps) {
                   />
                 </AspectRatio>
                 {/* Géneros */}
-                {((details && details.genres) || item.genres) && (
+                {((details && details.genres) || (item as any).genres) && (
                   <div className="mt-2 flex flex-wrap gap-1 md:gap-2 justify-center md:justify-start">
-                    {((details && details.genres) || item.genres)?.map(
+                    {((details && details.genres) || (item as any).genres)?.map(
                       (genre: any) => (
                         <span
                           key={genre.id}

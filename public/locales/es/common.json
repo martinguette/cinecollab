@@ -33,7 +33,8 @@
     "leave": "Salir",
     "share": "Compartir",
     "copy": "Copiar",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "back": "Atrás"
   },
   "common": {
     "loading": "Cargando...",

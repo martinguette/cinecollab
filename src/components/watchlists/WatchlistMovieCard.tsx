@@ -46,6 +46,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { useGuest } from '@/hooks/use-guest';
+import { BackButton } from '@/components/ui/back-button';
 
 interface WatchlistMovieCardProps {
   item: TMDbMediaItem;
@@ -440,6 +441,13 @@ export function WatchlistMovieCard({
                 </AspectRatio>
                 {showTrailer && details?.videos?.results && (
                   <div className="mt-4">
+                    <div className="mb-4">
+                      <BackButton 
+                        onClick={() => setShowTrailer(false)}
+                        variant="outline"
+                        size="sm"
+                      />
+                    </div>
                     <iframe
                       width="100%"
                       height="200"
