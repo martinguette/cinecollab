@@ -12,7 +12,8 @@
     "empty": "Aún no tienes listas",
     "createFirst": "Crea tu primera lista",
     "myWatchlists": "Mis Listas",
-    "sharedWatchlists": "Listas Compartidas"
+    "sharedWatchlists": "Listas Compartidas",
+    "moreLists": "más listas"
   },
   "detail": {
     "addMovie": "Agregar Película",

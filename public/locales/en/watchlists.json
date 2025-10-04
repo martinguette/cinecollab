@@ -12,7 +12,8 @@
     "empty": "No watchlists yet",
     "createFirst": "Create your first watchlist",
     "myWatchlists": "My Watchlists",
-    "sharedWatchlists": "Shared Watchlists"
+    "sharedWatchlists": "Shared Watchlists",
+    "moreLists": "more lists"
   },
   "detail": {
     "addMovie": "Add Movie",
