@@ -14,7 +14,13 @@ import {
 } from '@/components/ui/dialog';
 import { useTMDbConfig } from '@/hooks/use-tmdb-config';
 import { supabase } from '@/integrations/supabase/client';
-import { getMovieDetails, getTVDetails } from '@/lib/tmdb-api';
+import {
+  getMovieDetails,
+  getTVDetails,
+  searchMedia,
+  getTitle,
+  getReleaseDate,
+} from '@/lib/tmdb-api';
 import { WatchlistMovieCard } from '@/components/watchlists/WatchlistMovieCard';
 import { RandomizerButton } from '@/components/watchlists/RandomizerButton';
 import { RandomSelectionModal } from '@/components/watchlists/RandomSelectionModal';
@@ -22,6 +28,7 @@ import { EmptyWatchlistState } from '@/components/watchlists/EmptyWatchlistState
 import { TMDbMediaItem } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { useGuest } from '@/hooks/use-guest';
+import { useAuth } from '@/hooks/use-auth';
 import { BackButton } from '@/components/ui/back-button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -70,6 +77,7 @@ const WatchlistDetail = () => {
   >(null);
   const { config, loading: configLoading } = useTMDbConfig();
   const { isGuest, requireAuth } = useGuest();
+  const { user } = useAuth();
   // Obtener el nombre de la watchlist
   useEffect(() => {
     if (!id) return;
@@ -144,6 +152,10 @@ const WatchlistDetail = () => {
   const [saving, setSaving] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [randomModalOpen, setRandomModalOpen] = useState(false);
   const [selectedRandomItem, setSelectedRandomItem] =
     useState<TMDbMediaItem | null>(null);
@@ -242,6 +254,64 @@ const WatchlistDetail = () => {
     }
   };
 
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const results = await searchMedia(query);
+      
+      const combinedResults = results.results.map((item: any) => ({
+        ...item,
+        media_type: item.media_type || (item.title ? 'movie' : 'tv')
+      }));
+      
+      setSearchResults(combinedResults.slice(0, 10)); // Limit to 10 results
+    } catch (error) {
+      console.error('Search error:', error);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleAddToWatchlist = async (item: any) => {
+    if (!id || !user) return;
+
+    try {
+      const { error } = await supabase.from('watchlist_movies').insert({
+        watchlist_id: id,
+        media_id: item.id,
+        media_type: item.media_type,
+        added_by: user.id,
+        added_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        toast({
+          title: 'Error',
+          description: 'No se pudo agregar la película a la lista',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Película agregada',
+          description: `${getTitle(item)} ha sido agregada a la lista`,
+        });
+        setSearchModalOpen(false);
+        setSearchQuery('');
+        setSearchResults([]);
+        // Refresh the watchlist
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Error adding to watchlist:', error);
+    }
+  };
+
   return (
     <Layout>
       <div className="p-4">
@@ -285,11 +355,10 @@ const WatchlistDetail = () => {
           <div className="flex flex-row items-center justify-end gap-3 w-full sm:w-auto">
             <Button
               variant="outline"
-              className="gap-1 flex-1 sm:flex-none sm:min-w-[120px]"
-              onClick={() => window.location.href = '/search'}
+              size="icon"
+              onClick={() => setSearchModalOpen(true)}
             >
               <Plus className="h-4 w-4" />
-              Agregar Película
             </Button>
             {items.length > 0 && (
               <RandomizerButton
@@ -458,10 +527,83 @@ const WatchlistDetail = () => {
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    </Layout>
-  );
-};
+                </AlertDialog>
 
-export default WatchlistDetail;
+                {/* Search Modal */}
+                <Dialog open={searchModalOpen} onOpenChange={setSearchModalOpen}>
+                  <DialogContent className="max-w-2xl max-h-[80vh]">
+                    <DialogHeader>
+                      <DialogTitle>Buscar Películas y Series</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <Input
+                        placeholder="Buscar películas o series..."
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          handleSearch(e.target.value);
+                        }}
+                        className="w-full"
+                      />
+                      
+                      {searchLoading && (
+                        <div className="flex justify-center py-4">
+                          <Loader2 className="h-6 w-6 animate-spin" />
+                        </div>
+                      )}
+                      
+                      {searchResults.length > 0 && (
+                        <div className="max-h-96 overflow-y-auto space-y-2">
+                          {searchResults.map((item) => (
+                            <div
+                              key={`${item.media_type}-${item.id}`}
+                              className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted cursor-pointer"
+                              onClick={() => handleAddToWatchlist(item)}
+                            >
+                              <img
+                                src={item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : '/placeholder.svg'}
+                                alt={getTitle(item)}
+                                className="w-12 h-16 object-cover rounded"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-medium truncate">
+                                  {getTitle(item)}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                  {item.media_type === 'movie' ? 'Película' : 'Serie'} • {new Date(getReleaseDate(item)).getFullYear()}
+                                </p>
+                              </div>
+                              <Button size="sm" variant="outline">
+                                Agregar
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {searchQuery && !searchLoading && searchResults.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          No se encontraron resultados para "{searchQuery}"
+                        </div>
+                      )}
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setSearchModalOpen(false);
+                          setSearchQuery('');
+                          setSearchResults([]);
+                        }}
+                      >
+                        Cerrar
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </Layout>
+          );
+        };
+
+        export default WatchlistDetail;
