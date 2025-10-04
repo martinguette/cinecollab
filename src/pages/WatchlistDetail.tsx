@@ -22,7 +22,8 @@ import { EmptyWatchlistState } from '@/components/watchlists/EmptyWatchlistState
 import { TMDbMediaItem } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { useGuest } from '@/hooks/use-guest';
-import { ArrowLeft, Globe, Lock, Share2, Users, X, Check } from 'lucide-react';
+import { BackButton } from '@/components/ui/back-button';
+import { Globe, Lock, Share2, Users, X, Check } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 const WatchlistDetail = () => {
@@ -136,12 +137,11 @@ const WatchlistDetail = () => {
   return (
     <Layout>
       <div className="p-4">
-        <Link
-          to="/watchlists"
-          className="text-sm text-blue-500 hover:underline"
-        >
-          ← {t('detail.backToLists')}
-        </Link>
+        <BackButton
+          onClick={() => window.history.back()}
+          variant="ghost"
+          className="text-sm text-blue-500 hover:text-blue-700"
+        />
         <div className="mt-2 mb-6">
           <div className="mb-4">
             <h1 className="text-2xl font-bold mb-2">
