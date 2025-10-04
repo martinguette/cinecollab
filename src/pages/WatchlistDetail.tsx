@@ -69,7 +69,17 @@ const WatchlistDetail = () => {
   const { t } = useTranslation('watchlists');
   const { t: tCommon } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
-  const [items, setItems] = useState<TMDbMediaItem[]>([]);
+  const [items, setItems] = useState<
+    (TMDbMediaItem & {
+      addedBy?: {
+        id: string;
+        email: string;
+        full_name?: string;
+        avatar_url?: string;
+      };
+      addedAt?: string;
+    })[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [watchlistName, setWatchlistName] = useState<string>('');
@@ -123,7 +133,21 @@ const WatchlistDetail = () => {
     // 1. Obtener los items de la watchlist desde Supabase
     supabase
       .from('watchlist_movies')
-      .select('media_id, media_type, watchlist_id')
+      .select(
+        `
+        media_id, 
+        media_type, 
+        watchlist_id,
+        added_by,
+        added_at,
+        profiles:added_by (
+          id,
+          email,
+          full_name,
+          avatar_url
+        )
+      `
+      )
       .eq('watchlist_id', id)
       .then(async ({ data, error }) => {
         if (error) {
@@ -139,19 +163,21 @@ const WatchlistDetail = () => {
         // 2. Obtener detalles de cada media
         const details = await Promise.all(
           data.map(
-            async (
-              item: Pick<
-                Database['public']['Tables']['watchlist_movies']['Row'],
-                'media_id' | 'media_type' | 'watchlist_id'
-              >
-            ) => {
+            async (item: any) => {
               try {
                 const mediaIdNum = Number(item.media_id);
+                let mediaDetails;
                 if (item.media_type === 'movie') {
-                  return await getMovieDetails(mediaIdNum);
+                  mediaDetails = await getMovieDetails(mediaIdNum);
                 } else {
-                  return await getTVDetails(mediaIdNum);
+                  mediaDetails = await getTVDetails(mediaIdNum);
                 }
+                
+                return {
+                  ...mediaDetails,
+                  addedBy: item.profiles,
+                  addedAt: item.added_at
+                };
               } catch (e: unknown) {
                 console.error('Error fetching details for', item, e);
                 return null;
