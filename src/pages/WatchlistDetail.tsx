@@ -139,8 +139,7 @@ const WatchlistDetail = () => {
       <div className="p-4">
         <BackButton
           onClick={() => window.history.back()}
-          variant="ghost"
-          className="text-sm text-blue-500 hover:text-blue-700"
+          variant="outline"
         />
         <div className="mt-2 mb-6">
           <div className="mb-4">
