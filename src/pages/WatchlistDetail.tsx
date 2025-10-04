@@ -18,6 +18,7 @@ import { getMovieDetails, getTVDetails } from '@/lib/tmdb-api';
 import { WatchlistMovieCard } from '@/components/watchlists/WatchlistMovieCard';
 import { RandomizerButton } from '@/components/watchlists/RandomizerButton';
 import { RandomSelectionModal } from '@/components/watchlists/RandomSelectionModal';
+import { EmptyWatchlistState } from '@/components/watchlists/EmptyWatchlistState';
 import { TMDbMediaItem } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { useGuest } from '@/hooks/use-guest';
@@ -89,7 +90,7 @@ const WatchlistDetail = () => {
                 } else {
                   return await getTVDetails(mediaIdNum);
                 }
-              } catch (e: any) {
+              } catch (e: unknown) {
                 console.error('Error fetching details for', item, e);
                 return null;
               }
@@ -224,7 +225,7 @@ const WatchlistDetail = () => {
         )}
         {error && <div className="text-red-500">{error}</div>}
         {!loading && !configLoading && config && items.length === 0 && (
-          <div>{t('detail.empty')}</div>
+          <EmptyWatchlistState watchlistName={watchlistName} />
         )}
         {!loading && !configLoading && config && items.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
