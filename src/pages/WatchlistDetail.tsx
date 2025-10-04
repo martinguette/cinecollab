@@ -137,10 +137,7 @@ const WatchlistDetail = () => {
   return (
     <Layout>
       <div className="p-4">
-        <BackButton
-          onClick={() => window.history.back()}
-          variant="outline"
-        />
+        <BackButton onClick={() => window.history.back()} variant="outline" />
         <div className="mt-2 mb-6">
           <div className="mb-4">
             <h1 className="text-2xl font-bold mb-2">

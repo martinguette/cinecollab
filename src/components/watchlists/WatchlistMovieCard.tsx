@@ -426,6 +426,30 @@ export function WatchlistMovieCard({
             <div className="flex justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
+          ) : showTrailer && details?.videos?.results ? (
+            <div className="w-full">
+              <div className="mb-4">
+                <BackButton
+                  onClick={() => setShowTrailer(false)}
+                  variant="outline"
+                />
+              </div>
+              <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-md bg-muted">
+                <iframe
+                  src={`https://www.youtube.com/embed/${
+                    details.videos.results.find(
+                      (video: any) =>
+                        video.site === 'YouTube' &&
+                        (video.type === 'Trailer' || video.type === 'Teaser')
+                    )?.key
+                  }`}
+                  title={tCommon('media.watchTrailer')}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  className="w-full h-full"
+                  allowFullScreen
+                />
+              </AspectRatio>
+            </div>
           ) : (
             <div className="flex flex-col md:flex-row gap-4">
               <div className="md:w-1/3">
@@ -439,32 +463,6 @@ export function WatchlistMovieCard({
                     className="object-cover w-full h-full"
                   />
                 </AspectRatio>
-                {showTrailer && details?.videos?.results && (
-                  <div className="mt-4">
-                    <div className="mb-4">
-                      <BackButton
-                        onClick={() => setShowTrailer(false)}
-                        variant="outline"
-                      />
-                    </div>
-                    <iframe
-                      width="100%"
-                      height="200"
-                      src={`https://www.youtube.com/embed/${
-                        details.videos.results.find(
-                          (video: any) =>
-                            video.site === 'YouTube' &&
-                            (video.type === 'Trailer' ||
-                              video.type === 'Teaser')
-                        )?.key
-                      }`}
-                      title={tCommon('media.watchTrailer')}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                )}
               </div>
               <div className="flex-1 mt-2 md:mt-0">
                 <p className="text-xs sm:text-sm mb-2 sm:mb-4">
