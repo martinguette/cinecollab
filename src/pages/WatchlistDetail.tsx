@@ -58,6 +58,7 @@ import type { Database } from '@/integrations/supabase/types';
 
 const WatchlistDetail = () => {
   const { t } = useTranslation('watchlists');
+  const { t: tCommon } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const [items, setItems] = useState<TMDbMediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -255,14 +256,14 @@ const WatchlistDetail = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={handleEditClick}>
                 <Edit className="mr-2 h-4 w-4" />
-                {t('detail.edit')}
+                {tCommon('buttons.edit')}
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => setDeleteModalOpen(true)}
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                {t('detail.delete')}
+                {tCommon('buttons.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
