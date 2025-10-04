@@ -255,14 +255,14 @@ const WatchlistDetail = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={handleEditClick}>
                 <Edit className="mr-2 h-4 w-4" />
-                {t('edit')}
+                {t('detail.edit')}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => setDeleteModalOpen(true)}
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                {t('delete')}
+                {t('detail.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
