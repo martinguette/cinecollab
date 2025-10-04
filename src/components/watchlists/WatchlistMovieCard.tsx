@@ -445,7 +445,6 @@ export function WatchlistMovieCard({
                       <BackButton
                         onClick={() => setShowTrailer(false)}
                         variant="outline"
-                        size="sm"
                       />
                     </div>
                     <iframe

@@ -137,7 +137,6 @@ function MediaCard({ item, config }: MediaCardProps) {
                 <BackButton
                   onClick={() => setShowTrailer(false)}
                   variant="outline"
-                  size="sm"
                 />
               </div>
               <AspectRatio

@@ -14,15 +14,13 @@ interface BackButtonProps {
     | 'ghost'
     | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
-  showText?: boolean;
 }
 
 export function BackButton({
   onClick,
   className = '',
   variant = 'ghost',
-  size = 'default',
-  showText = true,
+  size = 'icon',
 }: BackButtonProps) {
   const { t } = useTranslation('common');
 
@@ -34,7 +32,6 @@ export function BackButton({
       className={`gap-2 ${className}`}
     >
       <ArrowLeft className="h-4 w-4" />
-      {showText && <span>{t('back')}</span>}
     </Button>
   );
 }
