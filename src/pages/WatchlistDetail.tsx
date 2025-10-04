@@ -133,21 +133,7 @@ const WatchlistDetail = () => {
     // 1. Obtener los items de la watchlist desde Supabase
     supabase
       .from('watchlist_movies')
-      .select(
-        `
-        media_id, 
-        media_type, 
-        watchlist_id,
-        added_by,
-        added_at,
-        profiles:added_by (
-          id,
-          email,
-          full_name,
-          avatar_url
-        )
-      `
-      )
+      .select('media_id, media_type, watchlist_id, added_by, added_at')
       .eq('watchlist_id', id)
       .then(async ({ data, error }) => {
         if (error) {
@@ -162,28 +148,44 @@ const WatchlistDetail = () => {
         }
         // 2. Obtener detalles de cada media
         const details = await Promise.all(
-          data.map(
-            async (item: any) => {
-              try {
-                const mediaIdNum = Number(item.media_id);
-                let mediaDetails;
-                if (item.media_type === 'movie') {
-                  mediaDetails = await getMovieDetails(mediaIdNum);
-                } else {
-                  mediaDetails = await getTVDetails(mediaIdNum);
-                }
-                
-                return {
-                  ...mediaDetails,
-                  addedBy: item.profiles,
-                  addedAt: item.added_at
-                };
-              } catch (e: unknown) {
-                console.error('Error fetching details for', item, e);
-                return null;
+          data.map(async (item: any) => {
+            try {
+              const mediaIdNum = Number(item.media_id);
+              let mediaDetails;
+              if (item.media_type === 'movie') {
+                mediaDetails = await getMovieDetails(mediaIdNum);
+              } else {
+                mediaDetails = await getTVDetails(mediaIdNum);
               }
+
+              // Obtener información del usuario que agregó el item
+              let userInfo = null;
+              if (item.added_by) {
+                try {
+                  const { data: userData } = await supabase.auth.getUser();
+                  if (userData.user && userData.user.id === item.added_by) {
+                    userInfo = {
+                      id: userData.user.id,
+                      email: userData.user.email || '',
+                      full_name: userData.user.user_metadata?.full_name,
+                      avatar_url: userData.user.user_metadata?.avatar_url
+                    };
+                  }
+                } catch (userError) {
+                  console.error('Error fetching user info:', userError);
+                }
+              }
+
+              return {
+                ...mediaDetails,
+                addedBy: userInfo,
+                addedAt: item.added_at,
+              };
+            } catch (e: unknown) {
+              console.error('Error fetching details for', item, e);
+              return null;
             }
-          )
+          })
         );
         setItems(details.filter(Boolean));
         setLoading(false);

@@ -421,20 +421,21 @@ export function WatchlistMovieCard({
               </AlertDialogContent>
             </AlertDialog>
           </div>
-          
+
           {/* User who added this item */}
           {item.addedBy && (
             <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border/50">
               <Avatar size="xs" className="h-5 w-5">
                 {item.addedBy.avatar_url ? (
-                  <img 
-                    src={item.addedBy.avatar_url} 
+                  <img
+                    src={item.addedBy.avatar_url}
                     alt={item.addedBy.full_name || item.addedBy.email}
                     className="h-5 w-5 rounded-full object-cover"
                   />
                 ) : (
                   <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                    {(item.addedBy.full_name || item.addedBy.email)[0].toUpperCase()}
+                    {(item.addedBy.full_name ||
+                      item.addedBy.email)[0].toUpperCase()}
                   </div>
                 )}
               </Avatar>
