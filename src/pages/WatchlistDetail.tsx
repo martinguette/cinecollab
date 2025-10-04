@@ -23,7 +23,10 @@ import { TMDbMediaItem } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { useGuest } from '@/hooks/use-guest';
 import { BackButton } from '@/components/ui/back-button';
-import { Globe, Lock, Share2, Users, X, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Globe, Lock, Share2, Users, X, Check, Edit } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 const WatchlistDetail = () => {
@@ -106,6 +109,10 @@ const WatchlistDetail = () => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [saving, setSaving] = useState(false);
   const [randomModalOpen, setRandomModalOpen] = useState(false);
   const [selectedRandomItem, setSelectedRandomItem] =
     useState<TMDbMediaItem | null>(null);
@@ -134,20 +141,79 @@ const WatchlistDetail = () => {
     setRandomModalOpen(true);
   };
 
+  const handleEditClick = () => {
+    setEditName(watchlistName);
+    setEditDescription(watchlistDescription || '');
+    setEditModalOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!id) return;
+    if (!editName.trim()) {
+      toast({
+        title: t('errors.nameRequired'),
+        description: t('errors.nameRequiredDescription'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setSaving(true);
+    const { error } = await supabase
+      .from('watchlists')
+      .update({
+        name: editName.trim(),
+        description: editDescription.trim() || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
+
+    setSaving(false);
+
+    if (error) {
+      toast({
+        title: t('errors.updateFailed'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    } else {
+      setWatchlistName(editName.trim());
+      setWatchlistDescription(editDescription.trim() || null);
+      setEditModalOpen(false);
+      toast({
+        title: t('messages.watchlistUpdated'),
+        description: t('messages.watchlistUpdatedDescription'),
+      });
+    }
+  };
+
   return (
     <Layout>
       <div className="p-4">
         <BackButton onClick={() => window.history.back()} variant="outline" />
         <div className="mt-2 mb-6">
-          <div className="mb-4">
-            <h1 className="text-2xl font-bold mb-2">
-              {watchlistName || t('detail.defaultTitle')}
-            </h1>
-            {watchlistDescription && (
-              <p className="text-muted-foreground text-base leading-relaxed whitespace-pre-line">
-                {watchlistDescription}
-              </p>
-            )}
+          <div className="flex flex-row items-center justify-between mb-4">
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold mb-2">
+                {watchlistName || t('detail.defaultTitle')}
+              </h1>
+              {watchlistDescription && (
+                <p className="text-muted-foreground text-base leading-relaxed whitespace-pre-line">
+                  {watchlistDescription}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleEditClick}
+                className="shrink-0"
+              >
+                <Edit className="h-4 w-4" />
+                <span className="sr-only">{t('detail.edit')}</span>
+              </Button>
+            </div>
           </div>
 
           <div className="flex flex-row items-center justify-end gap-3 w-full sm:w-auto">
@@ -247,6 +313,55 @@ const WatchlistDetail = () => {
           selectedItem={selectedRandomItem}
           config={config}
         />
+
+        {/* Edit Watchlist Dialog */}
+        <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>{t('detail.editWatchlist')}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-name">{t('detail.name')}</Label>
+                <Input
+                  id="edit-name"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder={t('detail.namePlaceholder')}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-description">
+                  {t('detail.description')}
+                </Label>
+                <Textarea
+                  id="edit-description"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  placeholder={t('detail.descriptionPlaceholder')}
+                  className="mt-1"
+                  rows={3}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setEditModalOpen(false)}
+                disabled={saving}
+              >
+                {t('buttons.cancel')}
+              </Button>
+              <Button
+                onClick={handleSaveEdit}
+                disabled={saving || !editName.trim()}
+              >
+                {saving ? t('detail.saving') : t('buttons.save')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );

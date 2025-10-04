@@ -28,12 +28,29 @@
     "backToLists": "Volver a mis listas",
     "defaultTitle": "Películas/Series guardadas",
     "share": "Compartir",
+    "edit": "Editar",
+    "editWatchlist": "Editar Lista",
+    "name": "Nombre",
+    "description": "Descripción",
+    "namePlaceholder": "Ingresa el nombre de la lista",
+    "descriptionPlaceholder": "Ingresa descripción (opcional)",
+    "saving": "Guardando...",
     "shareTitle": "Compartir esta lista",
     "shareLink": "Enlace para compartir",
     "copyLink": "Copiar enlace",
     "copied": "¡Enlace copiado!",
     "linkCopied": "El enlace ha sido copiado al portapapeles.",
     "copyError": "No se pudo copiar el enlace."
+  },
+  "messages": {
+    "watchlistUpdated": "Lista actualizada",
+    "watchlistUpdatedDescription": "Tu lista ha sido actualizada exitosamente."
+  },
+  "errors": {
+    "nameRequired": "El nombre es requerido",
+    "nameRequiredDescription": "Por favor ingresa un nombre para tu lista.",
+    "updateFailed": "Error al actualizar",
+    "updateFailedDescription": "No se pudo actualizar la lista. Por favor intenta de nuevo."
   },
   "actions": {
     "addToWatchlist": "Agregar a Lista",

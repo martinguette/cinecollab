@@ -28,12 +28,29 @@
     "backToLists": "Back to my lists",
     "defaultTitle": "Saved Movies/Shows",
     "share": "Share",
+    "edit": "Edit",
+    "editWatchlist": "Edit Watchlist",
+    "name": "Name",
+    "description": "Description",
+    "namePlaceholder": "Enter watchlist name",
+    "descriptionPlaceholder": "Enter description (optional)",
+    "saving": "Saving...",
     "shareTitle": "Share this watchlist",
     "shareLink": "Share link",
     "copyLink": "Copy link",
     "copied": "Link copied!",
     "linkCopied": "The link has been copied to the clipboard.",
     "copyError": "Could not copy the link."
+  },
+  "messages": {
+    "watchlistUpdated": "Watchlist updated",
+    "watchlistUpdatedDescription": "Your watchlist has been updated successfully."
+  },
+  "errors": {
+    "nameRequired": "Name is required",
+    "nameRequiredDescription": "Please enter a name for your watchlist.",
+    "updateFailed": "Update failed",
+    "updateFailedDescription": "Could not update the watchlist. Please try again."
   },
   "actions": {
     "addToWatchlist": "Add to Watchlist",
