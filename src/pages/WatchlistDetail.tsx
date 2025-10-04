@@ -53,6 +53,7 @@ import {
   Edit,
   MoreVertical,
   Trash2,
+  Plus,
 } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -282,6 +283,14 @@ const WatchlistDetail = () => {
           </div>
 
           <div className="flex flex-row items-center justify-end gap-3 w-full sm:w-auto">
+            <Button
+              variant="outline"
+              className="gap-1 flex-1 sm:flex-none sm:min-w-[120px]"
+              onClick={() => window.location.href = '/search'}
+            >
+              <Plus className="h-4 w-4" />
+              Agregar Película
+            </Button>
             {items.length > 0 && (
               <RandomizerButton
                 items={items}
