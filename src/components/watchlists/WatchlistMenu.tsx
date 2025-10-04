@@ -78,7 +78,12 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
           setWatchlists([]);
         } else {
           // Extraer las watchlists anidadas
-          setWatchlists((data || []).map((row: any) => row.watchlists));
+          setWatchlists(
+            (data || []).map(
+              (row: { watchlists: { id: string; name: string } }) =>
+                row.watchlists
+            )
+          );
         }
         setLoading(false);
       });
@@ -181,37 +186,30 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
               </div>
-            ) : watchlists.length === 0 ? (
-              <div className="text-center py-3">
-                <div className="text-sm text-muted-foreground mb-2">
-                  {t('list.createFirst')}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {t('list.empty')}
-                </div>
-              </div>
             ) : (
-              watchlists.map((list) => (
-                <Button
-                  key={list.id}
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => handleAddToWatchlist(list.id, list.name)}
-                  disabled={!!addLoading}
-                >
-                  <List className="h-4 w-4 mr-2" />
-                  <span
-                    className="truncate max-w-[140px] inline-block align-middle"
-                    title={list.name}
+              <>
+                {watchlists.map((list) => (
+                  <Button
+                    key={list.id}
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => handleAddToWatchlist(list.id, list.name)}
+                    disabled={!!addLoading}
                   >
-                    {list.name}
-                  </span>
-                  {addLoading === list.id && (
-                    <Loader2 className="ml-2 h-3 w-3 animate-spin" />
-                  )}
-                </Button>
-              ))
+                    <List className="h-4 w-4 mr-2" />
+                    <span
+                      className="truncate max-w-[140px] inline-block align-middle"
+                      title={list.name}
+                    >
+                      {list.name}
+                    </span>
+                    {addLoading === list.id && (
+                      <Loader2 className="ml-2 h-3 w-3 animate-spin" />
+                    )}
+                  </Button>
+                ))}
+              </>
             )}
             <Button
               variant="ghost"
