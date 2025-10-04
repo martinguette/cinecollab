@@ -243,42 +243,41 @@ const WatchlistDetail = () => {
   return (
     <Layout>
       <div className="p-4">
-        <BackButton onClick={() => window.history.back()} variant="outline" />
-        <div className="mt-2 mb-6">
-          <div className="flex flex-row items-center justify-between mb-4">
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold mb-2">
-                {watchlistName || t('detail.defaultTitle')}
-              </h1>
-              {watchlistDescription && (
-                <p className="text-muted-foreground text-base leading-relaxed whitespace-pre-line">
-                  {watchlistDescription}
-                </p>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="shrink-0">
-                    <MoreVertical className="h-4 w-4" />
-                    <span className="sr-only">{t('detail.options')}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleEditClick}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    {t('detail.edit')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setDeleteModalOpen(true)}
-                    className="text-destructive focus:text-destructive"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {t('detail.delete')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+        <div className="flex items-center justify-between mb-4">
+          <BackButton onClick={() => window.history.back()} variant="outline" />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="shrink-0">
+                <MoreVertical className="h-4 w-4" />
+                <span className="sr-only">{t('detail.options')}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleEditClick}>
+                <Edit className="mr-2 h-4 w-4" />
+                {t('detail.edit')}
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setDeleteModalOpen(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t('detail.delete')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        <div className="mb-6">
+          <div className="mb-4">
+            <h1 className="text-2xl font-bold mb-2">
+              {watchlistName || t('detail.defaultTitle')}
+            </h1>
+            {watchlistDescription && (
+              <p className="text-muted-foreground text-base leading-relaxed whitespace-pre-line">
+                {watchlistDescription}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-row items-center justify-end gap-3 w-full sm:w-auto">
