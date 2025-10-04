@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
@@ -46,6 +46,8 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
   const [newListDialogOpen, setNewListDialogOpen] = useState(false);
   const [collaboratorEmail, setCollaboratorEmail] = useState('');
   const [permission, setPermission] = useState('view');
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   // Real watchlists from Supabase
@@ -88,6 +90,70 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
         setLoading(false);
       });
   }, [user, toast]);
+
+  // Asegurar que el scroll funcione cuando se abre el popover
+  useEffect(() => {
+    if (isPopoverOpen && !loading) {
+      // Pequeño delay para asegurar que el DOM esté renderizado
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          // Asegurar que el contenedor sea focusable
+          scrollContainerRef.current.setAttribute('tabindex', '0');
+          scrollContainerRef.current.focus();
+
+          // Agregar listener para eventos de scroll
+          const handleWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            scrollContainerRef.current!.scrollTop += e.deltaY;
+          };
+
+          const handleTouchMove = (e: TouchEvent) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = scrollContainerRef.current!.getBoundingClientRect();
+            const scrollTop = scrollContainerRef.current!.scrollTop;
+            const scrollHeight = scrollContainerRef.current!.scrollHeight;
+            const clientHeight = scrollContainerRef.current!.clientHeight;
+
+            if (touch.clientY < rect.top + 20) {
+              scrollContainerRef.current!.scrollTop = Math.max(
+                0,
+                scrollTop - 10
+              );
+            } else if (touch.clientY > rect.bottom - 20) {
+              scrollContainerRef.current!.scrollTop = Math.min(
+                scrollHeight - clientHeight,
+                scrollTop + 10
+              );
+            }
+          };
+
+          scrollContainerRef.current.addEventListener('wheel', handleWheel, {
+            passive: false,
+          });
+          scrollContainerRef.current.addEventListener(
+            'touchmove',
+            handleTouchMove,
+            { passive: false }
+          );
+
+          // Cleanup
+          return () => {
+            if (scrollContainerRef.current) {
+              scrollContainerRef.current.removeEventListener(
+                'wheel',
+                handleWheel
+              );
+              scrollContainerRef.current.removeEventListener(
+                'touchmove',
+                handleTouchMove
+              );
+            }
+          };
+        }
+      }, 100);
+    }
+  }, [isPopoverOpen, loading]);
 
   // Add movie to watchlist (Supabase: watchlist_movies table)
   const handleAddToWatchlist = async (listId: string, listName: string) => {
@@ -143,6 +209,7 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
         title: t('messages.movieAdded'),
         description: t('messages.movieAddedDescription', { name: listName }),
       });
+      setIsPopoverOpen(false);
     }
   };
 
@@ -173,15 +240,28 @@ export function WatchlistMenu({ mediaId, mediaType }: WatchlistMenuProps) {
 
   return (
     <>
-      <Popover>
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
-          <Button>
+          <Button onClick={() => setIsPopoverOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             {t('actions.addToWatchlist')}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-56 p-2" align="end" side="right">
-          <div className="space-y-1">
+          <div
+            ref={scrollContainerRef}
+            className="space-y-1 max-h-64 overflow-y-auto focus:outline-none"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#d1d5db transparent',
+            }}
+            tabIndex={0}
+            onMouseEnter={() => {
+              if (scrollContainerRef.current) {
+                scrollContainerRef.current.focus();
+              }
+            }}
+          >
             {loading ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
