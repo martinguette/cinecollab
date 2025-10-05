@@ -133,7 +133,8 @@ export function FeedbackForm({ onSuccess }: FeedbackFormProps) {
 
           if (user) {
             // Llamar a la Edge Function para enviar notificación por email
-            await fetch(
+            console.log('Enviando notificación por email...');
+            const emailResponse = await fetch(
               'https://fnsklauaxovbvatfquil.supabase.co/functions/v1/send-feedback-notification',
               {
                 method: 'POST',
@@ -157,6 +158,12 @@ export function FeedbackForm({ onSuccess }: FeedbackFormProps) {
                     user.user_metadata?.name || user.email || 'Usuario',
                 }),
               }
+            );
+
+            console.log(
+              'Respuesta del email:',
+              emailResponse.status,
+              await emailResponse.text()
             );
           }
         } catch (emailError) {
