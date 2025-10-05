@@ -125,6 +125,46 @@ export function FeedbackForm({ onSuccess }: FeedbackFormProps) {
         language: formData.language,
       });
 
+      // Si el feedback se insertó correctamente, llamar a la Edge Function para enviar email
+      if (!error) {
+        try {
+          const { data: userData } = await supabase.auth.getUser();
+          const user = userData?.user;
+
+          if (user) {
+            // Llamar a la Edge Function para enviar notificación por email
+            await fetch(
+              'https://fnsklauaxovbvatfquil.supabase.co/functions/v1/send-feedback-notification',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${
+                    import.meta.env.VITE_SUPABASE_ANON_KEY
+                  }`,
+                },
+                body: JSON.stringify({
+                  id: 'temp-id', // Se generará automáticamente
+                  type: formData.type,
+                  subject: formData.subject.trim(),
+                  message: formData.message.trim(),
+                  language: formData.language,
+                  status: 'pending',
+                  priority: 'medium',
+                  created_at: new Date().toISOString(),
+                  user_email: user.email || 'Usuario no identificado',
+                  user_name:
+                    user.user_metadata?.name || user.email || 'Usuario',
+                }),
+              }
+            );
+          }
+        } catch (emailError) {
+          console.error('Error sending email notification:', emailError);
+          // No fallar el proceso si el email falla
+        }
+      }
+
       if (error) {
         throw error;
       }

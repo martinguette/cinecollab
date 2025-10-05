@@ -101,7 +101,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'CineCollab <noreply@cinecollab.com>',
-        to: [Deno.env.get('ADMIN_EMAIL') || 'marguepardo@gmail.com'],
+        to: ['marguepardo@gmail.com'],
         subject: `${feedbackType.emoji} Nuevo ${feedbackType.name}: ${record.subject}`,
         html: emailHtml,
       }),
