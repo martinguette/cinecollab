@@ -22,25 +22,27 @@ export function useUser(userId: string | null) {
     setLoading(true);
     setError(null);
 
-    // Usar la función RPC que creamos
+    // Usar consulta SQL directa con el cliente de Supabase
     supabase
-      .rpc('get_user_by_id', { user_id: userId })
-      .then(({ data, error: rpcError }) => {
-        if (rpcError) {
-          setError(rpcError.message);
+      .from('users')
+      .select('id, name, email, avatar_url')
+      .eq('id', userId)
+      .single()
+      .then(({ data, error: queryError }) => {
+        if (queryError) {
+          setError(queryError.message);
           setUser({
             id: userId,
             name: 'Usuario',
             email: 'Usuario',
             avatar_url: undefined,
           });
-        } else if (data && data.length > 0) {
-          const userData = data[0];
+        } else if (data) {
           setUser({
-            id: userData.id,
-            name: userData.name,
-            email: userData.email,
-            avatar_url: userData.avatar_url,
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            avatar_url: data.avatar_url,
           });
         } else {
           setUser({

@@ -77,8 +77,12 @@ const WatchlistDetail = () => {
   const [watchlistDescription, setWatchlistDescription] = useState<
     string | null
   >(null);
-  const [ownerId, setOwnerId] = useState<string | null>(null);
-  const { user: watchlistCreator, loading: creatorLoading } = useUser(ownerId);
+  const [watchlistCreator, setWatchlistCreator] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    avatar_url?: string;
+  } | null>(null);
   const { config, loading: configLoading } = useTMDbConfig();
   const { isGuest, requireAuth } = useGuest();
   const { user } = useAuth();
@@ -97,7 +101,48 @@ const WatchlistDetail = () => {
           setWatchlistName(data.name);
           setWatchlistDescription(data.description ?? null);
 
-          setOwnerId(data.owner_id);
+          // Obtener información del usuario creador
+          if (data.owner_id) {
+            // Usar consulta SQL directa con fetch
+            fetch('/api/supabase/execute-sql', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                query:
+                  'SELECT id, name, email, avatar_url FROM public.users WHERE id = $1',
+                params: [data.owner_id],
+              }),
+            })
+              .then((res) => res.json())
+              .then(({ data: userData, error: userError }) => {
+                if (!userError && userData && userData.length > 0) {
+                  const user = userData[0];
+                  setWatchlistCreator({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    avatar_url: user.avatar_url,
+                  });
+                } else {
+                  // Si no se encuentra el usuario, usar datos básicos
+                  setWatchlistCreator({
+                    id: data.owner_id,
+                    name: 'Usuario',
+                    email: 'Usuario',
+                    avatar_url: undefined,
+                  });
+                }
+              })
+              .catch(() => {
+                // Si falla la consulta, usar datos básicos
+                setWatchlistCreator({
+                  id: data.owner_id,
+                  name: 'Usuario',
+                  email: 'Usuario',
+                  avatar_url: undefined,
+                });
+              });
+          }
         }
       });
   }, [id]);
