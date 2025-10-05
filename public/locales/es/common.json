@@ -1,8 +1,8 @@
 {
   "app": {
     "name": "CineCollab",
-    "tagline": "Encuentra tu próxima serie favorita",
-    "description": "Busca películas y series, crea listas de seguimiento y colabora con amigos"
+    "tagline": "Crea listas colaborativas con amigos",
+    "description": "Descubre cine y series en comunidad. Crea listas compartidas, intercambia recomendaciones y organiza noches de película con tu gente"
   },
   "navigation": {
     "search": "Buscar",
