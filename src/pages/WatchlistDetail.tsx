@@ -26,7 +26,7 @@ import { WatchlistMovieCard } from '@/components/watchlists/WatchlistMovieCard';
 import { RandomizerButton } from '@/components/watchlists/RandomizerButton';
 import { RandomSelectionModal } from '@/components/watchlists/RandomSelectionModal';
 import { EmptyWatchlistState } from '@/components/watchlists/EmptyWatchlistState';
-import { TMDbMediaItem } from '@/types';
+import { TMDbMediaItem, TMDbMediaItemWithUser } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 import { useGuest } from '@/hooks/use-guest';
 import { useAuth } from '@/hooks/use-auth';
@@ -70,7 +70,7 @@ const WatchlistDetail = () => {
   const { t } = useTranslation('watchlists');
   const { t: tCommon } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
-  const [items, setItems] = useState<TMDbMediaItem[]>([]);
+  const [items, setItems] = useState<TMDbMediaItemWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [watchlistName, setWatchlistName] = useState<string>('');
@@ -103,17 +103,16 @@ const WatchlistDetail = () => {
 
           // Obtener información del usuario creador
           if (data.owner_id) {
-            // Usar la función RPC que funciona correctamente
             supabase
-              .rpc('get_user_by_id', { user_id: data.owner_id })
+              .rpc('get_user_info', { user_id: data.owner_id })
+              .single()
               .then(({ data: userData, error: userError }) => {
-                if (!userError && userData && userData.length > 0) {
-                  const user = userData[0];
+                if (!userError && userData) {
                   setWatchlistCreator({
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    avatar_url: user.avatar_url,
+                    id: userData.id,
+                    name: userData.name || 'Usuario',
+                    email: userData.email || 'Usuario',
+                    avatar_url: userData.avatar_url,
                   });
                 } else {
                   // Si no se encuentra el usuario, usar datos básicos
@@ -144,10 +143,10 @@ const WatchlistDetail = () => {
     if (!id) return;
     setLoading(true);
     setError(null);
-    // 1. Obtener los items de la watchlist desde Supabase
+    // 1. Obtener los items de la watchlist desde Supabase con información del usuario
     supabase
       .from('watchlist_movies')
-      .select('media_id, media_type, watchlist_id')
+      .select('media_id, media_type, watchlist_id, added_by, added_at')
       .eq('watchlist_id', id)
       .then(async ({ data, error }) => {
         if (error) {
@@ -160,22 +159,50 @@ const WatchlistDetail = () => {
           setLoading(false);
           return;
         }
-        // 2. Obtener detalles de cada media
+        // 2. Obtener detalles de cada media y información del usuario
         const details = await Promise.all(
           data.map(
             async (
               item: Pick<
                 Database['public']['Tables']['watchlist_movies']['Row'],
-                'media_id' | 'media_type' | 'watchlist_id'
+                | 'media_id'
+                | 'media_type'
+                | 'watchlist_id'
+                | 'added_by'
+                | 'added_at'
               >
             ) => {
               try {
                 const mediaIdNum = Number(item.media_id);
+                let mediaDetails;
                 if (item.media_type === 'movie') {
-                  return await getMovieDetails(mediaIdNum);
+                  mediaDetails = await getMovieDetails(mediaIdNum);
                 } else {
-                  return await getTVDetails(mediaIdNum);
+                  mediaDetails = await getTVDetails(mediaIdNum);
                 }
+
+                // Obtener información del usuario que agregó la película
+                const { data: userData } = await supabase
+                  .rpc('get_user_info', { user_id: item.added_by })
+                  .single();
+
+                return {
+                  ...mediaDetails,
+                  addedBy: userData
+                    ? {
+                        id: userData.id,
+                        name: userData.name || 'Usuario',
+                        email: userData.email || 'Usuario',
+                        avatar_url: userData.avatar_url,
+                      }
+                    : {
+                        id: item.added_by,
+                        name: 'Usuario',
+                        email: 'Usuario',
+                        avatar_url: undefined,
+                      },
+                  addedAt: item.added_at,
+                };
               } catch (e: unknown) {
                 console.error('Error fetching details for', item, e);
                 return null;
@@ -203,7 +230,7 @@ const WatchlistDetail = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [randomModalOpen, setRandomModalOpen] = useState(false);
   const [selectedRandomItem, setSelectedRandomItem] =
-    useState<TMDbMediaItem | null>(null);
+    useState<TMDbMediaItemWithUser | null>(null);
   const shareUrl = `${window.location.origin}/watchlist/join/${id}`;
 
   const handleCopy = async () => {
@@ -224,7 +251,7 @@ const WatchlistDetail = () => {
     }
   };
 
-  const handleRandomSelect = (item: TMDbMediaItem) => {
+  const handleRandomSelect = (item: TMDbMediaItemWithUser) => {
     setSelectedRandomItem(item);
     setRandomModalOpen(true);
   };
@@ -354,24 +381,54 @@ const WatchlistDetail = () => {
         if (id) {
           const fetchWatchlistDetails = async () => {
             const { data, error } = await supabase
-              .from('watchlists')
-              .select('*, watchlist_movies(*)')
-              .eq('id', id)
-              .single();
+              .from('watchlist_movies')
+              .select('media_id, media_type, watchlist_id, added_by, added_at')
+              .eq('watchlist_id', id);
 
             if (!error && data) {
               const mediaItems = await Promise.all(
-                data.watchlist_movies.map(
+                data.map(
                   async (
-                    item: Database['public']['Tables']['watchlist_movies']['Row']
+                    item: Pick<
+                      Database['public']['Tables']['watchlist_movies']['Row'],
+                      | 'media_id'
+                      | 'media_type'
+                      | 'watchlist_id'
+                      | 'added_by'
+                      | 'added_at'
+                    >
                   ) => {
-                    const mediaIdNum = item.media_id;
+                    const mediaIdNum = Number(item.media_id);
                     try {
+                      let mediaDetails;
                       if (item.media_type === 'movie') {
-                        return await getMovieDetails(mediaIdNum);
+                        mediaDetails = await getMovieDetails(mediaIdNum);
                       } else {
-                        return await getTVDetails(mediaIdNum);
+                        mediaDetails = await getTVDetails(mediaIdNum);
                       }
+
+                      // Obtener información del usuario que agregó la película
+                      const { data: userData } = await supabase
+                        .rpc('get_user_info', { user_id: item.added_by })
+                        .single();
+
+                      return {
+                        ...mediaDetails,
+                        addedBy: userData
+                          ? {
+                              id: userData.id,
+                              name: userData.name || 'Usuario',
+                              email: userData.email || 'Usuario',
+                              avatar_url: userData.avatar_url,
+                            }
+                          : {
+                              id: item.added_by,
+                              name: 'Usuario',
+                              email: 'Usuario',
+                              avatar_url: undefined,
+                            },
+                        addedAt: item.added_at,
+                      };
                     } catch (e: unknown) {
                       console.error('Error fetching details for', item, e);
                       return null;
@@ -379,7 +436,7 @@ const WatchlistDetail = () => {
                   }
                 )
               );
-              setItems(mediaItems.filter(Boolean) as TMDbMediaItem[]);
+              setItems(mediaItems.filter(Boolean) as TMDbMediaItemWithUser[]);
             }
           };
           fetchWatchlistDetails();

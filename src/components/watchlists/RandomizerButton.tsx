@@ -2,11 +2,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Dice6 } from 'lucide-react';
-import { TMDbMediaItem } from '@/types';
+import { TMDbMediaItem, TMDbMediaItemWithUser } from '@/types';
 
 interface RandomizerButtonProps {
-  items: TMDbMediaItem[];
-  onRandomSelect: (item: TMDbMediaItem) => void;
+  items: TMDbMediaItemWithUser[];
+  onRandomSelect: (item: TMDbMediaItemWithUser) => void;
   disabled?: boolean;
 }
 

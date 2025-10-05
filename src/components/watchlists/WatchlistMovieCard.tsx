@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TMDbMediaItem, TMDbConfig } from '@/types';
+import { TMDbMediaItem, TMDbMediaItemWithUser, TMDbConfig } from '@/types';
 import { getTitle, getReleaseDate, formatPosterPath } from '@/lib/tmdb-api';
 import {
   Card,
@@ -49,7 +49,7 @@ import { useGuest } from '@/hooks/use-guest';
 import { BackButton } from '@/components/ui/back-button';
 
 interface WatchlistMovieCardProps {
-  item: TMDbMediaItem;
+  item: TMDbMediaItemWithUser;
   config: TMDbConfig | null;
   watchlistId: string;
   onRemove?: () => void;
@@ -77,8 +77,8 @@ export function WatchlistMovieCard({
   const { isGuest, requireAuth } = useGuest();
   const { toast } = useToast();
 
-  const title = getTitle(item);
-  const releaseDate = getReleaseDate(item);
+  const title = getTitle(item as TMDbMediaItem);
+  const releaseDate = getReleaseDate(item as TMDbMediaItem);
   const formattedDate = releaseDate
     ? new Date(releaseDate).getFullYear()
     : 'Unknown';
@@ -333,6 +333,31 @@ export function WatchlistMovieCard({
             {title}
           </h3>
           <CardDescription className="text-xs">{formattedDate}</CardDescription>
+
+          {/* User who added the item */}
+          <div className="flex items-center gap-1 mt-2">
+            <div className="w-4 h-4 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+              {item.addedBy.avatar_url ? (
+                <img
+                  src={item.addedBy.avatar_url}
+                  alt={item.addedBy.name}
+                  className="w-4 h-4 rounded-full object-cover"
+                />
+              ) : item.addedBy.name ? (
+                item.addedBy.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2)
+              ) : (
+                'U'
+              )}
+            </div>
+            <span className="text-xs text-muted-foreground truncate">
+              {item.addedBy.name || 'Usuario'}
+            </span>
+          </div>
         </CardContent>
 
         {/* Action buttons bar */}

@@ -7,15 +7,15 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { TMDbMediaItem } from '@/types';
-import { TMDbConfig } from '@/lib/tmdb-api';
+import { TMDbMediaItem, TMDbMediaItemWithUser } from '@/types';
+import { TMDbConfig } from '@/types';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Calendar, Star } from 'lucide-react';
 
 interface RandomSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedItem: TMDbMediaItem | null;
+  selectedItem: TMDbMediaItemWithUser | null;
   config: TMDbConfig | null;
 }
 

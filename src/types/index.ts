@@ -1,4 +1,3 @@
-
 // TMDb API Types
 export interface TMDbConfig {
   images: {
@@ -56,6 +55,38 @@ export interface TMDbGenre {
 }
 
 export type TMDbMediaItem = TMDbMovie | TMDbTV;
+
+// Extended type for watchlist items with user information
+export interface TMDbMediaItemWithUser {
+  // Include all properties from TMDbMediaItem
+  id: number;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  overview: string;
+  genre_ids: number[];
+  vote_average: number;
+  media_type?: 'movie' | 'tv';
+  videos?: {
+    results: TMDbVideo[];
+  };
+
+  // Movie-specific properties
+  title?: string;
+  release_date?: string;
+
+  // TV-specific properties
+  name?: string;
+  first_air_date?: string;
+
+  // Additional properties for watchlist items
+  addedBy: {
+    id: string;
+    name: string;
+    email: string;
+    avatar_url?: string;
+  };
+  addedAt: string;
+}
 
 export interface TMDbSearchResults {
   page: number;
