@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { useTMDbConfig } from '@/hooks/use-tmdb-config';
+import { useUser } from '@/hooks/use-user';
 import { supabase } from '@/integrations/supabase/client';
 import {
   getMovieDetails,
@@ -76,18 +77,16 @@ const WatchlistDetail = () => {
   const [watchlistDescription, setWatchlistDescription] = useState<
     string | null
   >(null);
-  const [watchlistCreator, setWatchlistCreator] = useState<{
-    id: string;
-    email: string;
-    full_name?: string;
-    avatar_url?: string;
-  } | null>(null);
+  const [ownerId, setOwnerId] = useState<string | null>(null);
+  const { user: watchlistCreator, loading: creatorLoading } = useUser(ownerId);
   const { config, loading: configLoading } = useTMDbConfig();
   const { isGuest, requireAuth } = useGuest();
   const { user } = useAuth();
   // Obtener el nombre de la watchlist y información del creador
   useEffect(() => {
     if (!id) return;
+
+    // Obtener información básica de la watchlist
     supabase
       .from('watchlists')
       .select('name, description, owner_id')
@@ -98,19 +97,7 @@ const WatchlistDetail = () => {
           setWatchlistName(data.name);
           setWatchlistDescription(data.description ?? null);
 
-          // Obtener información del usuario creador
-          if (data.owner_id) {
-            supabase.auth.getUser().then(({ data: userData }) => {
-              if (userData.user && userData.user.id === data.owner_id) {
-                setWatchlistCreator({
-                  id: userData.user.id,
-                  email: userData.user.email || '',
-                  full_name: userData.user.user_metadata?.full_name,
-                  avatar_url: userData.user.user_metadata?.avatar_url,
-                });
-              }
-            });
-          }
+          setOwnerId(data.owner_id);
         }
       });
   }, [id]);
@@ -409,8 +396,8 @@ const WatchlistDetail = () => {
                 <Avatar
                   src={watchlistCreator.avatar_url || undefined}
                   fallback={
-                    watchlistCreator.full_name
-                      ? watchlistCreator.full_name
+                    watchlistCreator.name
+                      ? watchlistCreator.name
                           .split(' ')
                           .map((n) => n[0])
                           .join('')
@@ -421,7 +408,7 @@ const WatchlistDetail = () => {
                 />
                 <span>
                   {t('detail.createdBy')}{' '}
-                  {watchlistCreator.full_name || watchlistCreator.email}
+                  {watchlistCreator.name || watchlistCreator.email}
                 </span>
               </div>
             )}
