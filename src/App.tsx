@@ -13,6 +13,7 @@ import Register from './pages/auth/Register';
 import JoinWatchlist from './pages/JoinWatchlist';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import Feedback from './pages/Feedback';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { GuestRoute } from '@/components/auth/GuestRoute';
@@ -70,6 +71,7 @@ const App = () => (
         />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/feedback" element={<Feedback />} />
         <Route path="/watchlist/join/:id" element={<JoinWatchlist />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

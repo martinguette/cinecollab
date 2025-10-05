@@ -125,6 +125,73 @@ export type Database = {
           }
         ];
       };
+      feedback: {
+        Row: {
+          id: string;
+          user_id: string;
+          type: 'bug' | 'suggestion' | 'feature' | 'compliment' | 'other';
+          subject: string;
+          message: string;
+          language: 'en' | 'es';
+          status:
+            | 'pending'
+            | 'reviewed'
+            | 'in_progress'
+            | 'resolved'
+            | 'closed';
+          priority: 'low' | 'medium' | 'high' | 'urgent';
+          created_at: string;
+          updated_at: string;
+          admin_notes: string | null;
+          resolved_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          type: 'bug' | 'suggestion' | 'feature' | 'compliment' | 'other';
+          subject: string;
+          message: string;
+          language: 'en' | 'es';
+          status?:
+            | 'pending'
+            | 'reviewed'
+            | 'in_progress'
+            | 'resolved'
+            | 'closed';
+          priority?: 'low' | 'medium' | 'high' | 'urgent';
+          created_at?: string;
+          updated_at?: string;
+          admin_notes?: string | null;
+          resolved_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          type?: 'bug' | 'suggestion' | 'feature' | 'compliment' | 'other';
+          subject?: string;
+          message?: string;
+          language?: 'en' | 'es';
+          status?:
+            | 'pending'
+            | 'reviewed'
+            | 'in_progress'
+            | 'resolved'
+            | 'closed';
+          priority?: 'low' | 'medium' | 'high' | 'urgent';
+          created_at?: string;
+          updated_at?: string;
+          admin_notes?: string | null;
+          resolved_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'feedback_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;

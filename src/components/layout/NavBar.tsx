@@ -9,6 +9,7 @@ import {
   LogOut,
   Globe,
   Loader2,
+  MessageSquare,
 } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { getAvatarUrl, getUserInitials, getDisplayName } from '@/lib/avatar';
@@ -157,6 +158,12 @@ export function NavBar() {
                   </div>
                 </div>
 
+                <DropdownMenuItem className="cursor-pointer" asChild>
+                  <Link to="/feedback" className="flex items-center">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    <span>Feedback</span>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="cursor-pointer text-destructive focus:text-destructive"

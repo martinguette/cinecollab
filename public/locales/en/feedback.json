@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "Feedback & Suggestions",
+    "description": "Help us improve CineCollab! Share your thoughts, report bugs, suggest features, or just say hello. We read every message and appreciate your input.",
+    "cards": {
+      "bug": {
+        "title": "Bug Reports",
+        "description": "Found something that's not working? Let us know so we can fix it!"
+      },
+      "suggestion": {
+        "title": "Suggestions",
+        "description": "Have ideas to make CineCollab better? We'd love to hear them!"
+      },
+      "compliment": {
+        "title": "Compliments",
+        "description": "Loving the app? We'd love to hear what you enjoy most!"
+      }
+    }
+  },
+  "form": {
+    "title": "Send us your feedback",
+    "description": "Choose the type of feedback and tell us what's on your mind. All feedback is welcome!",
+    "language": "Language",
+    "selectLanguage": "Select your preferred language",
+    "feedbackType": "What type of feedback is this?",
+    "subject": "Subject",
+    "subjectPlaceholder": "Brief description of your feedback",
+    "message": "Message",
+    "messagePlaceholder": "Tell us more about your feedback, suggestion, or report...",
+    "characters": "characters",
+    "submit": "Send Feedback",
+    "submitting": "Sending...",
+    "success": {
+      "title": "Thank you!",
+      "description": "Your feedback has been sent successfully. We'll review it and get back to you if needed."
+    },
+    "errors": {
+      "loginRequired": "Please log in to send feedback",
+      "fillAllFields": "Please fill in all required fields",
+      "submissionFailed": "Failed to send feedback. Please try again."
+    },
+    "types": {
+      "bug": "Bug Report",
+      "suggestion": "Suggestion",
+      "feature": "Feature Request",
+      "compliment": "Compliment",
+      "other": "Other"
+    }
+  }
+}

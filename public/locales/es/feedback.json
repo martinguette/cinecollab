@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "Comentarios y Sugerencias",
+    "description": "¡Ayúdanos a mejorar CineCollab! Comparte tus pensamientos, reporta errores, sugiere funciones o simplemente saluda. Leemos cada mensaje y apreciamos tu opinión.",
+    "cards": {
+      "bug": {
+        "title": "Reportes de Errores",
+        "description": "¿Encontraste algo que no funciona? ¡Déjanos saber para poder arreglarlo!"
+      },
+      "suggestion": {
+        "title": "Sugerencias",
+        "description": "¿Tienes ideas para hacer CineCollab mejor? ¡Nos encantaría escucharlas!"
+      },
+      "compliment": {
+        "title": "Felicitaciones",
+        "description": "¿Te encanta la app? ¡Nos encantaría saber qué es lo que más disfrutas!"
+      }
+    }
+  },
+  "form": {
+    "title": "Envíanos tus comentarios",
+    "description": "Elige el tipo de comentario y cuéntanos qué tienes en mente. ¡Todos los comentarios son bienvenidos!",
+    "language": "Idioma",
+    "selectLanguage": "Selecciona tu idioma preferido",
+    "feedbackType": "¿Qué tipo de comentario es este?",
+    "subject": "Asunto",
+    "subjectPlaceholder": "Breve descripción de tu comentario",
+    "message": "Mensaje",
+    "messagePlaceholder": "Cuéntanos más sobre tu comentario, sugerencia o reporte...",
+    "characters": "caracteres",
+    "submit": "Enviar Comentario",
+    "submitting": "Enviando...",
+    "success": {
+      "title": "¡Gracias!",
+      "description": "Tu comentario ha sido enviado exitosamente. Lo revisaremos y te responderemos si es necesario."
+    },
+    "errors": {
+      "loginRequired": "Por favor inicia sesión para enviar comentarios",
+      "fillAllFields": "Por favor completa todos los campos requeridos",
+      "submissionFailed": "Error al enviar el comentario. Por favor intenta de nuevo."
+    },
+    "types": {
+      "bug": "Reporte de Error",
+      "suggestion": "Sugerencia",
+      "feature": "Solicitud de Función",
+      "compliment": "Felicitación",
+      "other": "Otro"
+    }
+  }
+}
