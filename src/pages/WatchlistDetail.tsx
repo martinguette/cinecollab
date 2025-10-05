@@ -103,17 +103,9 @@ const WatchlistDetail = () => {
 
           // Obtener información del usuario creador
           if (data.owner_id) {
-            // Usar consulta SQL directa con fetch
-            fetch('/api/supabase/execute-sql', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                query:
-                  'SELECT id, name, email, avatar_url FROM public.users WHERE id = $1',
-                params: [data.owner_id],
-              }),
-            })
-              .then((res) => res.json())
+            // Usar la función RPC que funciona correctamente
+            supabase
+              .rpc('get_user_by_id', { user_id: data.owner_id })
               .then(({ data: userData, error: userError }) => {
                 if (!userError && userData && userData.length > 0) {
                   const user = userData[0];
